@@ -52,21 +52,21 @@
 
         .header-title {
             text-align: center;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .header-title h1 {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 800;
             background: linear-gradient(135deg, #00d2ff, #92fe9d);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             letter-spacing: -0.5px;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .header-title p {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
         }
 
@@ -106,19 +106,19 @@
 
         .scan-target-box {
             position: relative;
-            width: 78%;
-            height: 52%;
+            width: 82%;
+            height: 48%;
             border: 2px dashed rgba(0, 210, 255, 0.6);
             border-radius: 12px;
             box-shadow: inset 0 0 18px rgba(0, 210, 255, 0.15);
         }
 
-        /* Cantoneiras futuristas */
+        /* Cantoneiras */
         .scan-target-box::before, .scan-target-box::after {
             content: '';
             position: absolute;
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             border-color: #00f2fe;
             border-style: solid;
         }
@@ -151,12 +151,12 @@
 
         .hud-badge {
             position: absolute;
-            bottom: 12px;
-            background: rgba(0, 0, 0, 0.65);
+            bottom: 10px;
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
             padding: 4px 12px;
             border-radius: 20px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: #92fe9d;
             font-family: 'JetBrains Mono', monospace;
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -178,27 +178,131 @@
             100% { opacity: 1; transform: scale(1.2); }
         }
 
+        /* Barra de Zoom e Ferramentas Rápidas */
+        .zoom-control-card {
+            width: 100%;
+            max-width: 480px;
+            margin-top: 10px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 14px;
+            padding: 10px 14px;
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .zoom-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .zoom-slider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .zoom-slider-row input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            accent-color: #00d2ff;
+            cursor: pointer;
+        }
+
+        .zoom-preset-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .zoom-btn {
+            flex: 1;
+            padding: 5px 0;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .zoom-btn.active, .zoom-btn:hover {
+            background: rgba(0, 210, 255, 0.25);
+            border-color: #00d2ff;
+            color: #00d2ff;
+        }
+
+        /* Botões de Ação */
+        .controls-row {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 480px;
+            margin-top: 10px;
+        }
+
+        .btn-modern {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary-glow {
+            background: linear-gradient(135deg, #00d2ff, #0066eb);
+            color: white;
+        }
+
+        .btn-secondary-glow {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-torch.active {
+            background: #f59e0b;
+            color: #111;
+            box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+        }
+
         /* Painel de Resultados */
         .result-panel {
             width: 100%;
             max-width: 480px;
-            margin-top: 16px;
+            margin-top: 12px;
             background: var(--card-bg);
             backdrop-filter: blur(16px);
-            border-radius: 20px;
-            padding: 18px;
+            border-radius: 18px;
+            padding: 14px;
             border: 1px solid var(--card-border);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .result-main {
             text-align: center;
-            padding: 12px 10px;
+            padding: 10px;
             background: rgba(0, 0, 0, 0.25);
-            border-radius: 14px;
+            border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.3s ease;
         }
@@ -210,15 +314,14 @@
         }
 
         .size-label {
-            font-size: 0.78rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-muted);
-            margin-bottom: 2px;
         }
 
         .size-value {
-            font-size: 2.6rem;
+            font-size: 2.4rem;
             font-weight: 800;
             letter-spacing: -1px;
             color: #ffffff;
@@ -228,23 +331,48 @@
 
         .code-detected {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #00f2fe;
-            margin-top: 6px;
+            margin-top: 4px;
             word-break: break-all;
             background: rgba(0, 0, 0, 0.4);
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 8px;
+            padding: 3px 10px;
+            border-radius: 6px;
             border: 1px solid rgba(0, 242, 254, 0.3);
         }
 
+        /* Debug / Preview do Frame Processado */
+        .debug-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .processed-preview-container {
+            width: 72px;
+            height: 48px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #000;
+        }
+
+        #previewCanvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         .ocr-preview-box {
+            flex: 1;
             background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 10px;
-            font-size: 0.75rem;
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.72rem;
             color: var(--text-muted);
             border: 1px dashed rgba(255, 255, 255, 0.08);
         }
@@ -254,62 +382,19 @@
             color: #cbd5e1;
             white-space: pre-wrap;
             word-break: break-all;
-            max-height: 50px;
+            max-height: 38px;
             overflow-y: auto;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
-        /* Botões de Ação */
-        .controls-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            max-width: 480px;
-            margin-top: 14px;
-        }
-
-        .btn-modern {
-            flex: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 13px 18px;
-            font-size: 0.92rem;
-            font-weight: 600;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-primary-glow {
-            background: linear-gradient(135deg, #00d2ff, #0066eb);
-            color: white;
-        }
-        .btn-primary-glow:active {
-            transform: scale(0.97);
-        }
-
-        .btn-secondary-glow {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-main);
-            border: 1px solid var(--card-border);
-        }
-
-        .btn-secondary-glow:active {
-            transform: scale(0.97);
-        }
-
-        /* Lista de Histórico Recente */
+        /* Histórico Recente */
         .history-card {
             width: 100%;
             max-width: 480px;
-            margin-top: 14px;
+            margin-top: 10px;
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 14px;
+            border-radius: 14px;
+            padding: 12px;
             border: 1px solid var(--card-border);
         }
 
@@ -317,20 +402,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .history-list {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            max-height: 140px;
+            gap: 5px;
+            max-height: 120px;
             overflow-y: auto;
         }
 
@@ -339,9 +424,9 @@
             justify-content: space-between;
             align-items: center;
             background: rgba(0, 0, 0, 0.25);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.76rem;
             border-left: 3px solid #00d2ff;
         }
 
@@ -354,11 +439,11 @@
             font-weight: 700;
             color: #92fe9d;
             background: rgba(146, 254, 157, 0.15);
-            padding: 2px 8px;
-            border-radius: 6px;
+            padding: 2px 6px;
+            border-radius: 4px;
         }
 
-        canvas {
+        #cropCanvas {
             display: none;
         }
     </style>
@@ -368,7 +453,7 @@
 
     <div class="header-title">
         <h1><i class="fas fa-microchip me-2"></i>Leitor de Código Chip</h1>
-        <p>Aponte a câmera para o código da memória (ex: BGA/eMMC)</p>
+        <p>Ajuste o zoom e aproxime a câmera para leitura das gravações a laser</p>
     </div>
 
     <!-- Câmera & Mira -->
@@ -386,13 +471,35 @@
         </div>
     </div>
 
-    <!-- Botões -->
+    <!-- Controle de Zoom e Resolução -->
+    <div class="zoom-control-card">
+        <div class="zoom-header">
+            <span><i class="fas fa-search-plus me-1"></i>Controle de Zoom (Macro)</span>
+            <span id="zoomLevelText" style="font-family: 'JetBrains Mono'; color: #00d2ff;">1.0x</span>
+        </div>
+        <div class="zoom-slider-row">
+            <i class="fas fa-minus" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+            <input type="range" id="zoomSlider" min="1" max="5" step="0.1" value="1">
+            <i class="fas fa-plus" style="font-size: 0.7rem; color: var(--text-muted);"></i>
+        </div>
+        <div class="zoom-preset-buttons">
+            <button class="zoom-btn active" data-zoom="1">1x (Padrão)</button>
+            <button class="zoom-btn" data-zoom="1.8">1.8x</button>
+            <button class="zoom-btn" data-zoom="2.5">2.5x</button>
+            <button class="zoom-btn" data-zoom="3.5">3.5x (Chip Pequeno)</button>
+        </div>
+    </div>
+
+    <!-- Botões de Ação -->
     <div class="controls-row">
         <button id="btnToggleScan" class="btn-modern btn-primary-glow">
-            <i class="fas fa-pause"></i> <span id="toggleText">Pausar Leitura</span>
+            <i class="fas fa-pause"></i> <span id="toggleText">Pausar</span>
+        </button>
+        <button id="btnTorch" class="btn-modern btn-secondary-glow btn-torch">
+            <i class="fas fa-lightbulb"></i> <span id="torchText">Lanterna</span>
         </button>
         <button id="btnSwitchCam" class="btn-modern btn-secondary-glow">
-            <i class="fas fa-sync-alt"></i> <span>Alternar Câmera</span>
+            <i class="fas fa-sync-alt"></i> <span>Câmera</span>
         </button>
     </div>
 
@@ -401,15 +508,21 @@
         <div class="result-main" id="resultCard">
             <div class="size-label">Capacidade Identificada</div>
             <div class="size-value" id="sizeDisplay">--</div>
-            <div class="code-detected" id="codeDisplay">Aguardando leitura...</div>
+            <div class="code-detected" id="codeDisplay">Enquadre o código do chip...</div>
         </div>
 
-        <div class="ocr-preview-box">
-            <div style="display: flex; justify-content: space-between;">
-                <span>Texto OCR Capturado:</span>
-                <span id="scanCountText" style="font-family: 'JetBrains Mono'; color: #00d2ff;">Ciclo: 0</span>
+        <!-- Debug Visual da Imagem Nitidificada e OCR -->
+        <div class="debug-row">
+            <div class="processed-preview-container" title="Frame com alta nitidez enviado para o OCR">
+                <canvas id="previewCanvas"></canvas>
             </div>
-            <div class="ocr-text" id="rawOcrText">Aguardando primeiro frame...</div>
+            <div class="ocr-preview-box">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>OCR Lido:</span>
+                    <span id="scanCountText" style="font-family: 'JetBrains Mono'; color: #00d2ff;">#0</span>
+                </div>
+                <div class="ocr-text" id="rawOcrText">Aguardando...</div>
+            </div>
         </div>
     </div>
 
@@ -424,13 +537,14 @@
         </ul>
     </div>
 
-    <!-- Canvas oculto para corte e OCR -->
+    <!-- Canvas Oculto para Processamento em Alta Resolução -->
     <canvas id="cropCanvas"></canvas>
 
     <script>
         // Elementos DOM
         const video = document.getElementById('video');
         const cropCanvas = document.getElementById('cropCanvas');
+        const previewCanvas = document.getElementById('previewCanvas');
         const hudText = document.getElementById('hudText');
         const hudDot = document.getElementById('hudDot');
         const sizeDisplay = document.getElementById('sizeDisplay');
@@ -442,18 +556,27 @@
         const historyList = document.getElementById('historyList');
         const btnToggleScan = document.getElementById('btnToggleScan');
         const btnSwitchCam = document.getElementById('btnSwitchCam');
+        const btnTorch = document.getElementById('btnTorch');
+        const torchText = document.getElementById('torchText');
         const toggleText = document.getElementById('toggleText');
+        const zoomSlider = document.getElementById('zoomSlider');
+        const zoomLevelText = document.getElementById('zoomLevelText');
+        const zoomButtons = document.querySelectorAll('.zoom-btn');
 
         // Estado da Aplicação
-        let codesDatabase = {}; // { "8GB": ["KMF720012M-B214", ...], ... }
-        let lookupMap = new Map(); // "KMF720012MB214" (normalizado) -> { rawCode: "...", size: "8GB" }
+        let codesDatabase = {};
+        let lookupMap = new Map();
         let currentFacingMode = 'environment';
         let mediaStream = null;
+        let videoTrack = null;
         let isScanning = true;
         let isOcrBusy = false;
         let scanCounter = 0;
         let ocrWorker = null;
         let detectedHistory = [];
+        let hasHardwareZoom = false;
+        let currentZoomValue = 1.0;
+        let isTorchOn = false;
 
         // Normalizador de texto para aumentar tolerância a ruídos de OCR (hífens, espaços)
         function normalizeCode(str) {
@@ -463,7 +586,7 @@
         // 1. Carregar Base de Códigos da Planilha (JSON)
         async function loadDatabase() {
             try {
-                hudText.textContent = "Carregando códigos...";
+                hudText.textContent = "Carregando base...";
                 const res = await fetch('tabela_codigos.json');
                 if (!res.ok) throw new Error("Erro ao ler tabela_codigos.json");
                 codesDatabase = await res.json();
@@ -480,29 +603,32 @@
                 }
 
                 dbCountText.textContent = `${totalCodes} códigos carregados`;
-                hudText.textContent = "Base carregada!";
+                hudText.textContent = "Base pronta";
             } catch (err) {
                 console.error(err);
-                dbCountText.textContent = "Erro ao carregar base";
-                hudText.textContent = "Erro no JSON!";
+                dbCountText.textContent = "Erro na base";
+                hudText.textContent = "Erro no JSON";
             }
         }
 
-        // 2. Inicializar Câmera
+        // 2. Inicializar Câmera em Alta Resolução (1080p ou 4K ideal)
         async function startCamera() {
             if (mediaStream) {
                 mediaStream.getTracks().forEach(track => track.stop());
             }
 
-            hudText.textContent = "Pedindo permissão de câmera...";
+            hudText.textContent = "Iniciando câmera HD...";
             hudDot.style.background = "#fbbf24";
 
+            // Solicitar resolução alta (Full HD 1920x1080) e foco macro contínuo
             const constraints = {
                 video: {
-                    facingMode: currentFacingMode,
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    focusMode: 'continuous'
+                    facingMode: { ideal: currentFacingMode },
+                    width: { ideal: 1920, min: 1280 },
+                    height: { ideal: 1080, min: 720 },
+                    advanced: [
+                        { focusMode: 'continuous' }
+                    ]
                 },
                 audio: false
             };
@@ -512,15 +638,119 @@
                 video.srcObject = mediaStream;
                 await video.play();
 
-                hudText.textContent = "Scanner Ativo";
+                videoTrack = mediaStream.getVideoTracks()[0];
+                checkCameraCapabilities();
+
+                hudText.textContent = `Câmera OK (${video.videoWidth}x${video.videoHeight})`;
                 hudDot.style.background = "#92fe9d";
             } catch (err) {
-                console.error("Erro câmera:", err);
-                hudText.textContent = "Câmera não permitida";
-                hudDot.style.background = "#ef4444";
-                alert("Não foi possível acessar a câmera. Verifique se deu permissão no navegador ou se está em HTTPS/localhost.");
+                console.error("Tentando fallback de resolução básica:", err);
+                try {
+                    // Fallback se o dispositivo não aceitar restrições avançadas
+                    mediaStream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: currentFacingMode },
+                        audio: false
+                    });
+                    video.srcObject = mediaStream;
+                    await video.play();
+                    videoTrack = mediaStream.getVideoTracks()[0];
+                    checkCameraCapabilities();
+                    hudText.textContent = "Câmera Ativa";
+                    hudDot.style.background = "#92fe9d";
+                } catch (fallbackErr) {
+                    console.error("Falha geral câmera:", fallbackErr);
+                    hudText.textContent = "Câmera bloqueada";
+                    hudDot.style.background = "#ef4444";
+                    alert("Acesso à câmera negado ou não suportado. Verifique as permissões.");
+                }
             }
         }
+
+        // Detectar recursos de Zoom Óptico/Digital e Lanterna no Hardware do Celular
+        function checkCameraCapabilities() {
+            if (!videoTrack) return;
+            const capabilities = videoTrack.getCapabilities ? videoTrack.getCapabilities() : {};
+
+            // Zoom por Hardware
+            if ('zoom' in capabilities) {
+                hasHardwareZoom = true;
+                zoomSlider.min = capabilities.zoom.min || 1;
+                zoomSlider.max = Math.min(capabilities.zoom.max || 5, 8);
+                zoomSlider.step = capabilities.zoom.step || 0.1;
+                zoomSlider.value = capabilities.zoom.min || 1;
+                currentZoomValue = parseFloat(zoomSlider.value);
+                zoomLevelText.textContent = `${currentZoomValue.toFixed(1)}x (Óptico/Digital)`;
+            } else {
+                hasHardwareZoom = false;
+                zoomSlider.min = 1;
+                zoomSlider.max = 4;
+                zoomSlider.step = 0.1;
+                zoomSlider.value = 1;
+                currentZoomValue = 1;
+                zoomLevelText.textContent = "1.0x (Recorte HD)";
+            }
+
+            // Lanterna (Torch)
+            if ('torch' in capabilities) {
+                btnTorch.style.display = "inline-flex";
+            } else {
+                btnTorch.style.opacity = "0.5";
+            }
+        }
+
+        // Aplicar Zoom (Hardware se disponível, senão Zoom por Recorte Digital no Canvas)
+        async function applyZoom(val) {
+            currentZoomValue = parseFloat(val);
+            zoomSlider.value = currentZoomValue;
+            zoomLevelText.textContent = `${currentZoomValue.toFixed(1)}x ${hasHardwareZoom ? '' : '(HD)'}`;
+
+            // Atualiza botões de preset
+            zoomButtons.forEach(btn => {
+                const bZoom = parseFloat(btn.dataset.zoom);
+                if (Math.abs(bZoom - currentZoomValue) < 0.2) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Se o navegador do celular suporta zoom nativo no hardware
+            if (hasHardwareZoom && videoTrack) {
+                try {
+                    await videoTrack.applyConstraints({
+                        advanced: [{ zoom: currentZoomValue }]
+                    });
+                } catch (e) {
+                    console.warn("Falha ao aplicar zoom de hardware:", e);
+                }
+            }
+        }
+
+        // Eventos de Zoom
+        zoomSlider.addEventListener('input', (e) => applyZoom(e.target.value));
+        zoomButtons.forEach(btn => {
+            btn.addEventListener('click', () => applyZoom(btn.dataset.zoom));
+        });
+
+        // Alternar Lanterna
+        btnTorch.addEventListener('click', async () => {
+            if (!videoTrack) return;
+            const capabilities = videoTrack.getCapabilities ? videoTrack.getCapabilities() : {};
+            if ('torch' in capabilities) {
+                try {
+                    isTorchOn = !isTorchOn;
+                    await videoTrack.applyConstraints({
+                        advanced: [{ torch: isTorchOn }]
+                    });
+                    btnTorch.classList.toggle('active', isTorchOn);
+                    torchText.textContent = isTorchOn ? "Ligada" : "Lanterna";
+                } catch (e) {
+                    console.error("Erro ao ativar lanterna:", e);
+                }
+            } else {
+                alert("A lanterna não é suportada por este dispositivo/câmera.");
+            }
+        });
 
         // Alternar câmera (traseira/frontal)
         btnSwitchCam.addEventListener('click', () => {
@@ -532,64 +762,114 @@
         btnToggleScan.addEventListener('click', () => {
             isScanning = !isScanning;
             if (isScanning) {
-                toggleText.textContent = "Pausar Leitura";
-                btnToggleScan.innerHTML = '<i class="fas fa-pause"></i> <span>Pausar Leitura</span>';
+                toggleText.textContent = "Pausar";
+                btnToggleScan.innerHTML = '<i class="fas fa-pause"></i> <span>Pausar</span>';
                 hudText.textContent = "Scanner Ativo";
                 hudDot.style.background = "#92fe9d";
             } else {
-                toggleText.textContent = "Retomar Leitura";
-                btnToggleScan.innerHTML = '<i class="fas fa-play"></i> <span>Retomar Leitura</span>';
+                toggleText.textContent = "Retomar";
+                btnToggleScan.innerHTML = '<i class="fas fa-play"></i> <span>Retomar</span>';
                 hudText.textContent = "Pausado";
                 hudDot.style.background = "#64748b";
             }
         });
 
-        // 3. Inicializar Tesseract OCR Worker
+        // 3. Inicializar Tesseract OCR Worker com Otimizações para Chips
         async function initOcr() {
             try {
                 ocrWorker = await Tesseract.createWorker('eng');
                 await ocrWorker.setParameters({
                     tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-',
+                    tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT, // Ideal para poucas linhas de texto impresso/laser
                 });
-                console.log("Tesseract pronto!");
+                console.log("Tesseract pronto com PSM SPARSE_TEXT");
             } catch (e) {
                 console.error("Falha ao inicializar Tesseract:", e);
             }
         }
 
-        // 4. Capturar frame da área da mira e pré-processar contraste
-        function captureTargetRegion() {
+        // 4. Captura com Super-Nitidez (Sharpening Kernel + Ajuste Adaptativo de Limiar)
+        function captureAndEnhanceChipRegion() {
             if (!video.videoWidth || !video.videoHeight) return null;
 
-            // Recorta a região central onde fica a mira (78% largura x 52% altura)
             const vw = video.videoWidth;
             const vh = video.videoHeight;
 
-            const cropW = Math.floor(vw * 0.78);
-            const cropH = Math.floor(vh * 0.52);
+            // Se não tiver zoom de hardware, usamos o zoom digital reduzindo a área de corte
+            const softwareZoom = hasHardwareZoom ? 1.0 : currentZoomValue;
+
+            // Região de corte central onde está a mira
+            const baseW = vw * 0.82;
+            const baseH = vh * 0.48;
+
+            const cropW = Math.max(120, Math.floor(baseW / softwareZoom));
+            const cropH = Math.max(80, Math.floor(baseH / softwareZoom));
             const cropX = Math.floor((vw - cropW) / 2);
             const cropY = Math.floor((vh - cropH) / 2);
 
-            cropCanvas.width = cropW;
-            cropCanvas.height = cropH;
+            // Redimensiona o canvas para uma resolução ótima para OCR (upscale 2x se a imagem for pequena)
+            const targetW = Math.min(1000, cropW * 2);
+            const targetH = Math.min(600, cropH * 2);
+
+            cropCanvas.width = targetW;
+            cropCanvas.height = targetH;
             const ctx = cropCanvas.getContext('2d', { willReadFrequently: true });
 
-            // Desenhar recorte
-            ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+            // Interpolação de alta qualidade para suavizar bordas das letras
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
 
-            // Binarização simples / aumento de contraste para ajudar no OCR de chips
-            const imgData = ctx.getImageData(0, 0, cropW, cropH);
-            const data = imgData.data;
-            for (let i = 0; i < data.length; i += 4) {
-                // Escala de cinza
-                const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-                // Aumento de contraste
-                const contrast = gray > 120 ? 255 : 0;
-                data[i] = contrast;
-                data[i + 1] = contrast;
-                data[i + 2] = contrast;
+            const imgData = ctx.getImageData(0, 0, targetW, targetH);
+            const d = imgData.data;
+            const len = d.length;
+
+            // Passo 1: Converter para escala de cinza e calcular média de luminância
+            let totalLum = 0;
+            const gray = new Uint8Array(targetW * targetH);
+            for (let i = 0, j = 0; i < len; i += 4, j++) {
+                // Pesos ITU-R BT.709 para tons de chips e reflexos metálicos
+                const g = 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+                gray[j] = g;
+                totalLum += g;
             }
+            const avgLum = totalLum / (targetW * targetH);
+
+            // Passo 2: Kernel de Nitidez (Laplacian High-Pass Filter 3x3)
+            // Realça significativamente letras apagadas ou gravadas a laser no silício
+            const sharpened = new Uint8ClampedArray(targetW * targetH);
+            for (let y = 1; y < targetH - 1; y++) {
+                for (let x = 1; x < targetW - 1; x++) {
+                    const idx = y * targetW + x;
+                    // Matriz de nitidez: [0, -1, 0, -1, 5, -1, 0, -1, 0]
+                    const val = 5 * gray[idx] 
+                              - gray[idx - 1] 
+                              - gray[idx + 1] 
+                              - gray[idx - targetW] 
+                              - gray[idx + targetW];
+                    sharpened[idx] = Math.min(255, Math.max(0, val));
+                }
+            }
+
+            // Passo 3: Limiarização Adaptativa Dinâmica (Alto Contraste Preto e Branco)
+            // Se o chip tiver fundo preto com gravação branca ou vice-versa, destaca o texto
+            const threshold = avgLum < 80 ? avgLum * 1.35 : avgLum * 0.95;
+
+            for (let i = 0, j = 0; i < len; i += 4, j++) {
+                const pixelVal = sharpened[j] || gray[j];
+                const finalColor = pixelVal > threshold ? 255 : 0;
+                d[i] = finalColor;
+                d[i + 1] = finalColor;
+                d[i + 2] = finalColor;
+            }
+
             ctx.putImageData(imgData, 0, 0);
+
+            // Atualiza preview em tempo real no canto da tela para o usuário ver a nitidez gerada
+            previewCanvas.width = 120;
+            previewCanvas.height = 80;
+            const pCtx = previewCanvas.getContext('2d');
+            pCtx.drawImage(cropCanvas, 0, 0, 120, 80);
 
             return cropCanvas;
         }
@@ -598,7 +878,6 @@
         function matchCodes(rawText) {
             if (!rawText || lookupMap.size === 0) return null;
 
-            // Divide em palavras e linhas
             const words = rawText.split(/[\s\n\r,;:|]+/);
             
             // 1ª Tentativa: Match exato de palavra normalizada
@@ -609,7 +888,7 @@
                 }
             }
 
-            // 2ª Tentativa: Substring matching (o código da base está contido dentro do texto lido)
+            // 2ª Tentativa: Substring matching (código existente dentro da string)
             const fullNormalizedText = normalizeCode(rawText);
             for (const [normKey, data] of lookupMap.entries()) {
                 if (normKey.length >= 5 && fullNormalizedText.includes(normKey)) {
@@ -626,12 +905,10 @@
             codeDisplay.textContent = match.rawCode;
             resultCard.classList.add('found');
 
-            // Feedback visual e vibração (se suportado no celular)
             if (navigator.vibrate) {
-                navigator.vibrate(100);
+                navigator.vibrate([80, 50, 80]);
             }
 
-            // Adicionar ao histórico se não for repetição imediata
             if (detectedHistory.length === 0 || detectedHistory[0].code !== match.rawCode) {
                 detectedHistory.unshift({ code: match.rawCode, size: match.size, time: new Date().toLocaleTimeString() });
                 if (detectedHistory.length > 5) detectedHistory.pop();
@@ -649,7 +926,7 @@
             `).join('');
         }
 
-        // 6. Loop a cada 1 segundo (conforme solicitado)
+        // 6. Loop a cada 1 segundo
         async function runOcrLoop() {
             setInterval(async () => {
                 if (!isScanning || isOcrBusy || !ocrWorker || video.readyState < 2) {
@@ -658,14 +935,14 @@
 
                 isOcrBusy = true;
                 scanCounter++;
-                scanCountText.textContent = `Ciclo: ${scanCounter}`;
+                scanCountText.textContent = `#${scanCounter}`;
 
                 try {
-                    const canvasFrame = captureTargetRegion();
+                    const canvasFrame = captureAndEnhanceChipRegion();
                     if (canvasFrame) {
                         const { data: { text } } = await ocrWorker.recognize(canvasFrame);
                         const cleanText = text.trim();
-                        rawOcrText.textContent = cleanText || "(Nenhum caractere nítido)";
+                        rawOcrText.textContent = cleanText || "(Sem texto nítido)";
 
                         const match = matchCodes(cleanText);
                         if (match) {
@@ -673,7 +950,7 @@
                         }
                     }
                 } catch (err) {
-                    console.error("Erro no OCR:", err);
+                    console.error("Erro OCR:", err);
                 } finally {
                     isOcrBusy = false;
                 }

@@ -98,7 +98,7 @@
             display: block;
         }
 
-        /* Mira / Scanner HUD */
+        /* Mira / Scanner HUD de Alta Precisão (Isolamento de Código Único) */
         .hud-overlay {
             position: absolute;
             inset: 0;
@@ -109,49 +109,126 @@
             justify-content: center;
         }
 
+        /* Máscara de vinheta escura que ofusca todo o entorno e deixa apenas a linha alvo transparente */
+        .hud-backdrop-mask {
+            position: absolute;
+            inset: 0;
+            background: rgba(5, 8, 17, 0.58);
+            clip-path: polygon(
+                0% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%,
+                /* Janela de corte transparente no centro */
+                9% 37%, 9% 63%, 91% 63%, 91% 37%, 9% 37%
+            );
+        }
+
         .scan-target-box {
             position: relative;
             width: 82%;
-            height: 48%;
-            border: 2px dashed rgba(0, 210, 255, 0.6);
-            border-radius: 12px;
-            box-shadow: inset 0 0 18px rgba(0, 210, 255, 0.15);
+            height: 26%; /* Altura reduzida e calibrada para isolar 1 a 2 linhas do chip em vez de capturar o chip inteiro */
+            border: 2px solid rgba(0, 210, 255, 0.85);
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.35), inset 0 0 15px rgba(0, 210, 255, 0.15);
+            background: rgba(0, 210, 255, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Cantoneiras */
+        /* Cantoneiras de Alta Precisão */
         .scan-target-box::before, .scan-target-box::after {
             content: '';
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 18px;
             border-color: #00f2fe;
             border-style: solid;
+            filter: drop-shadow(0 0 4px #00f2fe);
         }
         .scan-target-box::before {
-            top: -2px; left: -2px;
+            top: -3px; left: -3px;
             border-width: 4px 0 0 4px;
             border-top-left-radius: 8px;
         }
         .scan-target-box::after {
-            bottom: -2px; right: -2px;
+            bottom: -3px; right: -3px;
             border-width: 0 4px 4px 0;
             border-bottom-right-radius: 8px;
         }
 
-        .scan-laser {
+        /* Cantoneiras opostas adicionais para visual de mira ótica profissional */
+        .corner-tr, .corner-bl {
+            position: absolute;
+            width: 24px;
+            height: 18px;
+            border-color: #00f2fe;
+            border-style: solid;
+            filter: drop-shadow(0 0 4px #00f2fe);
+        }
+        .corner-tr {
+            top: -3px; right: -3px;
+            border-width: 4px 4px 0 0;
+            border-top-right-radius: 8px;
+        }
+        .corner-bl {
+            bottom: -3px; left: -3px;
+            border-width: 0 0 4px 4px;
+            border-bottom-left-radius: 8px;
+        }
+
+        /* Retículo e Linha Guia Central */
+        .crosshair-h {
             position: absolute;
             left: 0;
             right: 0;
+            top: 50%;
+            height: 1px;
+            background: rgba(0, 242, 254, 0.4);
+            transform: translateY(-50%);
+        }
+        .crosshair-tick-left, .crosshair-tick-right {
+            position: absolute;
+            top: 50%;
+            width: 14px;
+            height: 2px;
+            background: #00f2fe;
+            transform: translateY(-50%);
+            box-shadow: 0 0 6px #00f2fe;
+        }
+        .crosshair-tick-left { left: 4px; }
+        .crosshair-tick-right { right: 4px; }
+
+        .scan-hint-tag {
+            position: absolute;
+            top: -24px;
+            background: rgba(11, 15, 25, 0.85);
+            border: 1px solid rgba(0, 210, 255, 0.5);
+            border-radius: 6px;
+            padding: 2px 10px;
+            font-size: 0.68rem;
+            color: #00d2ff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .scan-laser {
+            position: absolute;
+            left: 2px;
+            right: 2px;
             height: 2px;
             background: linear-gradient(90deg, transparent, #00f2fe, #fff, #00f2fe, transparent);
-            box-shadow: 0 0 10px #00f2fe;
-            animation: scanAnim 2.2s ease-in-out infinite alternate;
+            box-shadow: 0 0 12px #00f2fe;
+            animation: scanAnim 1.8s ease-in-out infinite alternate;
         }
 
         @keyframes scanAnim {
-            0% { top: 6%; opacity: 0.3; }
+            0% { top: 8%; opacity: 0.4; }
             50% { opacity: 1; }
-            100% { top: 92%; opacity: 0.3; }
+            100% { top: 90%; opacity: 0.4; }
         }
 
         .hud-badge {
@@ -360,21 +437,22 @@
             border: 1px solid rgba(0, 242, 254, 0.3);
         }
 
-        /* Debug / Preview do Frame Processado */
+        /* Debug / Preview do Frame Processado e Leitura */
         .debug-row {
             display: flex;
-            gap: 10px;
-            align-items: center;
+            gap: 12px;
+            align-items: flex-start;
         }
 
         .processed-preview-container {
-            width: 72px;
-            height: 48px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 86px;
+            height: 60px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
             overflow: hidden;
             flex-shrink: 0;
             background: #000;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.15);
         }
 
         #previewCanvas {
@@ -386,22 +464,68 @@
 
         .ocr-preview-box {
             flex: 1;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 6px 10px;
-            font-size: 0.72rem;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 0.75rem;
             color: var(--text-muted);
-            border: 1px dashed rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .ocr-text {
             font-family: 'JetBrains Mono', monospace;
-            color: #cbd5e1;
+            color: #92fe9d;
             white-space: pre-wrap;
             word-break: break-all;
-            max-height: 38px;
+            min-height: 38px;
+            max-height: 75px;
             overflow-y: auto;
-            margin-top: 2px;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 5px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            line-height: 1.35;
+        }
+
+        .ocr-parts-title {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ocr-tokens-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            max-height: 65px;
+            overflow-y: auto;
+        }
+
+        .ocr-token-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            background: rgba(0, 210, 255, 0.12);
+            color: #00d2ff;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            letter-spacing: 0.5px;
+            word-break: break-all;
+        }
+
+        .ocr-token-badge.matched {
+            background: rgba(146, 254, 157, 0.25);
+            color: #92fe9d;
+            border-color: #92fe9d;
+            font-weight: 700;
         }
 
         /* Histórico Recente */
@@ -478,9 +602,20 @@
         <video id="video" playsinline autoplay muted></video>
         
         <div class="hud-overlay">
+            <!-- Máscara de foco escurecida ao redor -->
+            <div class="hud-backdrop-mask"></div>
+
+            <!-- Caixa de Alinhamento Estreito para Linha Única de Código -->
             <div class="scan-target-box">
+                <span class="scan-hint-tag"><i class="fas fa-crosshairs"></i> Posicione o código aqui</span>
+                <div class="corner-tr"></div>
+                <div class="corner-bl"></div>
+                <div class="crosshair-h"></div>
+                <div class="crosshair-tick-left"></div>
+                <div class="crosshair-tick-right"></div>
                 <div class="scan-laser"></div>
             </div>
+
             <div class="hud-badge" id="hudStatus">
                 <span class="pulse-dot" id="hudDot"></span>
                 <span id="hudText">Iniciando câmera...</span>
@@ -543,11 +678,19 @@
                 <canvas id="previewCanvas"></canvas>
             </div>
             <div class="ocr-preview-box">
-                <div style="display: flex; justify-content: space-between;">
-                    <span>OCR Lido:</span>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 700; color: #f0f4f8;"><i class="fas fa-barcode me-1"></i>Texto Lido do Chip:</span>
                     <span id="scanCountText" style="font-family: 'JetBrains Mono'; color: #00d2ff;">#0</span>
                 </div>
-                <div class="ocr-text" id="rawOcrText">Aguardando...</div>
+                <div class="ocr-text" id="rawOcrText">Aguardando enquadramento...</div>
+                
+                <div class="ocr-parts-title">
+                    <span><i class="fas fa-layer-group me-1"></i>Partes Identificadas & Sanitizadas:</span>
+                    <span id="tokenCountText" style="font-family: 'JetBrains Mono'; color: #00f2fe;">0 partes</span>
+                </div>
+                <div class="ocr-tokens-container" id="tokensList">
+                    <span style="color: var(--text-muted); font-size: 0.7rem;">Nenhuma parte detectada</span>
+                </div>
             </div>
         </div>
     </div>
@@ -585,6 +728,8 @@
         const btnTorch = document.getElementById('btnTorch');
         const btnClearCache = document.getElementById('btnClearCache');
         const clearCacheText = document.getElementById('clearCacheText');
+        const tokenCountText = document.getElementById('tokenCountText');
+        const tokensList = document.getElementById('tokensList');
         const torchText = document.getElementById('torchText');
         const toggleText = document.getElementById('toggleText');
         const zoomSlider = document.getElementById('zoomSlider');
@@ -606,7 +751,60 @@
         let currentZoomValue = 1.0;
         let isTorchOn = false;
 
-        // Normalizador de texto para aumentar tolerância a ruídos de OCR (hífens, espaços)
+        // Algoritmo de Sanitização: Remove caracteres especiais, ruídos de borda e pontuações estranhas
+        function sanitizeOcrText(str) {
+            if (!str) return '';
+            return str
+                // Remove caracteres de controle e acentos/diacríticos
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                // Remove caracteres especiais indesejados mantendo apenas alfanuméricos, hífens e quebras de linha/espaços
+                .replace(/[^A-Za-z0-9\s\-_]/g, ' ')
+                // Uniformiza múltiplos hífens ou traços
+                .replace(/[-_]{2,}/g, '-')
+                // Converte múltiplos espaços em um só
+                .replace(/[^\S\r\n]+/g, ' ')
+                .trim();
+        }
+
+        // Divide o texto do OCR em partes/tokens lidos significativos usando split regex e filtros de sanitização
+        function extractSanitizedParts(rawText) {
+            if (!rawText) return [];
+            
+            // Sanitiza o texto original
+            const sanitized = sanitizeOcrText(rawText);
+
+            // Split em quebras de linha, espaços e pontuações de separação
+            const rawParts = sanitized.split(/[\r\n\s,;:|/\\]+/);
+            const tokenList = [];
+            const seen = new Set();
+
+            for (let part of rawParts) {
+                // Remove hífens órfãos no início ou final do token
+                part = part.replace(/^[-_]+|[-_]+$/g, '').trim().toUpperCase();
+
+                // Filtra ruídos mínimos (partes com menos de 3 caracteres geralmente são sujeira de OCR)
+                if (part.length >= 3 && !seen.has(part)) {
+                    seen.add(part);
+                    tokenList.push(part);
+
+                    // Se a parte contiver hífen (ex: KMQ310006M-B419), divide também nas subpartes
+                    if (part.includes('-')) {
+                        const subParts = part.split('-');
+                        for (let sub of subParts) {
+                            sub = sub.trim();
+                            if (sub.length >= 3 && !seen.has(sub)) {
+                                seen.add(sub);
+                                tokenList.push(sub);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return tokenList;
+        }
+
+        // Normalizador de texto para busca na base (remove tudo que não for alfanumérico)
         function normalizeCode(str) {
             return str.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
         }
@@ -931,17 +1129,17 @@
             // Se não tiver zoom de hardware, usamos o zoom digital reduzindo a área de corte
             const softwareZoom = hasHardwareZoom ? 1.0 : currentZoomValue;
 
-            // Região de corte central onde está a mira
+            // Região de corte central calibrada para coincidir com a mira estreita (evita capturar linhas vizinhas)
             const baseW = vw * 0.82;
-            const baseH = vh * 0.48;
+            const baseH = vh * 0.26; // 26% da altura do vídeo, exatamente como desenhado na mira
 
-            const cropW = Math.max(120, Math.floor(baseW / softwareZoom));
-            const cropH = Math.max(80, Math.floor(baseH / softwareZoom));
+            const cropW = Math.max(100, Math.floor(baseW / softwareZoom));
+            const cropH = Math.max(45, Math.floor(baseH / softwareZoom));
             const cropX = Math.floor((vw - cropW) / 2);
             const cropY = Math.floor((vh - cropH) / 2);
 
-            // Redimensionamento calibrado (largura entre 550px e 900px é o ponto ideal de velocidade e precisão no Tesseract)
-            const scale = Math.min(2.5, Math.max(1.2, 750 / cropW));
+            // Redimensionamento calibrado (largura entre 650px e 900px ideal para definição de linha única no Tesseract)
+            const scale = Math.min(3.0, Math.max(1.5, 750 / cropW));
             const targetW = Math.round(cropW * scale);
             const targetH = Math.round(cropH * scale);
 
@@ -1033,8 +1231,8 @@
         function matchCodes(rawText) {
             if (!rawText || lookupMap.size === 0) return null;
 
-            // Extrair linhas e tokens alfanuméricos
-            const rawTokens = rawText.split(/[\s\n\r,;:|/\\]+/).filter(t => t.length >= 3);
+            // Extrair partes sanitizadas usando split avançado e filtros anti-ruído
+            const rawTokens = extractSanitizedParts(rawText);
             const fullNormalizedText = normalizeCode(rawText);
 
             // 1ª Tentativa: Match exato por palavra direta ou variantes comuns
@@ -1042,7 +1240,7 @@
                 const variants = getCanonicalOcrVariants(token);
                 for (const variant of variants) {
                     if (variant.length >= 4 && lookupMap.has(variant)) {
-                        return lookupMap.get(variant);
+                        return { ...lookupMap.get(variant), matchedToken: token };
                     }
                 }
             }
@@ -1050,7 +1248,7 @@
             // 2ª Tentativa: Checar se o código da base está contido dentro da string OCR inteira
             for (const [normKey, data] of lookupMap.entries()) {
                 if (normKey.length >= 5 && fullNormalizedText.includes(normKey)) {
-                    return data;
+                    return { ...data, matchedToken: normKey };
                 }
             }
 
@@ -1063,7 +1261,7 @@
 
                     // Se encontrou o prefixo principal longo (geralmente >= 8 caracteres)
                     if (prefix.length >= 7 && fullNormalizedText.includes(prefix)) {
-                        return data;
+                        return { ...data, matchedToken: prefix };
                     }
 
                     // Se tokens capturados casam prefixo e sufixo mesmo separados em linhas diferentes
@@ -1075,7 +1273,7 @@
                         if (suffix.length >= 3 && norm === suffix) foundSuffix = true;
                     }
                     if (foundPrefix && foundSuffix) {
-                        return data;
+                        return { ...data, matchedToken: `${prefix}-${suffix}` };
                     }
                 }
             }
@@ -1083,6 +1281,7 @@
             // 4ª Tentativa: Casamento Aproximado (Fuzzy Levenshtein) para compensar falhas de 1 ou 2 caracteres do laser
             let bestMatch = null;
             let minDiff = 999;
+            let matchedPart = null;
 
             for (const token of rawTokens) {
                 const normToken = normalizeCode(token);
@@ -1098,13 +1297,14 @@
                         if (dist <= maxAllowed && dist < minDiff) {
                             minDiff = dist;
                             bestMatch = data;
+                            matchedPart = token;
                         }
                     }
                 }
             }
 
             if (bestMatch) {
-                return bestMatch;
+                return { ...bestMatch, matchedToken: matchedPart };
             }
 
             // 5ª Tentativa: Substrings deslizando na string total contra cada código da base (para códigos colados a outros textos)
@@ -1116,7 +1316,7 @@
                             const windowStr = fullNormalizedText.substr(start, normKey.length);
                             const dist = levenshteinDistance(windowStr, normKey);
                             if (dist <= 2) {
-                                return data;
+                                return { ...data, matchedToken: windowStr };
                             }
                         }
                     }
@@ -1124,6 +1324,24 @@
             }
 
             return null;
+        }
+
+        // Renderiza as partes/tokens extraídos na interface com destaque para correspondências
+        function renderSanitizedTokens(tokens, matchedToken = null) {
+            if (!tokens || tokens.length === 0) {
+                tokenCountText.textContent = "0 partes";
+                tokensList.innerHTML = '<span style="color: var(--text-muted); font-size: 0.7rem;">Nenhuma parte legível detectada</span>';
+                return;
+            }
+
+            tokenCountText.textContent = `${tokens.length} ${tokens.length === 1 ? 'parte' : 'partes'}`;
+            const normMatched = matchedToken ? normalizeCode(matchedToken) : null;
+
+            tokensList.innerHTML = tokens.map(tok => {
+                const normTok = normalizeCode(tok);
+                const isMatched = normMatched && (normTok.includes(normMatched) || normMatched.includes(normTok));
+                return `<span class="ocr-token-badge ${isMatched ? 'matched' : ''}" title="${isMatched ? 'Código reconhecido na base' : 'Parte lida'}">${tok}</span>`;
+            }).join('');
         }
 
         // Atualizar interface quando encontrar um código
@@ -1171,9 +1389,15 @@
                         const cleanText = text.trim();
                         rawOcrText.textContent = cleanText || "(Sem texto nítido)";
 
+                        // Extrai partes sanitizadas para visualização
+                        const tokens = extractSanitizedParts(cleanText);
+
                         const match = matchCodes(cleanText);
                         if (match) {
                             handleMatchFound(match);
+                            renderSanitizedTokens(tokens, match.matchedToken);
+                        } else {
+                            renderSanitizedTokens(tokens, null);
                         }
                     }
                 } catch (err) {

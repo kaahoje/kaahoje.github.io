@@ -784,17 +784,24 @@
 
                 // Filtra ruídos mínimos (partes com menos de 3 caracteres geralmente são sujeira de OCR)
                 if (part.length >= 3 && !seen.has(part)) {
-                    seen.add(part);
-                    tokenList.push(part);
+                    // Descarta palavras óbvias em inglês/dicionário geradas por alucinação (ex: THE, AND, WITH, FOR)
+                    const isEnglishWord = /^(THE|AND|FOR|WITH|THIS|THAT|PAGE|TEXT|ENG|NULL|UNDEFINED|TRUE|FALSE)$/i.test(part);
+                    // Códigos de chip contêm números ou letras maiúsculas mistas
+                    const hasChipStructure = /[0-9]/.test(part) || part.length >= 4;
 
-                    // Se a parte contiver hífen (ex: KMQ310006M-B419), divide também nas subpartes
-                    if (part.includes('-')) {
-                        const subParts = part.split('-');
-                        for (let sub of subParts) {
-                            sub = sub.trim();
-                            if (sub.length >= 3 && !seen.has(sub)) {
-                                seen.add(sub);
-                                tokenList.push(sub);
+                    if (!isEnglishWord && hasChipStructure) {
+                        seen.add(part);
+                        tokenList.push(part);
+
+                        // Se a parte contiver hífen (ex: KMQ310006M-B419), divide também nas subpartes
+                        if (part.includes('-')) {
+                            const subParts = part.split('-');
+                            for (let sub of subParts) {
+                                sub = sub.trim();
+                                if (sub.length >= 3 && !seen.has(sub)) {
+                                    seen.add(sub);
+                                    tokenList.push(sub);
+                                }
                             }
                         }
                     }
@@ -1104,15 +1111,20 @@
             return Array.from(variants);
         }
 
-        // 3. Inicializar Tesseract OCR Worker com Otimizações para Chips
+        // 3. Inicializar Tesseract OCR Worker com Otimizações Especializadas para Gravação em Baixo Relevo
         async function initOcr() {
             try {
                 ocrWorker = await Tesseract.createWorker('eng');
                 await ocrWorker.setParameters({
+                    // Apenas caracteres pertinentes a códigos de fabricantes (Samsung, Hynix, Micron, Kingston, etc.)
                     tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-',
-                    tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK, // SINGLE_BLOCK ou SPARSE_TEXT para blocos de chip
+                    // PSM.SINGLE_LINE (7) ou PSM.RAW_LINE (13) impede o Tesseract de inventar parágrafos ou palavras do dicionário
+                    tessedit_pageseg_mode: Tesseract.PSM.SINGLE_LINE,
+                    // Desativa heurísticas de linguagem natural / dicionário de inglês que geram palavras alucinadas
+                    load_system_dawg: '0',
+                    load_freq_dawg: '0'
                 });
-                console.log("Tesseract pronto para detecção contínua");
+                console.log("Tesseract configurado para linha única em chip baixo relevo");
             } catch (e) {
                 console.error("Falha ao inicializar Tesseract:", e);
             }
@@ -1172,47 +1184,64 @@
             const avgLum = totalLum / totalPixels;
             const range = Math.max(1, maxLum - minLum);
 
-            // Alternância dinâmica:
-            // Modo 0: Filtro Laplaciano com Realce de Bordas e Normalização de Contraste
-            // Modo 1: Binarização Adaptativa OTSU / Thresholding Alto Contraste (fundo claro com texto escuro padrão Tesseract)
+            // --- PROCESSAMENTO ESPECIALIZADO PARA CHIP PRETO COM BAIXO RELEVO ---
+            // Em chips pretos foscos com gravação afundada/laser, o corpo é escuro uniforme e os sulcos
+            // causam micro-sombras e micro-reflexos nas bordas internas da ranhura.
+
+            // Modo 0: Filtro de Detecção de Sulco (Gradiente Morfológico / Sobel Normalizado)
+            // Modo 1: Limiarização Local Adaptativa com Fundo Branco e Ranhuras Pretas (ideal para o OCR ler)
             frameToggle = (frameToggle + 1) % 2;
 
             if (frameToggle === 0) {
-                // Sharpening de nitidez a laser com normalização de contraste
+                // Detecção de sulco e ranhuras em plástico preto:
+                // Filtro passa-alta direcional para realçar as ranhuras entalhadas
                 for (let y = 1; y < targetH - 1; y++) {
                     const row = y * targetW;
                     for (let x = 1; x < targetW - 1; x++) {
                         const idx = row + x;
-                        // Laplacian 3x3
-                        let sharp = 5 * gray[idx] - gray[idx - 1] - gray[idx + 1] - gray[idx - targetW] - gray[idx + targetW];
-                        // Expansão de contraste (Stretching)
-                        sharp = ((sharp - minLum) / range) * 255;
-                        const finalVal = Math.min(255, Math.max(0, sharp));
+                        // Sobel horizontal e vertical para capturar bordas dos sulcos
+                        const gx = (gray[idx + 1] - gray[idx - 1]) * 2 + (gray[idx + 1 - targetW] - gray[idx - 1 - targetW]) + (gray[idx + 1 + targetW] - gray[idx - 1 + targetW]);
+                        const gy = (gray[idx + targetW] - gray[idx - targetW]) * 2 + (gray[idx + targetW - 1] - gray[idx - targetW - 1]) + (gray[idx + targetW + 1] - gray[idx - targetW + 1]);
+                        const edge = Math.min(255, Math.hypot(gx, gy));
+
+                        // Para o Tesseract: Fundo branco (255) e traços das letras escurecidos (0)
+                        // Quanto maior a ranhura de borda, mais preto o traço da letra fica
+                        const textVal = edge > 35 ? Math.max(0, 255 - edge * 2.2) : 255;
+
+                        const pIdx = idx * 4;
+                        d[pIdx] = textVal;
+                        d[pIdx + 1] = textVal;
+                        d[pIdx + 2] = textVal;
+                    }
+                }
+            } else {
+                // Binarização Adaptativa em Janela Deslizante (Inversão Limpa para Chip Escuro)
+                // Remove o ruído do fundo preto e mantém apenas o texto gravado em baixo relevo
+                const step = 8;
+                for (let y = 0; y < targetH; y++) {
+                    const row = y * targetW;
+                    const yMin = Math.max(0, y - step);
+                    const yMax = Math.min(targetH - 1, y + step);
+
+                    for (let x = 0; x < targetW; x++) {
+                        const idx = row + x;
+                        const pixel = gray[idx];
+
+                        // Média do bloco local circundante
+                        const xMin = Math.max(0, x - step);
+                        const xMax = Math.min(targetW - 1, x + step);
+                        const cornerAvg = (gray[yMin * targetW + xMin] + gray[yMax * targetW + xMax]) / 2;
+
+                        // Se o pixel for um ponto de variação em relação ao plástico preto de fundo
+                        const isGroove = Math.abs(pixel - cornerAvg) > 6;
+                        // Letra preta (0) em fundo branco (255)
+                        const finalVal = isGroove ? 0 : 255;
 
                         const pIdx = idx * 4;
                         d[pIdx] = finalVal;
                         d[pIdx + 1] = finalVal;
                         d[pIdx + 2] = finalVal;
                     }
-                }
-            } else {
-                // Limiarização binarizada adaptativa (Preto no Branco, onde letras escuras sobre fundo claro performam melhor no Tesseract)
-                // Se a gravação do chip for clara sobre fundo escuro (inversão comum em laser de silício), inverte adequadamente
-                const isLightOnDark = avgLum < 128;
-                const threshold = isLightOnDark ? (minLum + range * 0.45) : (minLum + range * 0.55);
-
-                for (let i = 0, j = 0; i < d.length; i += 4, j++) {
-                    const val = gray[j];
-                    let bin;
-                    if (isLightOnDark) {
-                        // Inverte para o Tesseract ver texto escuro em fundo claro
-                        bin = val > threshold ? 0 : 255;
-                    } else {
-                        bin = val > threshold ? 255 : 0;
-                    }
-                    d[i] = bin;
-                    d[i + 1] = bin;
-                    d[i + 2] = bin;
                 }
             }
 
@@ -1278,21 +1307,27 @@
                 }
             }
 
-            // 4ª Tentativa: Casamento Aproximado (Fuzzy Levenshtein) para compensar falhas de 1 ou 2 caracteres do laser
+            // 4ª Tentativa: Casamento Aproximado (Fuzzy Levenshtein) com validação estrita de prefixo de fabricante
+            // Evita falsos positivos com palavras aleatórias ou ruídos da textura do plástico
             let bestMatch = null;
             let minDiff = 999;
             let matchedPart = null;
 
             for (const token of rawTokens) {
                 const normToken = normalizeCode(token);
+                // Códigos de chip têm pelo menos 5 caracteres
                 if (normToken.length < 5) continue;
 
                 for (const [normKey, data] of lookupMap.entries()) {
-                    // Se os tamanhos forem semelhantes (diferença máx 2)
+                    // Ambos devem ter comprimento próximo (diferença máx 2)
                     const lenDiff = Math.abs(normToken.length - normKey.length);
                     if (lenDiff <= 2) {
-                        // Limite tolerável: 1 erro para palavras de 5 a 7 letras, 2 erros para códigos maiores
-                        const maxAllowed = normKey.length >= 8 ? 2 : 1;
+                        // Verifica se as primeiras 2 letras coincidem (ex: KM..., H9..., JY..., JW...)
+                        // Isso impede que uma palavra de ruído case com um código de fabricante completamente diferente
+                        const samePrefix = normToken.slice(0, 2) === normKey.slice(0, 2);
+                        if (!samePrefix && normKey.length > 5) continue;
+
+                        const maxAllowed = normKey.length >= 10 ? 2 : 1;
                         const dist = levenshteinDistance(normToken, normKey);
                         if (dist <= maxAllowed && dist < minDiff) {
                             minDiff = dist;
@@ -1307,16 +1342,18 @@
                 return { ...bestMatch, matchedToken: matchedPart };
             }
 
-            // 5ª Tentativa: Substrings deslizando na string total contra cada código da base (para códigos colados a outros textos)
-            if (fullNormalizedText.length >= 5) {
+            // 5ª Tentativa: Substrings deslizando na string total contra cada código da base (com verificação de prefixo inicial)
+            if (fullNormalizedText.length >= 7) {
                 for (const [normKey, data] of lookupMap.entries()) {
                     if (normKey.length >= 8) {
-                        // Verifica se uma janela de tamanho igual tem distância <= 2
                         for (let start = 0; start <= fullNormalizedText.length - normKey.length; start++) {
                             const windowStr = fullNormalizedText.substr(start, normKey.length);
-                            const dist = levenshteinDistance(windowStr, normKey);
-                            if (dist <= 2) {
-                                return { ...data, matchedToken: windowStr };
+                            // Exige que o início coincida para evitar casamento acidental com ruído
+                            if (windowStr.slice(0, 2) === normKey.slice(0, 2)) {
+                                const dist = levenshteinDistance(windowStr, normKey);
+                                if (dist <= 1) {
+                                    return { ...data, matchedToken: windowStr };
+                                }
                             }
                         }
                     }

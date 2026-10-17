@@ -444,15 +444,30 @@
             align-items: flex-start;
         }
 
-        .processed-preview-container {
-            width: 86px;
-            height: 60px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 210, 255, 0.3);
-            overflow: hidden;
+        .processed-preview-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
             flex-shrink: 0;
+        }
+
+        .processed-preview-container {
+            width: 96px;
+            height: 64px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 210, 255, 0.4);
+            overflow: hidden;
             background: #000;
-            box-shadow: 0 0 10px rgba(0, 210, 255, 0.15);
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .processed-preview-container:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 16px rgba(0, 210, 255, 0.4);
         }
 
         #previewCanvas {
@@ -460,6 +475,104 @@
             height: 100%;
             object-fit: cover;
             display: block;
+        }
+
+        .preview-action-btns {
+            display: flex;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .preview-btn-small {
+            flex: 1;
+            padding: 4px 0;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: #00d2ff;
+            font-size: 0.68rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .preview-btn-small:hover {
+            background: rgba(0, 210, 255, 0.25);
+            border-color: #00d2ff;
+            color: #fff;
+        }
+
+        /* Modal de Imagem Ampliada */
+        .img-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 8, 17, 0.88);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .img-modal-backdrop.active {
+            display: flex;
+        }
+
+        .img-modal-content {
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 210, 255, 0.4);
+            border-radius: 16px;
+            padding: 16px;
+            max-width: 95vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 210, 255, 0.3);
+        }
+
+        .img-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #00d2ff;
+        }
+
+        .img-modal-close {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 2px 6px;
+        }
+
+        .img-modal-close:hover {
+            color: #fff;
+        }
+
+        .img-modal-view {
+            max-width: 100%;
+            max-height: 60vh;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: pixelated;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .img-modal-actions {
+            display: flex;
+            gap: 10px;
+            width: 100%;
         }
 
         .ocr-preview-box {
@@ -674,8 +787,18 @@
 
         <!-- Debug Visual da Imagem Nitidificada e OCR -->
         <div class="debug-row">
-            <div class="processed-preview-container" title="Frame com alta nitidez enviado para o OCR">
-                <canvas id="previewCanvas"></canvas>
+            <div class="processed-preview-col">
+                <div class="processed-preview-container" id="previewContainer" title="Clique para amplificar a imagem">
+                    <canvas id="previewCanvas"></canvas>
+                </div>
+                <div class="preview-action-btns">
+                    <button class="preview-btn-small" id="btnZoomImage" title="Amplificar Imagem">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button class="preview-btn-small" id="btnDownloadImage" title="Baixar Imagem">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
             </div>
             <div class="ocr-preview-box">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -709,6 +832,22 @@
     <!-- Canvas Oculto para Processamento em Alta Resolução -->
     <canvas id="cropCanvas"></canvas>
 
+    <!-- Modal de Visualização Ampliada e Download -->
+    <div class="img-modal-backdrop" id="imgModal">
+        <div class="img-modal-content">
+            <div class="img-modal-header">
+                <span><i class="fas fa-search-plus me-1"></i>Imagem Amplificada (Alta Resolução)</span>
+                <button class="img-modal-close" id="btnCloseModal">&times;</button>
+            </div>
+            <img id="modalImg" class="img-modal-view" alt="Frame amplificado do chip">
+            <div class="img-modal-actions">
+                <button id="btnDownloadModal" class="btn-modern btn-primary-glow" style="width: 100%;">
+                    <i class="fas fa-download"></i> Baixar Imagem (PNG)
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Elementos DOM
         const video = document.getElementById('video');
@@ -730,6 +869,13 @@
         const clearCacheText = document.getElementById('clearCacheText');
         const tokenCountText = document.getElementById('tokenCountText');
         const tokensList = document.getElementById('tokensList');
+        const previewContainer = document.getElementById('previewContainer');
+        const btnZoomImage = document.getElementById('btnZoomImage');
+        const btnDownloadImage = document.getElementById('btnDownloadImage');
+        const imgModal = document.getElementById('imgModal');
+        const modalImg = document.getElementById('modalImg');
+        const btnCloseModal = document.getElementById('btnCloseModal');
+        const btnDownloadModal = document.getElementById('btnDownloadModal');
         const torchText = document.getElementById('torchText');
         const toggleText = document.getElementById('toggleText');
         const zoomSlider = document.getElementById('zoomSlider');
@@ -1050,6 +1196,68 @@
                 alert("Cache limpo! Recarregando página...");
                 window.location.reload(true);
             }
+        });
+
+        // -------------------------------------------------------------
+        // Recursos de Amplificação e Download da Imagem do Chip
+        // -------------------------------------------------------------
+        function openImageAmplifier() {
+            if (!cropCanvas || cropCanvas.width === 0) {
+                alert("Aguardando captura da câmera para amplificar...");
+                return;
+            }
+            try {
+                // Obtém a imagem processada no cropCanvas em alta resolução
+                const dataUrl = cropCanvas.toDataURL('image/png');
+                modalImg.src = dataUrl;
+                imgModal.classList.add('active');
+            } catch (e) {
+                console.error("Erro ao gerar imagem ampliada:", e);
+            }
+        }
+
+        function closeImageAmplifier() {
+            imgModal.classList.remove('active');
+        }
+
+        function downloadProcessedImage() {
+            if (!cropCanvas || cropCanvas.width === 0) {
+                alert("Nenhuma imagem capturada para baixar no momento.");
+                return;
+            }
+            try {
+                const dataUrl = cropCanvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                link.download = `chip_frame_${timestamp}.png`;
+                link.href = dataUrl;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (e) {
+                console.error("Erro ao baixar imagem:", e);
+                alert("Falha ao salvar imagem.");
+            }
+        }
+
+        // Eventos para amplificar imagem
+        previewContainer.addEventListener('click', openImageAmplifier);
+        btnZoomImage.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openImageAmplifier();
+        });
+
+        // Eventos para download
+        btnDownloadImage.addEventListener('click', (e) => {
+            e.stopPropagation();
+            downloadProcessedImage();
+        });
+        btnDownloadModal.addEventListener('click', downloadProcessedImage);
+
+        // Fechar modal
+        btnCloseModal.addEventListener('click', closeImageAmplifier);
+        imgModal.addEventListener('click', (e) => {
+            if (e.target === imgModal) closeImageAmplifier();
         });
 
         // Tabela de confusão comum em OCR em chips (laser/serigrafia)

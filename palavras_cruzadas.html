@@ -1,0 +1,3280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Palavras Cruzadas — Níveis 0 a 200</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-btn-top: #58a6ff;
+      --blue-btn-mid: #256fe3;
+      --blue-btn-bot: #154bb3;
+      --blue-btn-edge: #0c337d;
+      --green-btn-top: #74f03c;
+      --green-btn-bot: #29a812;
+      --green-btn-edge: #186b07;
+      --gold-light: #fff176;
+      --gold-mid: #ffca28;
+      --gold-dark: #f59e0b;
+      --gold-rim: #c27803;
+      --card-shadow: 0 10px 28px rgba(7, 36, 82, 0.24);
+      --text-ink: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Nunito', 'Montserrat', system-ui, -apple-system, sans-serif;
+      background: #0d9488;
+      color: var(--text-ink);
+    }
+
+    /* Full-bleed Tropical Lagoon Scenic Backdrop */
+    .scenic-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: linear-gradient(180deg,
+        #7ed6fb 0%,
+        #bcebfb 18%,
+        #e4f6ff 34%,
+        #5dd5c9 68%,
+        #18a8a1 84%,
+        #0e7f8a 100%
+      );
+    }
+
+    .scenic-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    /* Desktop framing glow */
+    .viewport-wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .game-shell {
+      width: 100%;
+      max-width: 440px;
+      height: 100dvh;
+      padding: max(10px, env(safe-area-inset-top)) 14px max(12px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      position: relative;
+    }
+
+    /* ================= TOP HUD BAR ================= */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+
+    .top-left-btns {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-3d-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.55);
+      background: linear-gradient(180deg, var(--blue-btn-top) 0%, var(--blue-btn-mid) 58%, var(--blue-btn-bot) 100%);
+      box-shadow:
+        0 4px 0 var(--blue-btn-edge),
+        0 6px 12px rgba(8, 35, 85, 0.35),
+        inset 0 2px 3px rgba(255, 255, 255, 0.65);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      position: relative;
+      padding: 0;
+    }
+
+    .btn-3d-circle:active {
+      transform: translateY(3px);
+      box-shadow:
+        0 1px 0 var(--blue-btn-edge),
+        0 2px 6px rgba(8, 35, 85, 0.35),
+        inset 0 2px 3px rgba(255, 255, 255, 0.45);
+    }
+
+    .level-pill {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(6px);
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      border-radius: 999px;
+      padding: 6px 20px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #1e293b;
+      box-shadow: 0 3px 10px rgba(15, 45, 95, 0.16);
+      cursor: pointer;
+      transition: transform 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .level-pill:active {
+      transform: scale(0.96);
+    }
+
+    .coin-capsule {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      height: 34px;
+      padding: 0 34px 0 36px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #327ef2 0%, #1752c4 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      box-shadow:
+        0 3px 0 #0c3582,
+        0 5px 12px rgba(8, 35, 85, 0.3);
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.98rem;
+      letter-spacing: 0.01em;
+      min-width: 108px;
+      justify-content: center;
+    }
+
+    .coin-badge-icon {
+      position: absolute;
+      left: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #fff69b 0%, #ffd538 35%, #f59e0b 82%, #c97302 100%);
+      border: 2px solid #fff3b0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.32), inset 0 -2px 3px rgba(161, 88, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .coin-badge-icon::after {
+      content: '';
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(217, 119, 6, 0.65);
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.7);
+    }
+
+    .btn-add-coins {
+      position: absolute;
+      right: -3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid #d9ffbd;
+      background: linear-gradient(180deg, var(--green-btn-top) 0%, var(--green-btn-bot) 100%);
+      box-shadow: 0 3px 0 var(--green-btn-edge), 0 4px 8px rgba(0, 0, 0, 0.28);
+      color: #fff;
+      font-size: 1.35rem;
+      font-weight: 900;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .btn-add-coins:active {
+      transform: translateY(calc(-50% + 2px));
+      box-shadow: 0 1px 0 var(--green-btn-edge);
+    }
+
+    /* ================= CLUE & WORD BANK CARD ================= */
+    .clue-card {
+      position: relative;
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: var(--card-shadow);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .clue-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 5px 92px 5px 96px;
+      background: linear-gradient(180deg, #3c8aff 0%, #1c5bd2 55%, #1246b5 100%);
+      border-radius: 14px 14px 0 0;
+      border-bottom: 2px solid #0e3794;
+      box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.4);
+    }
+
+    .run-grade-badge {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(7, 22, 62, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 2px 8px;
+      height: 22px;
+      color: #fde047;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.72rem;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .run-grade-badge.grade-2 {
+      color: #93c5fd;
+    }
+
+    .run-grade-badge.grade-1 {
+      color: #fca5a5;
+    }
+
+    .star-progress {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      background: rgba(7, 22, 62, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 2px 10px 2px 26px;
+      height: 22px;
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+    }
+
+    .star-icon-3d {
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-52%);
+      width: 34px;
+      height: 34px;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+      pointer-events: none;
+    }
+
+    .theme-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: clamp(0.9rem, 3.8vw, 1.06rem);
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      text-shadow: 0 1px 2px rgba(0, 20, 70, 0.45);
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    .word-bank {
+      padding: 9px 12px 11px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 6px 15px;
+      min-height: 54px;
+    }
+
+    .word-item {
+      display: inline-flex;
+      align-items: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: clamp(0.86rem, 3.7vw, 1.04rem);
+      letter-spacing: 0.04em;
+      color: #111827;
+      padding: 2px 7px;
+      border-radius: 999px;
+      transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    .word-item.found {
+      color: #1e293b;
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+      opacity: 0.78;
+      transform: scale(0.96);
+    }
+
+    .word-item.pop-reveal {
+      animation: popScale 0.42s cubic-bezier(0.22, 1.4, 0.36, 1);
+    }
+
+    .inline-coin {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      margin: 0 1px;
+      vertical-align: middle;
+      background: radial-gradient(circle at 35% 30%, #fff48f 0%, #ffd234 45%, #f59e0b 90%);
+      border: 1.5px solid #d97706;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .inline-coin::after {
+      content: '';
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 1px solid rgba(180, 83, 9, 0.55);
+    }
+
+    /* ================= CENTRAL LETTER GRID CARD ================= */
+    .grid-card {
+      position: relative;
+      flex: 0 1 auto;
+      min-height: 0;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: var(--card-shadow);
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drag-preview {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      background: linear-gradient(180deg, #3c8aff 0%, #164ec2 100%);
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.96rem;
+      letter-spacing: 0.1em;
+      padding: 4px 16px;
+      border-radius: 999px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(10, 40, 100, 0.3);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 20;
+      transition: opacity 0.12s ease, transform 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .drag-preview.visible {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    .onboarding-tip {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.84);
+      color: #ffffff;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 15;
+      white-space: nowrap;
+      animation: floatGentle 2.2s ease-in-out infinite;
+    }
+
+    .board-stage {
+      position: relative;
+      touch-action: none;
+      display: grid;
+      place-items: center;
+      transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .board-stage.rotating {
+      transform: rotate(90deg) scale(0.94);
+    }
+
+    .capsule-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: visible;
+    }
+
+    .letter-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      width: 100%;
+      height: 100%;
+    }
+
+    .grid-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', 'Nunito', sans-serif;
+      font-weight: 700;
+      color: #0b0f17;
+      position: relative;
+      cursor: pointer;
+      transition: color 0.28s ease, transform 0.16s ease;
+      line-height: 1;
+    }
+
+    .grid-cell.faded {
+      color: #d6dae0;
+    }
+
+    .grid-cell.selected {
+      color: #0f172a;
+      transform: scale(1.1);
+    }
+
+    .grid-cell.hint-pulse::before {
+      content: '';
+      position: absolute;
+      width: 78%;
+      height: 78%;
+      border-radius: 50%;
+      border: 3px solid #f59e0b;
+      background: rgba(253, 224, 71, 0.28);
+      animation: hintPulse 1.15s ease-in-out infinite;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .grid-cell.word-bounce {
+      animation: cellCelebrate 0.38s cubic-bezier(0.22, 1.4, 0.36, 1);
+    }
+
+    /* ================= BOTTOM POWER-UP BAR ================= */
+    .powerups-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 4px 2px 10px;
+      flex-shrink: 0;
+    }
+
+    .powerup-btn {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.58);
+      background: linear-gradient(180deg, #54a2ff 0%, #246ce0 58%, #154ab2 100%);
+      box-shadow:
+        0 4px 0 #0c337d,
+        0 7px 14px rgba(5, 30, 72, 0.4),
+        inset 0 2px 3px rgba(255, 255, 255, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.15s ease;
+      padding: 0;
+    }
+
+    .powerup-btn:active {
+      transform: translateY(3px);
+      box-shadow:
+        0 1px 0 #0c337d,
+        0 3px 8px rgba(5, 30, 72, 0.4),
+        inset 0 2px 3px rgba(255, 255, 255, 0.5);
+    }
+
+    .powerup-btn:disabled {
+      filter: grayscale(0.5) opacity(0.75);
+      cursor: not-allowed;
+    }
+
+    .powerup-badge {
+      position: absolute;
+      bottom: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-width: 28px;
+      height: 19px;
+      padding: 0 6px;
+      border-radius: 6px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.72rem;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .powerup-badge.video-badge {
+      background: #ffffff;
+      color: #1e293b;
+      border: 1.5px solid #334155;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+      padding: 0 4px;
+    }
+
+    .powerup-badge.coin-cost-badge {
+      border-radius: 999px;
+      background: linear-gradient(180deg, #2d79ed 0%, #154aad 100%);
+      color: #ffffff;
+      border: 1.5px solid #bfdbfe;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      padding: 0 7px 0 4px;
+    }
+
+    .mini-coin {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff48f 0%, #ffd234 45%, #f59e0b 90%);
+      border: 1px solid #b45309;
+      flex-shrink: 0;
+    }
+
+    /* ================= TOAST & FLOATING FEEDBACK ================= */
+    .toast-container {
+      position: fixed;
+      top: 66px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .toast-pill {
+      background: rgba(15, 23, 42, 0.9);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.86rem;
+      padding: 7px 16px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+      animation: toastSlide 0.24s ease-out;
+      white-space: nowrap;
+    }
+
+    .toast-pill.gold {
+      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+      border-color: #fef08a;
+      color: #ffffff;
+    }
+
+    /* ================= MODALS ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 20, 52, 0.62);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.18s ease-out;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 390px;
+      max-height: 86dvh;
+      background: #ffffff;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 18px 46px rgba(4, 18, 46, 0.48);
+      display: flex;
+      flex-direction: column;
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      animation: popScale 0.24s cubic-bezier(0.22, 1.3, 0.36, 1);
+    }
+
+    .modal-header {
+      background: linear-gradient(180deg, #3c8aff 0%, #1854c8 100%);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      border-bottom: 3px solid #0e3894;
+    }
+
+    .modal-header h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.06rem;
+      letter-spacing: 0.02em;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.55);
+      background: rgba(10, 30, 80, 0.35);
+      color: #ffffff;
+      font-size: 1.15rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-body {
+      padding: 14px 16px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Level Map Grid */
+    .level-summary-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: #1e40af;
+    }
+
+    .level-milestone-bar {
+      background: #fefce8;
+      border: 1px solid #fde047;
+      border-radius: 10px;
+      padding: 7px 11px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #854d0e;
+      text-align: center;
+    }
+
+    .level-quick-jumps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .quick-chip {
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #1e293b;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .quick-chip:hover,
+    .quick-chip.active {
+      background: #dbeafe;
+      border-color: #3b82f6;
+      color: #1d4ed8;
+    }
+
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .level-tile {
+      position: relative;
+      min-width: 0;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      background: #f8fafc;
+      padding: 7px 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s ease, border-color 0.15s ease;
+    }
+
+    .level-tile:active {
+      transform: scale(0.95);
+    }
+
+    .level-tile.completed {
+      background: linear-gradient(180deg, #dcfce7 0%, #bbf7d0 100%);
+      border-color: #22c55e;
+      color: #14532d;
+    }
+
+    .level-tile.current {
+      background: linear-gradient(180deg, #fef08a 0%, #fde047 100%);
+      border-color: #eab308;
+      box-shadow: 0 3px 10px rgba(234, 179, 8, 0.35);
+      color: #713f12;
+    }
+
+    .level-tile.locked {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #64748b;
+      opacity: 0.85;
+    }
+
+    .level-tile-num {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 0.96rem;
+      line-height: 1.1;
+    }
+
+    .level-tile-tag {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: #64748b;
+      margin-top: 2px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .level-tile.completed .level-tile-tag {
+      color: #15803d;
+    }
+
+    .level-tile-stars {
+      font-size: 0.64rem;
+      line-height: 1;
+      margin-top: 2px;
+      color: #eab308;
+      letter-spacing: 1px;
+    }
+
+    .level-tile.locked .level-tile-stars {
+      color: #64748b;
+    }
+
+    .level-tile-check {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: #16a34a;
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #ffffff;
+    }
+
+    .economy-summary {
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #1e3a8a;
+    }
+
+    .economy-rules {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .economy-rule-row {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 11px;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #334155;
+      line-height: 1.35;
+    }
+
+    .economy-rule-row strong {
+      color: #0f172a;
+    }
+
+    /* Settings & Action Buttons */
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      font-weight: 800;
+      font-size: 0.92rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      border-radius: 999px;
+      background: #cbd5e1;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .toggle-switch.on {
+      background: #22c55e;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
+    }
+
+    .toggle-switch.on::after {
+      transform: translateX(22px);
+    }
+
+    .btn-primary-3d {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #ffffff;
+      background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+      box-shadow: 0 4px 0 #14532d;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .btn-primary-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #14532d;
+    }
+
+    .btn-blue-3d {
+      background: linear-gradient(180deg, #4f9cff 0%, #1d5ed6 100%);
+      box-shadow: 0 4px 0 #0e3894;
+    }
+
+    .btn-blue-3d:active {
+      box-shadow: 0 1px 0 #0e3894;
+    }
+
+    .btn-danger-outline {
+      width: 100%;
+      border: 2px solid #fca5a5;
+      background: #fef2f2;
+      color: #b91c1c;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    /* Victory Modal */
+    .victory-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      padding: 4px 0 2px;
+    }
+
+    .victory-stars {
+      font-size: 2.3rem;
+      letter-spacing: 6px;
+      filter: drop-shadow(0 3px 5px rgba(245, 158, 11, 0.4));
+    }
+
+    .victory-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 1.3rem;
+      color: #0f172a;
+    }
+
+    .victory-sub {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .reward-box {
+      width: 100%;
+      background: linear-gradient(180deg, #fefce8 0%, #fef9c3 100%);
+      border: 2px solid #fde047;
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      font-weight: 800;
+      color: #854d0e;
+    }
+
+    /* Confetti canvas */
+    .confetti-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 95;
+    }
+
+    /* Compact adjustments for smaller mobile heights */
+    @media (max-height: 700px) {
+      .game-shell {
+        gap: 6px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+      .btn-3d-circle {
+        width: 38px;
+        height: 38px;
+      }
+      .word-bank {
+        padding: 7px 10px 8px;
+        gap: 4px 12px;
+        min-height: 44px;
+      }
+      .powerup-btn {
+        width: 48px;
+        height: 48px;
+      }
+      .powerups-bar {
+        padding-bottom: 8px;
+        gap: 10px;
+      }
+    }
+
+    @keyframes popScale {
+      0% { transform: scale(0.84); opacity: 0; }
+      70% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes hintPulse {
+      0%, 100% { transform: scale(0.92); opacity: 0.7; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    @keyframes cellCelebrate {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.22); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes toastSlide {
+      from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes floatGentle {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-4px); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Scenic Tropical Lagoon Background -->
+  <div class="scenic-bg" aria-hidden="true">
+    <svg class="scenic-svg" viewBox="0 0 430 900" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6ac9f7"/>
+          <stop offset="55%" stop-color="#bfeaff"/>
+          <stop offset="100%" stop-color="#eaf8ff"/>
+        </linearGradient>
+        <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#53dbcb"/>
+          <stop offset="32%" stop-color="#22beb8"/>
+          <stop offset="70%" stop-color="#0f969c"/>
+          <stop offset="100%" stop-color="#086a7a"/>
+        </linearGradient>
+        <linearGradient id="rockLeft" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#9e8769"/>
+          <stop offset="60%" stop-color="#766047"/>
+          <stop offset="100%" stop-color="#4e3f2d"/>
+        </linearGradient>
+        <linearGradient id="rockRight" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#a89070"/>
+          <stop offset="65%" stop-color="#7b654a"/>
+          <stop offset="100%" stop-color="#4c3d2c"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Sky -->
+      <rect x="0" y="0" width="430" height="580" fill="url(#skyGrad)"/>
+      <!-- Soft sunlit sky haze -->
+      <ellipse cx="215" cy="95" rx="220" ry="70" fill="#ffffff" opacity="0.38"/>
+      <ellipse cx="90" cy="145" rx="110" ry="30" fill="#ffffff" opacity="0.32"/>
+      <ellipse cx="340" cy="135" rx="120" ry="32" fill="#ffffff" opacity="0.28"/>
+
+      <!-- Distant Horizon Sea & Islets -->
+      <rect x="0" y="540" width="430" height="360" fill="url(#waterGrad)"/>
+      <path d="M88,542 Q122,508 158,542 Z" fill="#4f9468" opacity="0.58"/>
+      <path d="M270,542 Q308,514 344,542 Z" fill="#45885e" opacity="0.52"/>
+      <rect x="0" y="538" width="430" height="4" fill="#c7f9f2" opacity="0.55"/>
+
+      <!-- Left Limestone Cliff & Layered Tropical Jungle -->
+      <path d="M0,95 L56,142 L68,238 L55,342 L72,468 L58,595 L122,684 L0,704 Z" fill="url(#rockLeft)"/>
+      <path d="M0,195 L42,248 L36,365 L52,475 L34,605 L82,688 L0,702 Z" fill="#68543d" opacity="0.72"/>
+      <path d="M24,148 L48,215 M32,295 L56,372 M22,428 L58,522 M44,560 L92,658" stroke="#b69d7c" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
+      <!-- Left Organic Canopy Silhouettes -->
+      <path d="M0,115 Q38,125 46,162 Q64,194 42,226 Q60,262 36,296 Q54,335 30,374 Q48,418 26,458 Q46,502 22,542 L0,565 Z" fill="#1d4f12"/>
+      <path d="M0,132 C34,136 52,168 38,198 C58,216 54,254 32,272 C50,298 46,336 26,356 C44,386 38,426 20,448 C38,478 30,518 0,536 Z" fill="#2f7418"/>
+      <path d="M0,152 C28,158 44,185 30,210 C48,228 42,260 22,275 C38,300 32,334 16,350 C32,376 26,412 10,432 L0,450 Z" fill="#51a32a"/>
+      <!-- Left Palm Fronds -->
+      <path d="M-5,222 Q26,204 54,218 Q28,226 -2,235 Z" fill="#6bc43d"/>
+      <path d="M-5,232 Q30,224 58,244 Q28,245 -2,244 Z" fill="#469623"/>
+      <path d="M-4,344 Q28,325 54,340 Q26,348 -2,356 Z" fill="#70ca42"/>
+      <path d="M-4,468 Q26,450 50,466 Q24,474 -2,482 Z" fill="#5ab231"/>
+
+      <!-- Right Limestone Cliff & Layered Tropical Jungle -->
+      <path d="M430,88 L370,138 L356,242 L372,350 L358,478 L374,598 L308,682 L430,702 Z" fill="url(#rockRight)"/>
+      <path d="M430,188 L386,245 L394,362 L378,476 L396,604 L344,686 L430,700 Z" fill="#6b563e" opacity="0.72"/>
+      <path d="M406,142 L382,212 M398,292 L374,370 M408,426 L372,520 M386,558 L338,656" stroke="#bfa786" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
+      <!-- Right Organic Canopy Silhouettes -->
+      <path d="M430,108 Q390,120 382,158 Q364,192 388,224 Q368,260 392,296 Q374,335 398,374 Q380,418 402,458 Q382,502 406,542 L430,565 Z" fill="#1d4f12"/>
+      <path d="M430,126 C394,132 376,164 390,196 C370,214 374,252 396,270 C378,296 382,334 402,354 C384,384 390,424 408,446 C390,476 398,516 430,534 Z" fill="#2f7418"/>
+      <path d="M430,148 C400,154 384,182 398,208 C380,226 386,258 406,274 C390,298 396,332 412,348 C396,374 402,410 418,430 L430,448 Z" fill="#51a32a"/>
+      <!-- Right Palm Fronds -->
+      <path d="M435,216 Q402,198 374,212 Q400,220 432,229 Z" fill="#6bc43d"/>
+      <path d="M435,226 Q398,218 370,238 Q400,239 432,238 Z" fill="#469623"/>
+      <path d="M434,340 Q400,322 374,336 Q402,344 432,352 Z" fill="#70ca42"/>
+      <path d="M434,462 Q402,444 378,460 Q404,468 432,476 Z" fill="#5ab231"/>
+
+      <!-- Turquoise Lagoon Ripples & Reflections -->
+      <ellipse cx="215" cy="735" rx="190" ry="26" fill="#99f6e4" opacity="0.24"/>
+      <ellipse cx="145" cy="790" rx="125" ry="14" fill="#ccfbf1" opacity="0.28"/>
+      <ellipse cx="295" cy="825" rx="135" ry="16" fill="#99f6e4" opacity="0.25"/>
+      <ellipse cx="210" cy="868" rx="170" ry="18" fill="#5eead4" opacity="0.24"/>
+      <path d="M45,712 Q130,702 215,715 T385,710" stroke="#ffffff" stroke-width="2.2" fill="none" opacity="0.28"/>
+      <path d="M25,765 Q125,754 220,768 T410,760" stroke="#ffffff" stroke-width="2.6" fill="none" opacity="0.24"/>
+      <path d="M40,830 Q150,818 245,832 T395,826" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.22"/>
+      <path d="M75,868 Q170,858 265,870 T370,865" stroke="#ffffff" stroke-width="1.8" fill="none" opacity="0.18"/>
+    </svg>
+  </div>
+
+  <!-- Toast feedback container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Victory Confetti Canvas -->
+  <canvas id="confettiCanvas" class="confetti-layer"></canvas>
+
+  <div class="viewport-wrap">
+    <main class="game-shell">
+      <!-- Top HUD Bar -->
+      <header class="top-bar">
+        <div class="top-left-btns">
+          <button id="btnLevels" class="btn-3d-circle" type="button" title="Mapa de Níveis (0 a 200)" aria-label="Selecionar nível">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button id="btnSettings" class="btn-3d-circle" type="button" title="Configurações" aria-label="Configurações">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+              <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.31-.07.63-.07.94s.02.63.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+            </svg>
+          </button>
+        </div>
+
+        <button id="levelBadge" class="level-pill" type="button" title="Escolher nível">Nível 0</button>
+
+        <div class="coin-capsule" aria-label="Moedas">
+          <span class="coin-badge-icon" aria-hidden="true"></span>
+          <span id="coinCount">25</span>
+          <button id="btnAddCoins" class="btn-add-coins" type="button" title="Economia e regras de proficiência" aria-label="Economia e proficiência">+</button>
+        </div>
+      </header>
+
+      <!-- Theme Clue & Word Bank Card -->
+      <section class="clue-card" aria-label="Tema e palavras do nível">
+        <div class="clue-header">
+          <div class="star-progress" title="Baú de Proficiência (a cada 20 estrelas ganhas você recebe +40 moedas)">
+            <svg class="star-icon-3d" viewBox="0 0 40 40">
+              <defs>
+                <linearGradient id="starGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#fff59d"/>
+                  <stop offset="45%" stop-color="#ffca28"/>
+                  <stop offset="100%" stop-color="#f59e0b"/>
+                </linearGradient>
+              </defs>
+              <path d="M20 3.5c1 0 1.9.6 2.3 1.5l3.7 7.6 8.4 1.2c1 .1 1.8.8 2.1 1.8.3.9 0 2-.7 2.6l-6.1 5.9 1.4 8.3c.2 1-.2 2-1.1 2.6-.8.6-1.9.7-2.8.2L20 31.3l-7.5 3.9c-.9.5-2 .4-2.8-.2-.8-.6-1.2-1.6-1.1-2.6l1.4-8.3-6.1-5.9c-.7-.7-1-1.7-.7-2.6.3-1 1.1-1.7 2.1-1.8l8.4-1.2 3.7-7.6c.4-.9 1.3-1.5 2.3-1.5z" fill="url(#starGrad)" stroke="#d97706" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            <span id="starCount">0/20</span>
+          </div>
+          <h1 id="themeTitle" class="theme-title">TEMA</h1>
+          <div id="runGradeBadge" class="run-grade-badge" title="Proficiência atual neste nível">★★★</div>
+        </div>
+        <div id="wordBank" class="word-bank"></div>
+      </section>
+
+      <!-- Central Letter Grid Card -->
+      <section id="gridCard" class="grid-card" aria-label="Tabuleiro de letras">
+        <div id="dragPreview" class="drag-preview" aria-hidden="true"></div>
+        <div id="onboardingTip" class="onboarding-tip" style="display: none;">Arraste sobre as letras para formar as palavras!</div>
+        <div id="boardStage" class="board-stage">
+          <svg id="capsuleSvg" class="capsule-svg" aria-hidden="true"></svg>
+          <div id="letterGrid" class="letter-grid" role="grid"></div>
+        </div>
+      </section>
+
+      <!-- Bottom 4 Power-up Buttons -->
+      <footer class="powerups-bar" aria-label="Poderes e dicas">
+        <!-- 1. Relâmpago (Eliminar letras extras) -->
+        <button id="btnZap" class="powerup-btn" type="button" title="Eliminar letras sobrando" aria-label="Eliminar letras sobrando">
+          <svg width="28" height="28" viewBox="0 0 32 32">
+            <defs>
+              <linearGradient id="boltGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fff59d"/>
+                <stop offset="50%" stop-color="#ffd52e"/>
+                <stop offset="100%" stop-color="#f59e0b"/>
+              </linearGradient>
+            </defs>
+            <path d="M18.5 3L8 17.5h7.2L13.5 29 24 14.5h-7.2L18.5 3z" fill="url(#boltGrad)" stroke="#b45309" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+          <span id="zapBadge" class="powerup-badge coin-cost-badge">
+            <span class="mini-coin"></span>
+            <span>45</span>
+          </span>
+        </button>
+
+        <!-- 2. Varinha Mágica (Revelar letra oculta com moeda) -->
+        <button id="btnWand" class="powerup-btn" type="button" title="Revelar palavra com moedas ocultas" aria-label="Varinha mágica">
+          <svg width="32" height="32" viewBox="0 0 36 36">
+            <defs>
+              <linearGradient id="wandStar" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fff59d"/>
+                <stop offset="55%" stop-color="#ffd22e"/>
+                <stop offset="100%" stop-color="#f59e0b"/>
+              </linearGradient>
+            </defs>
+            <!-- Wand handle -->
+            <path d="M19 19 L29.5 29.5" stroke="#5b21b6" stroke-width="5.5" stroke-linecap="round"/>
+            <path d="M19 19 L29.5 29.5" stroke="#8b5cf6" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M18.5 18.5 L21.5 21.5" stroke="#fbbf24" stroke-width="5.8" stroke-linecap="round"/>
+            <!-- Wand star -->
+            <path d="M14 4.5l2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L14 4.5z" fill="url(#wandStar)" stroke="#b45309" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          <span id="wandBadge" class="powerup-badge coin-cost-badge">
+            <span class="mini-coin"></span>
+            <span>65</span>
+          </span>
+        </button>
+
+        <!-- 3. Lupa (Dica no tabuleiro) -->
+        <button id="btnLens" class="powerup-btn" type="button" title="Mostrar início de uma palavra" aria-label="Dica com lupa">
+          <svg width="31" height="31" viewBox="0 0 36 36">
+            <line x1="21.5" y1="21.5" x2="30" y2="30" stroke="#991b1b" stroke-width="5.5" stroke-linecap="round"/>
+            <line x1="21.5" y1="21.5" x2="29.5" y2="29.5" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="14.5" cy="14.5" r="8.5" fill="#bae6fd" stroke="#f59e0b" stroke-width="3.4"/>
+            <circle cx="14.5" cy="14.5" r="7.2" fill="none" stroke="#fef08a" stroke-width="1.2"/>
+            <path d="M10.5 11.5a5 5 0 0 1 6-1" stroke="#ffffff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.85"/>
+          </svg>
+          <span id="lensBadge" class="powerup-badge coin-cost-badge">
+            <span class="mini-coin"></span>
+            <span>100</span>
+          </span>
+        </button>
+
+        <!-- 4. Girar (Rotacionar tabuleiro 90°) -->
+        <button id="btnRotate" class="powerup-btn" type="button" title="Girar tabuleiro 90°" aria-label="Girar tabuleiro">
+          <svg width="32" height="32" viewBox="0 0 36 36">
+            <defs>
+              <linearGradient id="rotGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#a3f849"/>
+                <stop offset="100%" stop-color="#38b814"/>
+              </linearGradient>
+            </defs>
+            <path d="M27.5 18a9.5 9.5 0 1 1-3.2-7.1" fill="none" stroke="#166534" stroke-width="6.5" stroke-linecap="round"/>
+            <path d="M27.5 18a9.5 9.5 0 1 1-3.2-7.1" fill="none" stroke="url(#rotGrad)" stroke-width="4.2" stroke-linecap="round"/>
+            <path d="M26.5 6.5L28 14l-7.3-1.6L26.5 6.5z" fill="#84f534" stroke="#166534" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- MODAL: Mapa de Níveis (0 a 200) -->
+  <div id="levelsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="levelsModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="levelsModalTitle">Mapa de Níveis (0 a 200)</h2>
+        <button class="modal-close" type="button" data-close="levelsModal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="level-summary-bar">
+          <span id="levelsProgressText">0 de 201 concluídos</span>
+          <span id="levelsCurrentText">Atual: Nível 0</span>
+        </div>
+        <div id="levelsMilestoneText" class="level-milestone-bar">Proficiência Total: 0★</div>
+        <div class="level-quick-jumps">
+          <button class="quick-chip active" type="button" data-filter="all">Todos (0–200)</button>
+          <button class="quick-chip" type="button" data-filter="improve">Aprimorar (&lt; 3★)</button>
+          <button class="quick-chip" type="button" data-filter="current">Ir ao Atual</button>
+        </div>
+        <div id="levelsGrid" class="levels-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Configurações -->
+  <div id="settingsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="settingsModalTitle">Configurações</h2>
+        <button class="modal-close" type="button" data-close="settingsModal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-row">
+          <span>Efeitos Sonoros</span>
+          <button id="toggleSound" class="toggle-switch on" type="button" aria-pressed="true"></button>
+        </div>
+        <div class="setting-row">
+          <span>Vibração ao Tocar</span>
+          <button id="toggleVibrate" class="toggle-switch on" type="button" aria-pressed="true"></button>
+        </div>
+        <button id="btnRestartLevel" class="btn-primary-3d btn-blue-3d" type="button">Reiniciar Nível Atual</button>
+        <button id="btnResetProgress" class="btn-danger-outline" type="button">Resetar Todo o Progresso</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Economia & Proficiência -->
+  <div id="coinsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="coinsModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="coinsModalTitle">Economia &amp; Proficiência</h2>
+        <button class="modal-close" type="button" data-close="coinsModal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="economySummary" class="economy-summary"></div>
+        <div class="economy-rules">
+          <div class="economy-rule-row"><strong>⭐⭐⭐ Maestria (0 erros e 0 dicas):</strong> 100% da recompensa + bônus de maestria + bônus de sequência + 3★.</div>
+          <div class="economy-rule-row"><strong>⭐⭐ Proficiente (até 2 erros sem dicas, ou 1 dica sem erros):</strong> 70% da recompensa + 2★.</div>
+          <div class="economy-rule-row"><strong>⭐ Básico (3+ erros ou 2+ dicas):</strong> 35% da recompensa + 1★.</div>
+          <div class="economy-rule-row"><strong>Rigor de Precisão:</strong> erros repetidos descontam moedas imediatamente; níveis já concluídos com 1★ ou 2★ podem ser rejogados para conquistar as moedas e estrelas restantes.</div>
+        </div>
+        <button id="btnGoImprove" class="btn-primary-3d btn-blue-3d" type="button">Ver Mapa de Níveis ★</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Nível Concluído -->
+  <div id="victoryModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="victoryModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="victoryModalTitle">Nível Concluído!</h2>
+        <button class="modal-close" type="button" data-close="victoryModal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="victory-hero">
+          <div id="victoryStars" class="victory-stars">⭐⭐⭐</div>
+          <div id="victoryHeading" class="victory-title">Excelente!</div>
+          <div id="victorySub" class="victory-sub">Você encontrou todas as palavras do tema.</div>
+          <div id="victoryMetrics" class="victory-sub" style="font-size: 0.8rem; color: #64748b;">Erros: 0 • Dicas: 0</div>
+        </div>
+        <div class="reward-box">
+          <span id="victoryCoinsBox">🪙 +<span id="victoryCoins">19</span> moedas</span>
+          <span>⭐ <span id="victoryWords">0</span> palavras</span>
+        </div>
+        <button id="btnNextLevel" class="btn-primary-3d" type="button">Próximo Nível ▶</button>
+        <button id="btnReplayLevel" class="btn-primary-3d btn-blue-3d" type="button">Jogar Novamente</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ================================================================
+         1. ALL 101 PORTUGUESE LEVELS (NÍVEL 0 ATÉ NÍVEL 100)
+         ================================================================ */
+      const LEVELS = [
+        { id: 0, t: 'CORES VIVAS', r: 5, c: 5, w: ['AZUL', 'ROSA', 'OURO', 'VERDE'] },
+        { id: 1, t: 'FRUTAS DOCES', r: 7, c: 6, w: ['MAÇÃ', 'PERA', 'UVA', 'MANGA', 'LIMÃO'] },
+        { id: 2, t: 'COZINHA', r: 7, c: 6, w: ['PANELA', 'PRATO', 'GARFO', 'FACA', 'COPO'] },
+        { id: 3, t: 'FAZENDA', r: 7, c: 6, w: ['VACA', 'PORCO', 'GALO', 'CABRA', 'PATO'] },
+        { id: 4, t: 'CORPO HUMANO', r: 7, c: 6, w: ['MÃO', 'OLHO', 'BOCA', 'NARIZ', 'BRAÇO'] },
+        { id: 5, t: 'MATERIAL ESCOLAR', r: 7, c: 6, w: ['LÁPIS', 'LIVRO', 'COLA', 'RÉGUA', 'GIZ'] },
+        { id: 6, t: 'CAFÉ DA MANHÃ', r: 7, c: 6, w: ['PÃO', 'CAFÉ', 'LEITE', 'BOLO', 'QUEIJO'] },
+        { id: 7, t: 'PRAIA E VERÃO', r: 7, c: 6, w: ['MAR', 'AREIA', 'SOL', 'ONDA', 'CONCHA'] },
+        { id: 8, t: 'TRANSPORTE', r: 7, c: 6, w: ['CARRO', 'TREM', 'NAVIO', 'MOTO', 'AVIÃO'] },
+        {
+          id: 9,
+          t: 'PODE DOBRAR',
+          r: 7,
+          c: 6,
+          w: ['LENÇO', 'PAPEL', 'TOALHA', 'CAMISA', 'FRALDA', 'MEIA'],
+          presetGrid: [
+            ['E', 'P', 'A', 'P', 'E', 'L'],
+            ['M', 'E', 'I', 'A', 'M', 'T'],
+            ['L', 'E', 'N', 'Ç', 'O', 'P'],
+            ['F', 'M', 'D', 'H', 'T', 'Ç'],
+            ['C', 'A', 'M', 'I', 'S', 'A'],
+            ['T', 'O', 'A', 'L', 'H', 'A'],
+            ['F', 'R', 'A', 'L', 'D', 'A']
+          ],
+          presetPlacements: [
+            { word: 'PAPEL', r: 0, c: 1, dr: 0, dc: 1 },
+            { word: 'MEIA', r: 1, c: 0, dr: 0, dc: 1 },
+            { word: 'LENÇO', r: 2, c: 0, dr: 0, dc: 1 },
+            { word: 'CAMISA', r: 4, c: 0, dr: 0, dc: 1 },
+            { word: 'TOALHA', r: 5, c: 0, dr: 0, dc: 1 },
+            { word: 'FRALDA', r: 6, c: 0, dr: 0, dc: 1 }
+          ],
+          presetMasks: {
+            CAMISA: [2, 3],
+            FRALDA: [1, 2, 3]
+          }
+        },
+        { id: 10, t: 'MÚSICA E SOM', r: 7, c: 6, w: ['VIOLÃO', 'PIANO', 'FLAUTA', 'TAMBOR', 'HARPA'] },
+        { id: 11, t: 'PROFISSÕES', r: 7, c: 7, w: ['MÉDICO', 'PINTOR', 'PADEIRO', 'PILOTO', 'ATOR'] },
+        { id: 12, t: 'SISTEMA SOLAR', r: 7, c: 7, w: ['TERRA', 'MARTE', 'LUA', 'SOL', 'SATURNO', 'VÊNUS'] },
+        { id: 13, t: 'FLORES', r: 7, c: 7, w: ['ROSA', 'LÍRIO', 'CRAVO', 'TULIPA', 'VIOLETA'] },
+        { id: 14, t: 'ESPORTES', r: 7, c: 7, w: ['FUTEBOL', 'TÊNIS', 'NATAÇÃO', 'JUDÔ', 'GOLFE', 'SURFE'] },
+        { id: 15, t: 'CLIMA E TEMPO', r: 7, c: 7, w: ['CHUVA', 'VENTO', 'NUVEM', 'TROVÃO', 'NEBLINA', 'CALOR'] },
+        { id: 16, t: 'MÓVEIS DA CASA', r: 7, c: 7, w: ['MESA', 'SOFÁ', 'CAMA', 'ESTANTE', 'CADEIRA', 'ARMÁRIO'] },
+        { id: 17, t: 'AVES DO BRASIL', r: 7, c: 7, w: ['ARARA', 'TUCANO', 'SABIÁ', 'CORUJA', 'ÁGUIA', 'GARÇA'] },
+        { id: 18, t: 'VIDA MARINHA', r: 7, c: 7, w: ['BALEIA', 'POLVO', 'TUBARÃO', 'CORAL', 'PEIXE', 'LULA'] },
+        { id: 19, t: 'DOCES E SOBREMESAS', r: 7, c: 7, w: ['PUDIM', 'TORTA', 'SORVETE', 'QUINDIM', 'COCADA', 'MOUSSE'] },
+        { id: 20, t: 'FERRAMENTAS', r: 7, c: 7, w: ['MARTELO', 'SERROTE', 'ALICATE', 'CHAVE', 'PREGO', 'BROCA'] },
+        { id: 21, t: 'ROUPAS DE INVERNO', r: 7, c: 7, w: ['CASACO', 'JAQUETA', 'LUVA', 'BOTA', 'MANTA', 'GORRO'] },
+        { id: 22, t: 'FAMÍLIA', r: 7, c: 7, w: ['MÃE', 'PAI', 'FILHO', 'IRMÃO', 'PRIMO', 'AVÔ'] },
+        { id: 23, t: 'SENTIMENTOS', r: 7, c: 7, w: ['AMOR', 'ALEGRIA', 'PAZ', 'CORAGEM', 'CALMA', 'AFETO'] },
+        { id: 24, t: 'PEDRAS PRECIOSAS', r: 7, c: 7, w: ['RUBI', 'SAFIRA', 'OPALA', 'ÁGATA', 'JADE', 'TOPÁZIO'] },
+        { id: 25, t: 'ÁRVORES', r: 7, c: 7, w: ['IPÊ', 'PINHO', 'CEDRO', 'BAMBU', 'JATOBÁ', 'MANGUE'] },
+        { id: 26, t: 'INSETOS', r: 7, c: 7, w: ['ABELHA', 'FORMIGA', 'BESOURO', 'TRAÇA', 'MOSCA', 'GRILO'] },
+        { id: 27, t: 'RÉPTEIS', r: 7, c: 7, w: ['COBRA', 'LAGARTO', 'JACARÉ', 'IGUANA', 'JABUTI', 'CÁGADO'] },
+        { id: 28, t: 'MAMÍFEROS', r: 7, c: 7, w: ['LEÃO', 'TIGRE', 'GIRAFA', 'MACACO', 'ZEBRA', 'LOBO'] },
+        { id: 29, t: 'CINEMA', r: 7, c: 7, w: ['FILME', 'ROTEIRO', 'CÂMERA', 'ELENCO', 'TELA', 'PIPOCA'] },
+        { id: 30, t: 'TEATRO', r: 7, c: 7, w: ['PALCO', 'CORTINA', 'DRAMA', 'PLATEIA', 'ATO', 'MÁSCARA'] },
+        { id: 31, t: 'PINTURA E ARTE', r: 7, c: 7, w: ['PINCEL', 'TINTA', 'QUADRO', 'MOLDURA', 'ESBOÇO', 'TELA'] },
+        { id: 32, t: 'FOTOGRAFIA', r: 7, c: 7, w: ['LENTE', 'FLASH', 'RETRATO', 'FOCO', 'ÁLBUM', 'FILTRO'] },
+        { id: 33, t: 'INFORMÁTICA', r: 7, c: 7, w: ['MOUSE', 'TECLADO', 'TELA', 'ARQUIVO', 'SENHA', 'DADOS'] },
+        { id: 34, t: 'INTERNET', r: 7, c: 7, w: ['SITE', 'REDE', 'NUVEM', 'LINK', 'PORTAL', 'EMAIL'] },
+        { id: 35, t: 'MATEMÁTICA', r: 7, c: 7, w: ['SOMA', 'NÚMERO', 'RAIZ', 'FRAÇÃO', 'ÂNGULO', 'MÉDIA'] },
+        { id: 36, t: 'GEOGRAFIA', r: 8, c: 8, w: ['MAPA', 'GLOBO', 'OCEANO', 'RELEVO', 'TRÓPICO', 'REGIÃO', 'CLIMA'] },
+        { id: 37, t: 'HISTÓRIA', r: 8, c: 8, w: ['IMPÉRIO', 'REINO', 'SÉCULO', 'MEMÓRIA', 'MUSEU', 'CRÔNICA', 'TRATADO'] },
+        { id: 38, t: 'CIÊNCIAS', r: 8, c: 8, w: ['ÁTOMO', 'CÉLULA', 'ENERGIA', 'MATÉRIA', 'FÓRMULA', 'ENSAIO', 'TEORIA'] },
+        { id: 39, t: 'MEDICINA', r: 8, c: 8, w: ['VACINA', 'EXAME', 'REMÉDIO', 'CIRURGIA', 'CURATIVO', 'PULSO', 'FEBRE'] },
+        { id: 40, t: 'DIREITO E LEIS', r: 8, c: 8, w: ['JUIZ', 'CÓDIGO', 'NORMA', 'SENTENÇA', 'DEVER', 'FÓRUM', 'RECURSO'] },
+        { id: 41, t: 'ARQUITETURA', r: 8, c: 8, w: ['PLANTA', 'COLUNA', 'ARCADA', 'FACHADA', 'PILAR', 'CÚPULA', 'VARANDA'] },
+        { id: 42, t: 'CONSTRUÇÃO', r: 8, c: 8, w: ['TIJOLO', 'CIMENTO', 'AREIA', 'TELHADO', 'REBOCO', 'PAREDE', 'VIGA'] },
+        { id: 43, t: 'JARDINAGEM', r: 8, c: 8, w: ['ADUBO', 'VASO', 'REGADOR', 'MUDA', 'SEMENTE', 'TERRA', 'PODA'] },
+        { id: 44, t: 'ACAMPAMENTO', r: 8, c: 8, w: ['BARRACA', 'FOGUEIRA', 'LANTERNA', 'MOCHILA', 'TRILHA', 'BÚSSOLA', 'CANTIL'] },
+        { id: 45, t: 'VIAGEM', r: 8, c: 8, w: ['MALA', 'PASSAGEM', 'ROTEIRO', 'HOTEL', 'TURISMO', 'DESTINO', 'GUIA'] },
+        { id: 46, t: 'HOTELARIA', r: 8, c: 8, w: ['QUARTO', 'RECEPÇÃO', 'DIÁRIA', 'HÓSPEDE', 'CHAVE', 'SUÍTE', 'RESERVA'] },
+        { id: 47, t: 'AEROPORTO', r: 8, c: 8, w: ['VOO', 'PISTA', 'EMBARQUE', 'BAGAGEM', 'PORTÃO', 'ESCALA', 'PILOTO'] },
+        { id: 48, t: 'NAVIO E PORTO', r: 8, c: 8, w: ['ÂNCORA', 'CAIS', 'MARUJO', 'TIMÃO', 'CABINE', 'CONVÉS', 'FAROL'] },
+        { id: 49, t: 'TRÂNSITO', r: 8, c: 8, w: ['SEMÁFORO', 'FAIXA', 'SINAL', 'CALÇADA', 'RODOVIA', 'BUZINA', 'ROTA'] },
+        { id: 50, t: 'SUPERMERCADO', r: 8, c: 8, w: ['CARRINHO', 'CAIXA', 'OFERTA', 'SACOLA', 'CORREDOR', 'PREÇO', 'TROCO'] },
+        { id: 51, t: 'PADARIA', r: 8, c: 8, w: ['BROA', 'SONHO', 'BAGUETE', 'BISCOITO', 'FERMENTO', 'FARINHA', 'FORNO'] },
+        { id: 52, t: 'PIZZARIA', r: 8, c: 8, w: ['MASSA', 'MOLHO', 'QUEIJO', 'ORÉGANO', 'FATIA', 'BORDA', 'AZEITONA'] },
+        { id: 53, t: 'CHURRASCO', r: 8, c: 8, w: ['CARVÃO', 'GRELHA', 'ESPETO', 'PICANHA', 'LINGUIÇA', 'SAL', 'BRASA'] },
+        { id: 54, t: 'TEMPEROS', r: 8, c: 8, w: ['ALHO', 'CEBOLA', 'ALECRIM', 'COMINHO', 'PIMENTA', 'AÇAFRÃO', 'LOURO'] },
+        { id: 55, t: 'VERDURAS', r: 8, c: 8, w: ['ALFACE', 'COUVE', 'RÚCULA', 'BRÓCOLIS', 'AGRIÃO', 'ACELGA', 'REPOLHO'] },
+        { id: 56, t: 'LEGUMES', r: 8, c: 8, w: ['CENOURA', 'BATATA', 'ABÓBORA', 'CHUCHU', 'PEPINO', 'QUIABO', 'INHAME'] },
+        { id: 57, t: 'GRÃOS E CEREAIS', r: 8, c: 8, w: ['ARROZ', 'FEIJÃO', 'MILHO', 'TRIGO', 'AVEIA', 'LENTILHA', 'SOJA'] },
+        { id: 58, t: 'BEBIDAS', r: 8, c: 8, w: ['SUCO', 'CHÁ', 'ÁGUA', 'VITAMINA', 'LIMONADA', 'GUARANÁ', 'MATE'] },
+        { id: 59, t: 'LATICÍNIOS', r: 8, c: 8, w: ['IOGURTE', 'MANTEIGA', 'COALHO', 'COALHADA', 'CREME', 'RICOTA', 'LEITE'] },
+        { id: 60, t: 'FESTA JUNINA', r: 8, c: 8, w: ['CANJICA', 'FOGUEIRA', 'PAÇOCA', 'PAMONHA', 'BALÃO', 'SANFONA', 'QUENTÃO'] },
+        { id: 61, t: 'CARNAVAL', r: 8, c: 8, w: ['SAMBA', 'DESFILE', 'FANTASIA', 'CONFETE', 'BLOCO', 'TAMBORIM', 'MARCHA'] },
+        { id: 62, t: 'NATAL', r: 8, c: 8, w: ['PRESENTE', 'PINHEIRO', 'ESTRELA', 'CEIA', 'RENAS', 'SINO', 'TRENÓ'] },
+        { id: 63, t: 'ANIVERSÁRIO', r: 8, c: 8, w: ['VELINHA', 'BOLO', 'BEXIGA', 'DOCINHO', 'CONVITE', 'PARABÉNS', 'FESTA'] },
+        { id: 64, t: 'CASAMENTO', r: 8, c: 8, w: ['ALIANÇA', 'BUQUÊ', 'NOIVA', 'VÉU', 'PADRINHO', 'BRINDE', 'VOTOS'] },
+        { id: 65, t: 'BRINQUEDOS', r: 8, c: 8, w: ['BONECA', 'PIPA', 'PIÃO', 'PETECA', 'CARRINHO', 'BOLA', 'DOMINÓ'] },
+        { id: 66, t: 'JOGOS DE MESA', r: 8, c: 8, w: ['DADO', 'BARALHO', 'XADREZ', 'DAMAS', 'TRILHA', 'PEÇA', 'TRUCO'] },
+        { id: 67, t: 'FUTEBOL', r: 8, c: 8, w: ['GOLEIRO', 'CHUTEIRA', 'ZAGUEIRO', 'ATACANTE', 'PÊNALTI', 'TORCIDA', 'CAMPO'] },
+        { id: 68, t: 'BASQUETE E VÔLEI', r: 8, c: 8, w: ['CESTO', 'SAQUE', 'BLOQUEIO', 'REDE', 'QUADRA', 'DRIBLE', 'REBOTE'] },
+        { id: 69, t: 'ATLETISMO', r: 8, c: 8, w: ['CORRIDA', 'SALTO', 'MARCHA', 'MARATONA', 'MEDALHA', 'PISTA', 'RECORDE'] },
+        { id: 70, t: 'ARTES MARCIAIS', r: 8, c: 8, w: ['FAIXA', 'TATAME', 'QUIMONO', 'GOLPE', 'DEFESA', 'KARATÊ', 'MESTRE'] },
+        { id: 71, t: 'ACADEMIA', r: 9, c: 9, w: ['HALTERE', 'ESTEIRA', 'TREINO', 'MÚSCULO', 'FLEXÃO', 'SUPINO', 'CORDA', 'SUOR'] },
+        { id: 72, t: 'DANÇA E RITMO', r: 9, c: 9, w: ['VALSA', 'FORRÓ', 'TANGO', 'BALÉ', 'BAILARINA', 'PASSO', 'COMPASSO', 'SALÃO'] },
+        { id: 73, t: 'LITERATURA', r: 9, c: 9, w: ['ROMANCE', 'POEMA', 'CAPÍTULO', 'AUTOR', 'ENREDO', 'CONTO', 'PROSA', 'EDITORA'] },
+        { id: 74, t: 'POESIA', r: 9, c: 9, w: ['VERSO', 'RIMA', 'ESTROFE', 'SONETO', 'METÁFORA', 'LÍRICA', 'MUSA', 'CANTO'] },
+        { id: 75, t: 'JORNALISMO', r: 9, c: 9, w: ['MANCHETE', 'REPÓRTER', 'NOTÍCIA', 'COLUNA', 'EDIÇÃO', 'IMPRENSA', 'PAUTA', 'DIÁRIO'] },
+        { id: 76, t: 'ASTRONOMIA', r: 9, c: 9, w: ['GALÁXIA', 'COMETA', 'ÓRBITA', 'NEBULOSA', 'ECLIPSE', 'METEORO', 'ESTRELA', 'COSMOS'] },
+        { id: 77, t: 'VULCÕES E TERRA', r: 9, c: 9, w: ['MAGMA', 'CRATERA', 'LAVA', 'TERREMOTO', 'CROSTA', 'BASALTO', 'ROCHA', 'CINZAS'] },
+        { id: 78, t: 'RIOS E LAGOS', r: 9, c: 9, w: ['NASCENTE', 'CACHOEIRA', 'AFLUENTE', 'MARGEM', 'BARRANCO', 'FOZ', 'RIACHO', 'LAGO'] },
+        { id: 79, t: 'MONTANHAS', r: 9, c: 9, w: ['CUME', 'SERRA', 'ALPINISMO', 'ABISMO', 'ESCALADA', 'NEVE', 'PICO', 'VALE'] },
+        { id: 80, t: 'DESERTO', r: 9, c: 9, w: ['DUNA', 'OÁSIS', 'CAMELO', 'MIRAGEM', 'CALOR', 'AREIA', 'CACTO', 'SECA'] },
+        { id: 81, t: 'AMAZÔNIA', r: 9, c: 9, w: ['FLORESTA', 'SERINGAL', 'BOTO', 'VITÓRIA', 'IGARAPÉ', 'CIPÓ', 'SELVAGEM', 'ONÇA'] },
+        { id: 82, t: 'PANTANAL', r: 9, c: 9, w: ['TUIUIÚ', 'CAPIVARA', 'BREJO', 'JACARÉ', 'ALAGADO', 'PEIXE', 'FAZENDA', 'GARÇA'] },
+        { id: 83, t: 'NORDESTE', r: 9, c: 9, w: ['SERTÃO', 'CAATINGA', 'JANGADA', 'COQUEIRO', 'ACARAJÉ', 'FREVO', 'SOL', 'DUNAS'] },
+        { id: 84, t: 'CAPITAIS DO MUNDO', r: 9, c: 9, w: ['BRASÍLIA', 'LISBOA', 'LONDRES', 'TÓQUIO', 'MADRI', 'PARIS', 'ROMA', 'BERLIM'] },
+        { id: 85, t: 'AMÉRICAS', r: 9, c: 9, w: ['BRASIL', 'CHILE', 'PERU', 'MÉXICO', 'CANADÁ', 'URUGUAI', 'CUBA', 'PANAMÁ'] },
+        { id: 86, t: 'EUROPA', r: 9, c: 9, w: ['FRANÇA', 'ITÁLIA', 'ESPANHA', 'PORTUGAL', 'GRÉCIA', 'SUÍÇA', 'BÉLGICA', 'POLÔNIA'] },
+        { id: 87, t: 'ÁSIA', r: 9, c: 9, w: ['JAPÃO', 'CHINA', 'ÍNDIA', 'COREIA', 'TAILÂNDIA', 'VIETNÃ', 'NEPAL', 'INDONÉSIA'] },
+        { id: 88, t: 'ÁFRICA', r: 9, c: 9, w: ['EGITO', 'MARROCOS', 'QUÊNIA', 'ANGOLA', 'NIGÉRIA', 'GANA', 'TUNÍSIA', 'SENEGAL'] },
+        { id: 89, t: 'MITOLOGIA', r: 9, c: 9, w: ['ZEUS', 'ATENA', 'APOLO', 'POSEIDON', 'OLIMPO', 'HERÓI', 'DRAGÃO', 'FÊNIX'] },
+        { id: 90, t: 'CASTELO MEDIEVAL', r: 9, c: 9, w: ['TORRE', 'MURALHA', 'CAVALEIRO', 'ESPADA', 'ESCUDO', 'COROA', 'TRONO', 'FOSSO'] },
+        { id: 91, t: 'PIRATAS', r: 9, c: 9, w: ['TESOURO', 'BAÚ', 'LUNETA', 'NAVIO', 'BANDEIRA', 'ILHA', 'BÚSSOLA', 'MOEDA'] },
+        { id: 92, t: 'DETETIVE', r: 9, c: 9, w: ['PISTA', 'SUSPEITO', 'LUPA', 'ENIGMA', 'CRIME', 'ÁLIBI', 'INDÍCIO', 'SIGILO'] },
+        { id: 93, t: 'MAGIA E FANTASIA', r: 9, c: 9, w: ['FEITIÇO', 'POÇÃO', 'VARINHA', 'DUENDE', 'FADA', 'ELIXIR', 'CRISTAL', 'MAGO'] },
+        { id: 94, t: 'ROBÓTICA', r: 9, c: 9, w: ['ROBÔ', 'SENSOR', 'CIRCUITO', 'MOTOR', 'PLACA', 'CÓDIGO', 'CHIP', 'ANTENA'] },
+        { id: 95, t: 'ENERGIA LIMPA', r: 9, c: 9, w: ['SOLAR', 'EÓLICA', 'TURBINA', 'PAINEL', 'BIOMASSA', 'VENTO', 'LIMPA', 'USINA'] },
+        { id: 96, t: 'ECOLOGIA', r: 9, c: 9, w: ['RECICLAR', 'PLANETA', 'BIOMA', 'RESERVA', 'NASCENTE', 'FLORA', 'FAUNA', 'VERDE'] },
+        { id: 97, t: 'VIRTUDES', r: 9, c: 9, w: ['HONRA', 'BONDADE', 'VERDADE', 'JUSTIÇA', 'RESPEITO', 'HUMILDADE', 'LEALDADE', 'GRATIDÃO'] },
+        { id: 98, t: 'GASTRONOMIA', r: 9, c: 9, w: ['RECEITA', 'TEMPERO', 'SOBREMESA', 'ASSADO', 'CALDO', 'GOURMET', 'PRATO', 'SABOR'] },
+        { id: 99, t: 'OLIMPÍADAS', r: 9, c: 9, w: ['TOCHA', 'PÓDIO', 'ATLETA', 'OURO', 'PRATA', 'BRONZE', 'ESTÁDIO', 'HINO'] },
+        { id: 100, t: 'MARCO CENTENÁRIO', r: 9, c: 9, w: ['CENTENA', 'MARCO', 'ETAPA', 'CONQUISTA', 'AVANÇO', 'META', 'PROEZA', 'GLÓRIA'] },
+        { id: 101, t: 'BIOLOGIA', r: 9, c: 9, w: ['ESPÉCIE', 'GENOMA', 'TECIDO', 'ÓRGÃO', 'FUNGO', 'BACTÉRIA', 'VÍRUS', 'BIOTA'] },
+        { id: 102, t: 'QUÍMICA', r: 9, c: 9, w: ['ELEMENTO', 'MOLÉCULA', 'REAÇÃO', 'ÁCIDO', 'SOLUÇÃO', 'MISTURA', 'ENXOFRE', 'PRATA'] },
+        { id: 103, t: 'FÍSICA', r: 9, c: 9, w: ['FORÇA', 'MASSA', 'ATRITO', 'IMPULSO', 'GRAVIDADE', 'CARGA', 'CAMPO', 'ONDAS'] },
+        { id: 104, t: 'GENÉTICA', r: 9, c: 9, w: ['GENE', 'ALELO', 'HERANÇA', 'MUTAÇÃO', 'CÓDON', 'CLONE', 'TRAÇO', 'NÚCLEO'] },
+        { id: 105, t: 'BOTÂNICA', r: 9, c: 9, w: ['RAIZ', 'CAULE', 'FOLHA', 'PÓLEN', 'FRUTO', 'SEIVA', 'ESPINHO', 'CASCA'] },
+        { id: 106, t: 'ANATOMIA', r: 9, c: 9, w: ['CRÂNIO', 'FÊMUR', 'COSTELA', 'PULMÃO', 'CORAÇÃO', 'FÍGADO', 'TENDÃO', 'ARTÉRIA'] },
+        { id: 107, t: 'ODONTOLOGIA', r: 9, c: 9, w: ['DENTE', 'ESMALTE', 'GENGIVA', 'MOLAR', 'CANINO', 'CÁRIE', 'ESCOVA', 'SORRISO'] },
+        { id: 108, t: 'FARMÁCIA', r: 9, c: 9, w: ['XAROPE', 'POMADA', 'CÁPSULA', 'DOSE', 'BULAS', 'GOTAS', 'RECEITA', 'EXTRATO'] },
+        { id: 109, t: 'NUTRIÇÃO', r: 9, c: 9, w: ['VITAMINA', 'PROTEÍNA', 'FIBRA', 'MINERAL', 'CALORIA', 'DIETA', 'CÁLCIO', 'FERRO'] },
+        { id: 110, t: 'PSICOLOGIA', r: 9, c: 9, w: ['MENTE', 'EMOÇÃO', 'HÁBITO', 'MEMÓRIA', 'ATENÇÃO', 'SONHO', 'ESTRESSE', 'EMPATIA'] },
+        { id: 111, t: 'VETERINÁRIA', r: 9, c: 9, w: ['FILHOTE', 'COLEIRA', 'RAÇÃO', 'VACINA', 'CLÍNICA', 'PATAS', 'CASCO', 'PELAGEM'] },
+        { id: 112, t: 'ÓPTICA', r: 9, c: 9, w: ['ESPELHO', 'PRISMA', 'REFRAÇÃO', 'LENTE', 'RAIO', 'IMAGEM', 'BRILHO', 'SOMBRA'] },
+        { id: 113, t: 'ACÚSTICA', r: 9, c: 9, w: ['ECO', 'TIMBRE', 'VOLUME', 'DECIBEL', 'GRAVE', 'AGUDO', 'RUÍDO', 'HARMONIA'] },
+        { id: 114, t: 'MAGNETISMO', r: 9, c: 9, w: ['ÍMÃ', 'POLO', 'ATRAÇÃO', 'BÚSSOLA', 'BOBINA', 'INDUÇÃO', 'FERRO', 'FLUIDO'] },
+        { id: 115, t: 'EVOLUÇÃO', r: 9, c: 9, w: ['FÓSSIL', 'ADAPTAÇÃO', 'SELEÇÃO', 'ORIGEM', 'LINHAGEM', 'ESPÉCIE', 'ANCESTRAL', 'MUDANÇA'] },
+        { id: 116, t: 'ENGENHARIA', r: 9, c: 9, w: ['PROJETO', 'CÁLCULO', 'ESTRUTURA', 'PONTE', 'TÚNEL', 'ESCALA', 'DESENHO', 'OBRA'] },
+        { id: 117, t: 'CONTABILIDADE', r: 9, c: 9, w: ['BALANÇO', 'ATIVO', 'PASSIVO', 'RECEITA', 'DESPESA', 'LUCRO', 'IMPOSTO', 'EXTRATO'] },
+        { id: 118, t: 'ECONOMIA', r: 9, c: 9, w: ['MERCADO', 'INFLAÇÃO', 'OFERTA', 'DEMANDA', 'MOEDA', 'JUROS', 'CÂMBIO', 'RENDA'] },
+        { id: 119, t: 'FINANÇAS', r: 9, c: 9, w: ['POUPANÇA', 'AÇÃO', 'TÍTULO', 'CARTEIRA', 'RESERVA', 'CRÉDITO', 'DIVIDENDO', 'FUNDO'] },
+        { id: 120, t: 'BANCO E MOEDA', r: 9, c: 9, w: ['AGÊNCIA', 'CONTA', 'SAQUE', 'DEPÓSITO', 'CHEQUE', 'CARTÃO', 'TARIFA', 'SALDO'] },
+        { id: 121, t: 'COMÉRCIO', r: 9, c: 9, w: ['LOJA', 'VITRINE', 'ESTOQUE', 'VENDA', 'CLIENTE', 'NOTA', 'DESCONTO', 'RECIBO'] },
+        { id: 122, t: 'LOGÍSTICA', r: 9, c: 9, w: ['CARGA', 'FRETE', 'GALPÃO', 'ENTREGA', 'RASTREIO', 'PALETE', 'REMESSA', 'ROTA'] },
+        { id: 123, t: 'METALURGIA', r: 9, c: 9, w: ['AÇO', 'FERRO', 'BRONZE', 'COBRE', 'FUNDIÇÃO', 'FORJA', 'LIGA', 'CHAPA'] },
+        { id: 124, t: 'MARCENARIA', r: 9, c: 9, w: ['MADEIRA', 'SERRA', 'PLAINA', 'VERNIZ', 'LIXA', 'COLA', 'PREGO', 'TÁBUA'] },
+        { id: 125, t: 'MODA E COSTURA', r: 9, c: 9, w: ['TECIDO', 'AGULHA', 'LINHA', 'BOTÃO', 'ZÍPER', 'MOLDE', 'BAINHA', 'RENDA'] },
+        { id: 126, t: 'JOALHERIA', r: 9, c: 9, w: ['ANEL', 'COLAR', 'BRINCO', 'PULSEIRA', 'PINGENTE', 'OURO', 'PRATA', 'DIAMANTE'] },
+        { id: 127, t: 'RELOJOARIA', r: 9, c: 9, w: ['PONTEIRO', 'MOSTRADOR', 'CORDA', 'PÊNDULO', 'MINUTO', 'SEGUNDO', 'HORA', 'ALARME'] },
+        { id: 128, t: 'CERÂMICA', r: 9, c: 9, w: ['ARGILA', 'BARRO', 'TORNO', 'ESMALTE', 'JARRA', 'PRATO', 'FORNO', 'LOUÇA'] },
+        { id: 129, t: 'VIDRAÇARIA', r: 9, c: 9, w: ['VIDRO', 'CRISTAL', 'VITRAL', 'ESPELHO', 'TAÇA', 'GARRAFA', 'JANELA', 'MOLDURA'] },
+        { id: 130, t: 'TIPOGRAFIA', r: 9, c: 9, w: ['FONTE', 'LETRA', 'GLIFO', 'MARGEM', 'PARÁGRAFO', 'TÍTULO', 'CORPO', 'IMPRESSO'] },
+        { id: 131, t: 'ORQUESTRA', r: 9, c: 9, w: ['MAESTRO', 'VIOLINO', 'CELLO', 'TROMPETE', 'OBOÉ', 'HARPA', 'BATUTA', 'PARTITURA'] },
+        { id: 132, t: 'ÓPERA', r: 9, c: 9, w: ['SOPRANO', 'TENOR', 'ÁRIA', 'CORO', 'LIBRETO', 'PALCO', 'PLATEIA', 'CENA'] },
+        { id: 133, t: 'ESCULTURA', r: 9, c: 9, w: ['MÁRMORE', 'ARGILA', 'CINZEL', 'ESTÁTUA', 'BUSTO', 'RELEVO', 'BRONZE', 'FORMA'] },
+        { id: 134, t: 'GRAVURA', r: 9, c: 9, w: ['ENTALHE', 'MATRIZ', 'CHAPA', 'CARIMBO', 'TINTA', 'PRENSA', 'TRAÇO', 'PAPEL'] },
+        { id: 135, t: 'ARQUEOLOGIA', r: 9, c: 9, w: ['RUÍNA', 'ESCAVAÇÃO', 'RELÍQUIA', 'CERÂMICA', 'MÚMIA', 'ARTEFATO', 'TEMPLO', 'SÍTIO'] },
+        { id: 136, t: 'FILOSOFIA', r: 10, c: 9, w: ['RAZÃO', 'ÉTICA', 'LÓGICA', 'VERDADE', 'MORAL', 'SER', 'IDEIA', 'SABER'] },
+        { id: 137, t: 'SOCIOLOGIA', r: 10, c: 9, w: ['CULTURA', 'GRUPO', 'CLASSE', 'ESTADO', 'POVO', 'NORMA', 'VALOR', 'FAMÍLIA'] },
+        { id: 138, t: 'DIPLOMACIA', r: 10, c: 9, w: ['TRATADO', 'EMBAIXADA', 'ACORDO', 'PAZ', 'CÔNSUL', 'VISTO', 'DIÁLOGO', 'ALIANÇA'] },
+        { id: 139, t: 'POLÍTICA', r: 10, c: 9, w: ['VOTO', 'URNA', 'ELEIÇÃO', 'SENADO', 'CÂMARA', 'LEI', 'DECRETO', 'MANDATO'] },
+        { id: 140, t: 'CIDADANIA', r: 10, c: 9, w: ['DIREITO', 'DEVER', 'RESPEITO', 'JUSTIÇA', 'IGUALDADE', 'VOTO', 'SOCIAL', 'HONRA'] },
+        { id: 141, t: 'BIBLIOTECA', r: 10, c: 9, w: ['ESTANTE', 'ACERVO', 'LEITURA', 'CATÁLOGO', 'ÍNDICE', 'VOLUME', 'SILÊNCIO', 'FICHA'] },
+        { id: 142, t: 'UNIVERSIDADE', r: 10, c: 9, w: ['CAMPUS', 'REITOR', 'CURSO', 'DIPLOMA', 'TESE', 'CALOURO', 'MESTRADO', 'DOCENTE'] },
+        { id: 143, t: 'LABORATÓRIO', r: 10, c: 9, w: ['TUBO', 'PROVETA', 'BÉQUER', 'PIPETA', 'LÂMINA', 'AVENTAL', 'ÓCULOS', 'BALANÇA'] },
+        { id: 144, t: 'OBSERVATÓRIO', r: 10, c: 9, w: ['LUNETA', 'CÚPULA', 'ASTRO', 'LENTE', 'CÉU', 'ESTRELA', 'PLANETA', 'NOTURNO'] },
+        { id: 145, t: 'PLANETÁRIO', r: 10, c: 9, w: ['ÓRBITA', 'SATURNO', 'JÚPITER', 'NETUNO', 'URANO', 'COMETA', 'PROJEÇÃO', 'CÚPULA'] },
+        { id: 146, t: 'SALA DE ESTAR', r: 10, c: 9, w: ['SOFÁ', 'POLTRONA', 'TAPETE', 'ESTANTE', 'QUADRO', 'ALMOFADA', 'MESINHA', 'LUSTRE'] },
+        { id: 147, t: 'QUARTO', r: 10, c: 9, w: ['CAMA', 'COLCHÃO', 'LENÇOL', 'EDREDOM', 'ABAJUR', 'ARMÁRIO', 'ESPELHO', 'CÔMODA'] },
+        { id: 148, t: 'BANHEIRO', r: 10, c: 9, w: ['CHUVEIRO', 'PIA', 'TOALHA', 'SABONETE', 'ESPELHO', 'TORNEIRA', 'ESCOVA', 'BANHEIRA'] },
+        { id: 149, t: 'LAVANDERIA', r: 10, c: 9, w: ['TANQUE', 'VARAL', 'SABÃO', 'FERRO', 'CESTO', 'PRENDEDOR', 'AMACIANTE', 'BALDE'] },
+        { id: 150, t: 'GARAGEM', r: 10, c: 9, w: ['PORTÃO', 'CARRO', 'PNEU', 'MACACO', 'ESTEPE', 'BATERIA', 'CHAVE', 'ÓLEO'] },
+        { id: 151, t: 'ESCRITÓRIO', r: 10, c: 9, w: ['MESA', 'CADEIRA', 'AGENDA', 'CADERNO', 'PASTA', 'CANETA', 'CARIMBO', 'TELEFONE'] },
+        { id: 152, t: 'CONFEITARIA', r: 10, c: 9, w: ['GLACÊ', 'CHANTILLY', 'BATEDEIRA', 'FORMA', 'CONFEITO', 'RECHEIO', 'CALDA', 'CARAMELO'] },
+        { id: 153, t: 'SORVETERIA', r: 10, c: 9, w: ['CASQUINHA', 'PICOLÉ', 'CALDA', 'BAUNILHA', 'MORANGO', 'CHOCOLATE', 'CREME', 'PALITO'] },
+        { id: 154, t: 'CAFETERIA', r: 10, c: 9, w: ['EXPRESSO', 'CAPUCCINO', 'XÍCARA', 'BULE', 'TORRA', 'GRÃO', 'MOEDOR', 'CROISSANT'] },
+        { id: 155, t: 'RESTAURANTE', r: 10, c: 9, w: ['CARDÁPIO', 'GARÇOM', 'ENTRADA', 'SOBREMESA', 'GORJETA', 'CONTA', 'MESA', 'PRATO'] },
+        { id: 156, t: 'FEIRA LIVRE', r: 10, c: 9, w: ['BARRACA', 'PASTEL', 'CALDO', 'BANANA', 'TOMATE', 'CEBOLA', 'LARANJA', 'PESO'] },
+        { id: 157, t: 'PESCARIA', r: 10, c: 9, w: ['ANZOL', 'ISCA', 'VARA', 'MOLINETE', 'REDE', 'BARCO', 'RIO', 'PEIXE'] },
+        { id: 158, t: 'NÁUTICA', r: 10, c: 9, w: ['VELA', 'LEME', 'PROA', 'POPA', 'REMO', 'CAIAQUE', 'BOIA', 'BÚSSOLA'] },
+        { id: 159, t: 'CICLISMO', r: 10, c: 9, w: ['BICICLETA', 'PEDAL', 'GUIDÃO', 'SELIM', 'CORRENTE', 'CAPACETE', 'RODA', 'FREIO'] },
+        { id: 160, t: 'HIPISMO', r: 10, c: 9, w: ['CAVALO', 'SELA', 'RÉDEA', 'GALOPE', 'TROTE', 'ESTRIBO', 'FERRADURA', 'PISTA'] },
+        { id: 161, t: 'MINERAIS', r: 10, c: 9, w: ['QUARTZO', 'GRANITO', 'BASALTO', 'CALCÁRIO', 'PIRITA', 'MICA', 'TALCO', 'GESSO'] },
+        { id: 162, t: 'FÓSSEIS', r: 10, c: 9, w: ['ÂMBAR', 'PEGADA', 'ESQUELETO', 'CONCHA', 'ROCHA', 'CAMADA', 'ERA', 'MUSEU'] },
+        { id: 163, t: 'CAVERNAS', r: 10, c: 9, w: ['GRUTA', 'ABISMO', 'ROCHA', 'MORCEGO', 'ESCURO', 'UMIDADE', 'LANTERNA', 'GALERIA'] },
+        { id: 164, t: 'GELEIRAS', r: 10, c: 9, w: ['GELO', 'NEVE', 'ICEBERG', 'NEVASCA', 'GLACIAL', 'ÁRTICO', 'FRIO', 'CRISTAL'] },
+        { id: 165, t: 'RECIFES', r: 10, c: 9, w: ['CORAL', 'ANÊMONA', 'TARTARUGA', 'CARDUME', 'ALGA', 'CONCHA', 'ESPONJA', 'POLVO'] },
+        { id: 166, t: 'SAVANA', r: 10, c: 9, w: ['ACÁCIA', 'GIRAFA', 'ELEFANTE', 'LEOPARDO', 'HIENA', 'IMPALA', 'GUEPARDO', 'ZEBRA'] },
+        { id: 167, t: 'TUNDRA', r: 10, c: 9, w: ['RENA', 'MUSGO', 'LÍQUEN', 'GEADA', 'CORUJA', 'RAPOSA', 'LOBO', 'VENTO'] },
+        { id: 168, t: 'MANGUEZAL', r: 10, c: 9, w: ['SIRI', 'OSTRA', 'LAMA', 'RAIZ', 'MARÉ', 'GARÇA', 'MANGUE', 'BERÇÁRIO'] },
+        { id: 169, t: 'CERRADO', r: 10, c: 9, w: ['PEQUI', 'BURITI', 'LOBO', 'EMA', 'TATU', 'CAGAITA', 'IPÊ', 'CUPIM'] },
+        { id: 170, t: 'MATA ATLÂNTICA', r: 10, c: 9, w: ['PALMITO', 'ORQUÍDEA', 'BROMÉLIA', 'MICO', 'SAGUI', 'ONÇA', 'TUCANO', 'SAMAMBAIA'] },
+        { id: 171, t: 'PAMPA GAÚCHO', r: 10, c: 10, w: ['CHIMARRÃO', 'GAÚCHO', 'COXILHA', 'ESTÂNCIA', 'CHURRASCO', 'LAÇO', 'BOMBACHA', 'PONCHO'] },
+        { id: 172, t: 'CORDILHEIRA', r: 10, c: 10, w: ['ANDES', 'ALPES', 'HIMALAIA', 'PICOS', 'NEVE', 'GELEIRA', 'VALE', 'VENTANIA'] },
+        { id: 173, t: 'ARQUIPÉLAGO', r: 10, c: 10, w: ['ILHA', 'ILHOTA', 'ATOL', 'ENSEADA', 'BAÍA', 'CABO', 'FALÉSIA', 'FAROL'] },
+        { id: 174, t: 'PENÍNSULA', r: 10, c: 10, w: ['COSTA', 'LITORAL', 'ISTMO', 'GOLFO', 'ESTREITO', 'PRAIA', 'CABO', 'MARGEM'] },
+        { id: 175, t: 'ESTUÁRIO', r: 10, c: 10, w: ['DELTA', 'MANGUE', 'MARÉ', 'SALOBRA', 'SEDIMENTO', 'FOZ', 'CANAL', 'VAZANTE'] },
+        { id: 176, t: 'AVIAÇÃO', r: 10, c: 10, w: ['AERONAVE', 'HÉLICE', 'TURBINA', 'CABINE', 'RADAR', 'DECOLAGEM', 'POUSO', 'ASA', 'ALTITUDE'] },
+        { id: 177, t: 'FERROVIA', r: 10, c: 10, w: ['TRILHO', 'LOCOMOTIVA', 'VAGÃO', 'ESTAÇÃO', 'DORMENTE', 'APITO', 'MAQUINISTA', 'BILHETE', 'TÚNEL'] },
+        { id: 178, t: 'SUBMARINO', r: 10, c: 10, w: ['PERISCÓPIO', 'SONAR', 'CASCO', 'ESCOTILHA', 'TORPEDO', 'MERGULHO', 'PROFUNDO', 'OXIGÊNIO', 'LEME'] },
+        { id: 179, t: 'FOGUETE', r: 10, c: 10, w: ['PROPULSOR', 'CÁPSULA', 'DECOLAGEM', 'ÓRBITA', 'ESTÁGIO', 'COMBUSTÃO', 'ASTRONAUTA', 'BASE', 'ESPACIAL'] },
+        { id: 180, t: 'SATÉLITES', r: 10, c: 10, w: ['SINAL', 'ANTENA', 'ÓRBITA', 'PAINEL', 'TELEMETRIA', 'SENSOR', 'RASTREIO', 'CINTURÃO', 'ESPELHO'] },
+        { id: 181, t: 'TELECOMUNICAÇÃO', r: 10, c: 10, w: ['SINAL', 'FREQUÊNCIA', 'REDE', 'FIBRA', 'CABO', 'ROTEADOR', 'ANTENA', 'MODEM', 'SATÉLITE'] },
+        { id: 182, t: 'CIBERSEGURANÇA', r: 10, c: 10, w: ['SENHA', 'FIREWALL', 'TOKEN', 'CIFRA', 'CHAVE', 'ACESSO', 'INVASÃO', 'AUDITORIA', 'BACKUP'] },
+        { id: 183, t: 'ALGORITMOS', r: 10, c: 10, w: ['LÓGICA', 'VETOR', 'MATRIZ', 'FUNÇÃO', 'LAÇO', 'ORDENAÇÃO', 'BUSCA', 'ÁRVORE', 'GRAFOS'] },
+        { id: 184, t: 'ELETRÔNICA', r: 10, c: 10, w: ['RESISTOR', 'CAPACITOR', 'DIODO', 'TRANSISTOR', 'PLACA', 'SOLDA', 'VOLTAGEM', 'CORRENTE', 'CIRCUITO'] },
+        { id: 185, t: 'AUTOMAÇÃO', r: 10, c: 10, w: ['SENSOR', 'ATUADOR', 'ESTEIRA', 'BRAÇO', 'CONTROLE', 'VÁLVULA', 'RELÉ', 'SISTEMA', 'EFICIÊNCIA'] },
+        { id: 186, t: 'BIOTECNOLOGIA', r: 10, c: 10, w: ['CLONAGEM', 'ENZIMA', 'FERMENTAR', 'VACINA', 'CULTURA', 'GENOMA', 'BACTÉRIA', 'PROTEÍNA', 'INSULINA'] },
+        { id: 187, t: 'NANOTECNOLOGIA', r: 10, c: 10, w: ['ÁTOMO', 'ESCALA', 'PARTÍCULA', 'GRAFENO', 'TUBO', 'FILME', 'PRECISÃO', 'CRISTAL', 'REVESTIR'] },
+        { id: 188, t: 'METEOROLOGIA', r: 10, c: 10, w: ['PREVISÃO', 'UMIDADE', 'PRESSÃO', 'BARÔMETRO', 'FRENTE', 'CICLONE', 'TEMPESTADE', 'BRISA', 'ALÍSIOS'] },
+        { id: 189, t: 'CARTOGRAFIA', r: 10, c: 10, w: ['MAPA', 'BÚSSOLA', 'ESCALA', 'LATITUDE', 'LONGITUDE', 'MERIDIANO', 'TRÓPICO', 'LEGENDA', 'ROSA'] },
+        { id: 190, t: 'OCEANOGRAFIA', r: 10, c: 10, w: ['ABISSAL', 'CORRENTE', 'MARÉ', 'SALINIDADE', 'PLÂNCTON', 'FOSSA', 'SONDA', 'CORAL', 'ONDA'] },
+        { id: 191, t: 'IDADE MÉDIA', r: 10, c: 10, w: ['FEUDO', 'VASSALO', 'SENHOR', 'MOSTEIRO', 'TORNEIO', 'ALDEIA', 'CAVALEIRO', 'CASTELO', 'GUILDA'] },
+        { id: 192, t: 'RENASCIMENTO', r: 10, c: 10, w: ['HUMANISMO', 'PINTURA', 'CÚPULA', 'MECENAS', 'CIÊNCIA', 'ANATOMIA', 'AFRESCO', 'INVENTO', 'ARTE'] },
+        { id: 193, t: 'ANTIGUIDADE', r: 10, c: 10, w: ['PIRÂMIDE', 'FARAÓ', 'COLISEU', 'ACRÓPOLE', 'PAPIRO', 'SENADO', 'ESTÁTUA', 'TEMPLO', 'IMPÉRIO'] },
+        { id: 194, t: 'NAVEGAÇÕES', r: 10, c: 10, w: ['CARAVELA', 'ASTROLÁBIO', 'BÚSSOLA', 'ESPECIARIA', 'VELA', 'PORTO', 'OCEANO', 'DESCOBERTA', 'ROTA'] },
+        { id: 195, t: 'FOLCLORE', r: 10, c: 10, w: ['SACI', 'CURUPIRA', 'IARA', 'BOITATÁ', 'BOTO', 'LOBISOMEM', 'CUCA', 'MULA', 'LENDA'] },
+        { id: 196, t: 'LENDAS DO BRASIL', r: 10, c: 10, w: ['VITÓRIA', 'GUARANÁ', 'MANDIOCA', 'NEGRINHO', 'ARARA', 'SERPENTE', 'ENCANTO', 'FLORA', 'MITO'] },
+        { id: 197, t: 'CAVALARIA', r: 10, c: 10, w: ['ELMO', 'ARMADURA', 'LANÇA', 'ESPORA', 'BRASÃO', 'ESCUDEIRO', 'JUSTA', 'PENDÃO', 'CORCEL'] },
+        { id: 198, t: 'ALQUIMIA', r: 10, c: 10, w: ['ELIXIR', 'PEDRA', 'CADINHO', 'ALAMBIQUE', 'FÓRMULA', 'OURO', 'MERCÚRIO', 'ENXOFRE', 'MISTÉRIO'] },
+        { id: 199, t: 'SABEDORIA', r: 10, c: 10, w: ['CONSELHO', 'PRUDÊNCIA', 'ESTUDO', 'REFLEXÃO', 'MEMÓRIA', 'CLAREZA', 'CIÊNCIA', 'FILOSOFIA', 'MENTE'] },
+        { id: 200, t: 'FESTA DA VITÓRIA', r: 10, c: 10, w: ['VITÓRIA', 'CAMPEÃO', 'TROFÉU', 'LENDÁRIO', 'MESTRE', 'SUCESSO', 'OURO', 'FESTA', 'SUPREMO'] }
+      ];
+
+      const MAX_LEVEL = LEVELS.length - 1;
+      const TOTAL_LEVELS = LEVELS.length;
+      const MAX_TOTAL_STARS = TOTAL_LEVELS * 3;
+
+      /* ================================================================
+         2. DETERMINISTIC CROSSWORD BOARD GENERATOR & COIN MASKS
+         ================================================================ */
+      const PT_FILLER = 'AAEEOOSSRRIINNDDMMUUTTCCLLPPVVGGHHFFBBÇ';
+
+      const CAPSULE_PALETTE = [
+        'rgba(110, 231, 183, 0.68)',
+        'rgba(147, 197, 253, 0.72)',
+        'rgba(253, 224, 71, 0.70)',
+        'rgba(249, 168, 212, 0.68)',
+        'rgba(196, 181, 253, 0.70)',
+        'rgba(253, 186, 116, 0.72)',
+        'rgba(134, 239, 172, 0.70)',
+        'rgba(103, 232, 249, 0.70)'
+      ];
+
+      const DIRS = {
+        H:  { dr: 0,  dc: 1 },
+        V:  { dr: 1,  dc: 0 },
+        DR: { dr: 1,  dc: 1 },
+        UR: { dr: -1, dc: 1 },
+        HL: { dr: 0,  dc: -1 },
+        VU: { dr: -1, dc: 0 },
+        DL: { dr: 1,  dc: -1 },
+        UL: { dr: -1, dc: -1 }
+      };
+
+      function mulberry32(seed) {
+        let a = seed >>> 0;
+        return function () {
+          a |= 0;
+          a = (a + 0x6D2B79F5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function getDirectionsForLevel(levelId) {
+        if (levelId <= 10) return ['H', 'V'];
+        if (levelId <= 35) return ['H', 'V', 'DR', 'UR'];
+        if (levelId <= 70) return ['H', 'V', 'DR', 'UR', 'HL', 'VU'];
+        return ['H', 'V', 'DR', 'UR', 'HL', 'VU', 'DL', 'UL'];
+      }
+
+      function computeCoinMasks(levelDef, rng) {
+        if (levelDef.presetMasks) {
+          return JSON.parse(JSON.stringify(levelDef.presetMasks));
+        }
+        const masks = {};
+        if (levelDef.id === 0) return masks;
+
+        const targetMaskCount =
+          levelDef.id <= 10 ? 2 :
+          levelDef.id <= 35 ? 2 :
+          levelDef.id <= 70 ? 3 :
+          levelDef.id <= 135 ? 4 : 5;
+
+        const eligible = levelDef.w.filter(w => w.length >= 4);
+        const shuffled = eligible.slice().sort(() => rng() - 0.5);
+        const chosen = shuffled.slice(0, Math.min(targetMaskCount, shuffled.length));
+
+        for (const word of chosen) {
+          const interior = [];
+          for (let i = 1; i < word.length - 1; i++) interior.push(i);
+          const count = Math.min(
+            interior.length,
+            word.length >= 7 ? 3 : word.length >= 5 ? 2 : 1
+          );
+          // Contiguous interior slice looks cleanest (like CA🪙🪙SA and F🪙🪙🪙DA)
+          const maxStart = Math.max(0, interior.length - count);
+          const startIdx = Math.floor(rng() * (maxStart + 1));
+          masks[word] = interior.slice(startIdx, startIdx + count);
+        }
+        return masks;
+      }
+
+      function tryPlaceWords(words, rows, cols, allowedDirKeys, rng) {
+        const grid = Array.from({ length: rows }, () => Array(cols).fill(null));
+        const placements = [];
+        const dirCounts = {};
+        allowedDirKeys.forEach(k => (dirCounts[k] = 0));
+
+        for (const word of words) {
+          const len = word.length;
+          const candidates = [];
+
+          for (const dKey of allowedDirKeys) {
+            const { dr, dc } = DIRS[dKey];
+            for (let r = 0; r < rows; r++) {
+              for (let c = 0; c < cols; c++) {
+                const endR = r + (len - 1) * dr;
+                const endC = c + (len - 1) * dc;
+                if (endR < 0 || endR >= rows || endC < 0 || endC >= cols) continue;
+
+                let valid = true;
+                let intersections = 0;
+                let emptyCells = 0;
+
+                for (let k = 0; k < len; k++) {
+                  const nr = r + k * dr;
+                  const nc = c + k * dc;
+                  const cell = grid[nr][nc];
+                  if (cell === null) {
+                    emptyCells++;
+                  } else if (cell === word[k]) {
+                    intersections++;
+                  } else {
+                    valid = false;
+                    break;
+                  }
+                }
+
+                if (!valid || emptyCells === 0) continue;
+
+                // Avoid colocated/collinear overlap with identical direction
+                let badCollinear = false;
+                for (const p of placements) {
+                  if (p.dr === dr && p.dc === dc) {
+                    // Check if start/end points share exact line and overlap
+                    const pCells = new Set();
+                    for (let k = 0; k < p.word.length; k++) {
+                      pCells.add(`${p.r + k * p.dr},${p.c + k * p.dc}`);
+                    }
+                    let sharedSameDir = 0;
+                    for (let k = 0; k < len; k++) {
+                      if (pCells.has(`${r + k * dr},${c + k * dc}`)) sharedSameDir++;
+                    }
+                    if (sharedSameDir >= 2) {
+                      badCollinear = true;
+                      break;
+                    }
+                  }
+                }
+                if (badCollinear) continue;
+
+                const dirBalance = (dirCounts[dKey] === 0 ? 4 : 0) - dirCounts[dKey] * 0.5;
+                const score = intersections * 12 + dirBalance + rng() * 2;
+                candidates.push({ r, c, dr, dc, dKey, score });
+              }
+            }
+          }
+
+          if (candidates.length === 0) {
+            return null;
+          }
+
+          candidates.sort((a, b) => b.score - a.score);
+          const topSpan = Math.min(3, candidates.length);
+          const pick = candidates[Math.floor(rng() * topSpan)];
+
+          for (let k = 0; k < len; k++) {
+            grid[pick.r + k * pick.dr][pick.c + k * pick.dc] = word[k];
+          }
+          dirCounts[pick.dKey]++;
+          placements.push({
+            word,
+            r: pick.r,
+            c: pick.c,
+            dr: pick.dr,
+            dc: pick.dc
+          });
+        }
+
+        return { grid, placements };
+      }
+
+      function buildLevelBoard(levelIndex) {
+        const levelDef = LEVELS[levelIndex];
+        if (!levelDef) throw new Error('Nível inválido: ' + levelIndex);
+
+        const rng = mulberry32((levelDef.id + 1) * 2654435761 + 98765);
+        const masks = computeCoinMasks(levelDef, rng);
+
+        if (levelDef.presetGrid && levelDef.presetPlacements) {
+          return {
+            id: levelDef.id,
+            theme: levelDef.t,
+            rows: levelDef.r,
+            cols: levelDef.c,
+            words: levelDef.w.slice(),
+            grid: levelDef.presetGrid.map(row => row.slice()),
+            placements: levelDef.presetPlacements.map(p => ({ ...p })),
+            masks
+          };
+        }
+
+        const allowedDirKeys = getDirectionsForLevel(levelDef.id);
+        const maxWordLen = Math.max(...levelDef.w.map(w => w.length));
+        let rows = Math.max(levelDef.r, maxWordLen);
+        let cols = Math.max(levelDef.c, maxWordLen);
+
+        let result = null;
+        for (let expand = 0; expand < 3 && !result; expand++) {
+          for (let attempt = 0; attempt < 25; attempt++) {
+            const attemptRng = mulberry32((levelDef.id + 1) * 2654435761 + attempt * 7919 + expand * 104729);
+            const orderedWords = levelDef.w.slice().sort((a, b) => {
+              if (b.length !== a.length) return b.length - a.length;
+              return attemptRng() - 0.5;
+            });
+            // Slightly shuffle equal-tier words on later retries
+            if (attempt > 6) {
+              for (let i = orderedWords.length - 1; i > 0; i--) {
+                const j = Math.floor(attemptRng() * (i + 1));
+                [orderedWords[i], orderedWords[j]] = [orderedWords[j], orderedWords[i]];
+              }
+            }
+            result = tryPlaceWords(orderedWords, rows, cols, allowedDirKeys, attemptRng);
+            if (result) break;
+          }
+          if (!result) {
+            rows++;
+            cols++;
+          }
+        }
+
+        if (!result) {
+          throw new Error('Falha ao gerar grade para nível ' + levelDef.id);
+        }
+
+        // Fill nulls with weighted Portuguese alphabet
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (result.grid[r][c] === null) {
+              result.grid[r][c] = PT_FILLER[Math.floor(rng() * PT_FILLER.length)];
+            }
+          }
+        }
+
+        // Keep placements ordered consistently with levelDef.w
+        const placementMap = new Map(result.placements.map(p => [p.word, p]));
+        const orderedPlacements = levelDef.w.map(w => placementMap.get(w));
+
+        return {
+          id: levelDef.id,
+          theme: levelDef.t,
+          rows,
+          cols,
+          words: levelDef.w.slice(),
+          grid: result.grid,
+          placements: orderedPlacements,
+          masks
+        };
+      }
+
+      /* ================================================================
+         2B. ECONOMY & PROFICIENCY RULES
+         ================================================================ */
+      const PROFICIENCY_GATES = [
+        { minLevel: 190, requiredStars: 480 },
+        { minLevel: 170, requiredStars: 414 },
+        { minLevel: 135, requiredStars: 312 },
+        { minLevel: 100, requiredStars: 222 },
+        { minLevel: 71, requiredStars: 150 },
+        { minLevel: 36, requiredStars: 66 },
+        { minLevel: 11, requiredStars: 18 }
+      ];
+
+      function getTierStep(levelId) {
+        if (levelId <= 10) return 0;
+        if (levelId <= 35) return 1;
+        if (levelId <= 70) return 2;
+        if (levelId <= 120) return 3;
+        if (levelId <= 165) return 4;
+        return 5;
+      }
+
+      function getPowerupCosts(b) {
+        const tierStep = getTierStep(b.id);
+        return {
+          zap: 45 + tierStep * 10 + (b.zapUses || 0) * 25,
+          wand: 65 + tierStep * 15 + (b.wandUses || 0) * 35,
+          lens: 100 + tierStep * 20 + (b.lensUses || 0) * 45
+        };
+      }
+
+      function computeRunStars(mistakes, hintsUsed) {
+        if (hintsUsed === 0 && mistakes === 0) return 3;
+        if ((hintsUsed === 0 && mistakes <= 2) || (hintsUsed === 1 && mistakes === 0)) return 2;
+        return 1;
+      }
+
+      function getTotalEarnedStarsFor(levelStars) {
+        let sum = 0;
+        if (!levelStars) return 0;
+        for (const k of Object.keys(levelStars)) {
+          sum += Number(levelStars[k]) || 0;
+        }
+        return sum;
+      }
+
+      function checkLevelAccessFor(levelId, completedLevels, levelStars) {
+        if (levelId <= 0) return { unlocked: true };
+        if (!completedLevels.includes(levelId - 1)) {
+          return {
+            unlocked: false,
+            reason: 'seq',
+            msg: `Conclua o Nível ${levelId - 1} primeiro.`
+          };
+        }
+        const totalStars = getTotalEarnedStarsFor(levelStars);
+        for (const gate of PROFICIENCY_GATES) {
+          if (levelId >= gate.minLevel && totalStars < gate.requiredStars) {
+            return {
+              unlocked: false,
+              reason: 'stars',
+              required: gate.requiredStars,
+              currentStars: totalStars,
+              msg: `Exige ${gate.requiredStars}★ de proficiência acumulada (atual: ${totalStars}★). Melhore níveis anteriores para 3★!`
+            };
+          }
+        }
+        return { unlocked: true };
+      }
+
+      function getNextMilestoneFor(levelStars) {
+        const totalStars = getTotalEarnedStarsFor(levelStars);
+        const ascending = PROFICIENCY_GATES.slice().sort((a, b) => a.minLevel - b.minLevel);
+        for (const gate of ascending) {
+          if (totalStars < gate.requiredStars) {
+            return { ...gate, currentStars: totalStars };
+          }
+        }
+        return null;
+      }
+
+      function getHighestUnlockedLevelFor(completedLevels, levelStars) {
+        let highest = 0;
+        for (let i = 1; i <= MAX_LEVEL; i++) {
+          if (checkLevelAccessFor(i, completedLevels, levelStars).unlocked) {
+            highest = i;
+          } else {
+            break;
+          }
+        }
+        return highest;
+      }
+
+      function calculateResolutionOutcome({ levelId, mistakes, hintsUsed, pendingMaskCoins, prevStars, prevCoins, prevStreak }) {
+        const runStars = computeRunStars(mistakes, hintsUsed);
+        const baseCoins =
+          levelId === 0 ? 10 :
+          levelId <= 10 ? 12 :
+          levelId <= 35 ? 16 :
+          levelId <= 70 ? 20 :
+          levelId <= 120 ? 26 :
+          levelId <= 165 ? 30 :
+          levelId < MAX_LEVEL ? 34 : 80;
+        const rawPot = baseCoins + (pendingMaskCoins || 0);
+
+        let isNewMastery = false;
+        let nextStreak = prevStreak || 0;
+        let masteryBonus = 0;
+        let streakBonus = 0;
+        let calculatedPayout = 0;
+
+        if (runStars === 3) {
+          isNewMastery = (prevStars || 0) < 3;
+          if (isNewMastery) nextStreak += 1;
+          masteryBonus =
+            levelId <= 10 ? 6 :
+            levelId <= 35 ? 10 :
+            levelId <= 70 ? 14 :
+            levelId <= 120 ? 18 :
+            levelId <= 165 ? 22 : 26;
+          streakBonus = isNewMastery ? Math.min(nextStreak * 3, 15) : 0;
+          calculatedPayout = rawPot + masteryBonus + streakBonus;
+        } else if (runStars === 2) {
+          if ((prevStars || 0) < 3) nextStreak = 0;
+          calculatedPayout = Math.round(rawPot * 0.7);
+        } else {
+          if ((prevStars || 0) < 3) nextStreak = 0;
+          calculatedPayout = Math.max(3, Math.round(rawPot * 0.35));
+        }
+
+        const safePrevCoins = prevCoins || 0;
+        const safePrevStars = prevStars || 0;
+        const netCoins = Math.max(0, calculatedPayout - safePrevCoins);
+        const netStars = Math.max(0, runStars - safePrevStars);
+
+        return {
+          runStars,
+          netStars,
+          baseCoins,
+          rawPot,
+          calculatedPayout,
+          prevCoins: safePrevCoins,
+          netCoins,
+          nextStreak,
+          masteryBonus,
+          streakBonus,
+          isNewMastery
+        };
+      }
+
+      /* ================================================================
+         3. PROCEDURAL WEBAUDIO SOUND EFFECTS
+         ================================================================ */
+      const SoundFX = (() => {
+        let ctx = null;
+        const scale = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 587.33, 659.25, 783.99];
+
+        function ensureCtx() {
+          if (!state.soundEnabled) return null;
+          if (!ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
+            ctx = new AudioCtx();
+          }
+          if (ctx.state === 'suspended') {
+            ctx.resume().catch(() => {});
+          }
+          return ctx;
+        }
+
+        function tone(freq, duration, type = 'sine', gainVal = 0.08, delay = 0) {
+          const ac = ensureCtx();
+          if (!ac) return;
+          const now = ac.currentTime + delay;
+          const osc = ac.createOscillator();
+          const gain = ac.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.exponentialRampToValueAtTime(gainVal, now + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+          osc.connect(gain);
+          gain.connect(ac.destination);
+          osc.start(now);
+          osc.stop(now + duration + 0.02);
+        }
+
+        return {
+          step(index) {
+            const note = scale[Math.min(index, scale.length - 1)];
+            tone(note, 0.09, 'triangle', 0.06);
+          },
+          found() {
+            tone(523.25, 0.14, 'triangle', 0.09, 0);
+            tone(659.25, 0.16, 'triangle', 0.09, 0.06);
+            tone(783.99, 0.24, 'sine', 0.1, 0.12);
+          },
+          coin() {
+            tone(987.77, 0.09, 'sine', 0.08, 0);
+            tone(1318.51, 0.18, 'sine', 0.09, 0.07);
+          },
+          zap() {
+            tone(420, 0.08, 'sawtooth', 0.05, 0);
+            tone(220, 0.12, 'triangle', 0.07, 0.05);
+          },
+          wand() {
+            [587.33, 739.99, 880, 1174.66].forEach((f, idx) => tone(f, 0.14, 'sine', 0.06, idx * 0.045));
+          },
+          rotate() {
+            tone(330, 0.08, 'sine', 0.05, 0);
+            tone(440, 0.1, 'sine', 0.06, 0.05);
+          },
+          error() {
+            tone(190, 0.12, 'sine', 0.045, 0);
+          },
+          victory() {
+            const notes = [523.25, 659.25, 783.99, 1046.5];
+            notes.forEach((f, i) => tone(f, 0.24, 'triangle', 0.1, i * 0.09));
+          }
+        };
+      })();
+
+      /* ================================================================
+         4. GAME STATE & PERSISTENCE
+         ================================================================ */
+      const STORAGE_KEY = 'kaahoje_palavras_cruzadas_v2';
+
+      function createDefaultState() {
+        return {
+          currentLevel: 0,
+          completedLevels: [],
+          levelStars: {},
+          levelCoinsEarned: {},
+          coins: 25,
+          stars: 0,
+          streak: 0,
+          soundEnabled: true,
+          vibrateEnabled: true,
+          activeLevelState: null
+        };
+      }
+
+      let state = loadState();
+      let board = null;
+      let levelsFilter = 'all';
+      let cellMetrics = { width: 44, height: 44 };
+      let dragState = {
+        active: false,
+        pointerId: null,
+        startCell: null,
+        cells: [],
+        clickStartCell: null
+      };
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return createDefaultState();
+          const parsed = JSON.parse(raw);
+          const completed = Array.isArray(parsed.completedLevels) ? parsed.completedLevels : [];
+          const levelStars = parsed.levelStars && typeof parsed.levelStars === 'object' ? parsed.levelStars : {};
+          const levelCoinsEarned = parsed.levelCoinsEarned && typeof parsed.levelCoinsEarned === 'object' ? parsed.levelCoinsEarned : {};
+          let currentLevel = clampLevel(parsed.currentLevel ?? 0);
+          if (!checkLevelAccessFor(currentLevel, completed, levelStars).unlocked) {
+            currentLevel = getHighestUnlockedLevelFor(completed, levelStars);
+          }
+          return {
+            currentLevel,
+            completedLevels: completed,
+            levelStars,
+            levelCoinsEarned,
+            coins: typeof parsed.coins === 'number' ? Math.max(0, parsed.coins) : 25,
+            stars: typeof parsed.stars === 'number' ? Math.max(0, parsed.stars % 20) : 0,
+            streak: typeof parsed.streak === 'number' ? Math.max(0, parsed.streak) : 0,
+            soundEnabled: parsed.soundEnabled !== false,
+            vibrateEnabled: parsed.vibrateEnabled !== false,
+            activeLevelState: parsed.activeLevelState || null
+          };
+        } catch {
+          return createDefaultState();
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch {
+          // Ignore storage quota errors
+        }
+      }
+
+      function clampLevel(n) {
+        const val = Number(n);
+        if (!Number.isFinite(val)) return 0;
+        return Math.max(0, Math.min(MAX_LEVEL, Math.trunc(val)));
+      }
+
+      function getTotalEarnedStars() {
+        return getTotalEarnedStarsFor(state.levelStars);
+      }
+
+      function checkLevelAccess(levelId) {
+        return checkLevelAccessFor(levelId, state.completedLevels, state.levelStars);
+      }
+
+      function vibrate(ms) {
+        if (state.vibrateEnabled && navigator.vibrate) {
+          navigator.vibrate(ms);
+        }
+      }
+
+      /* ================================================================
+         5. DOM ELEMENTS
+         ================================================================ */
+      const elLevelBadge = document.getElementById('levelBadge');
+      const elCoinCount = document.getElementById('coinCount');
+      const elStarCount = document.getElementById('starCount');
+      const elRunGradeBadge = document.getElementById('runGradeBadge');
+      const elThemeTitle = document.getElementById('themeTitle');
+      const elWordBank = document.getElementById('wordBank');
+      const elGridCard = document.getElementById('gridCard');
+      const elBoardStage = document.getElementById('boardStage');
+      const elCapsuleSvg = document.getElementById('capsuleSvg');
+      const elLetterGrid = document.getElementById('letterGrid');
+      const elDragPreview = document.getElementById('dragPreview');
+      const elOnboardingTip = document.getElementById('onboardingTip');
+      const elToastContainer = document.getElementById('toastContainer');
+      const elZapBadge = document.getElementById('zapBadge');
+      const elWandBadge = document.getElementById('wandBadge');
+      const elLensBadge = document.getElementById('lensBadge');
+      const elBtnZap = document.getElementById('btnZap');
+      const elBtnWand = document.getElementById('btnWand');
+      const elBtnLens = document.getElementById('btnLens');
+      const elBtnRotate = document.getElementById('btnRotate');
+
+      /* ================================================================
+         6. LEVEL INITIALIZATION & BOARD ROTATION
+         ================================================================ */
+      function initLevel(levelIndex, forceFresh = false) {
+        const idx = clampLevel(levelIndex);
+        const access = checkLevelAccess(idx);
+        const targetIdx = access.unlocked
+          ? idx
+          : getHighestUnlockedLevelFor(state.completedLevels, state.levelStars);
+
+        state.currentLevel = targetIdx;
+        const freshBoard = buildLevelBoard(targetIdx);
+
+        const saved = state.activeLevelState;
+        if (!forceFresh && saved && saved.levelId === targetIdx && Array.isArray(saved.grid) && saved.grid.length > 0) {
+          board = {
+            id: targetIdx,
+            theme: freshBoard.theme,
+            rows: saved.rows,
+            cols: saved.cols,
+            words: freshBoard.words,
+            grid: saved.grid,
+            placements: saved.placements,
+            masks: saved.masks,
+            foundWords: saved.foundWords || [],
+            foundColors: saved.foundColors || {},
+            fadedCells: saved.fadedCells || [],
+            hintCells: saved.hintCells || [],
+            mistakes: Number(saved.mistakes) || 0,
+            zapUses: Number(saved.zapUses) || 0,
+            wandUses: Number(saved.wandUses) || 0,
+            lensUses: Number(saved.lensUses) || 0,
+            pendingMaskCoins: Number(saved.pendingMaskCoins) || 0
+          };
+        } else {
+          board = {
+            ...freshBoard,
+            foundWords: [],
+            foundColors: {},
+            fadedCells: [],
+            hintCells: [],
+            mistakes: 0,
+            zapUses: 0,
+            wandUses: 0,
+            lensUses: 0,
+            pendingMaskCoins: 0
+          };
+          syncActiveBoardToState();
+        }
+
+        dragState.active = false;
+        dragState.cells = [];
+        dragState.clickStartCell = null;
+
+        renderAll();
+      }
+
+      function syncActiveBoardToState() {
+        state.activeLevelState = {
+          levelId: board.id,
+          rows: board.rows,
+          cols: board.cols,
+          grid: board.grid,
+          placements: board.placements,
+          masks: board.masks,
+          foundWords: board.foundWords,
+          foundColors: board.foundColors,
+          fadedCells: board.fadedCells,
+          hintCells: board.hintCells,
+          mistakes: board.mistakes,
+          zapUses: board.zapUses,
+          wandUses: board.wandUses,
+          lensUses: board.lensUses,
+          pendingMaskCoins: board.pendingMaskCoins
+        };
+        saveState();
+      }
+
+      function rotateBoard90CW() {
+        const oldRows = board.rows;
+        const oldCols = board.cols;
+        const newRows = oldCols;
+        const newCols = oldRows;
+
+        const newGrid = Array.from({ length: newRows }, () => Array(newCols).fill(''));
+        for (let r = 0; r < oldRows; r++) {
+          for (let c = 0; c < oldCols; c++) {
+            newGrid[c][oldRows - 1 - r] = board.grid[r][c];
+          }
+        }
+
+        const rotCoord = (r, c) => [c, oldRows - 1 - r];
+        const rotDir = (dr, dc) => [dc, -dr];
+
+        board.placements = board.placements.map(p => {
+          const [nr, nc] = rotCoord(p.r, p.c);
+          const [ndr, ndc] = rotDir(p.dr, p.dc);
+          return { ...p, r: nr, c: nc, dr: ndr, dc: ndc };
+        });
+
+        board.fadedCells = board.fadedCells.map(key => {
+          const [r, c] = key.split(',').map(Number);
+          const [nr, nc] = rotCoord(r, c);
+          return `${nr},${nc}`;
+        });
+
+        board.hintCells = board.hintCells.map(key => {
+          const [r, c] = key.split(',').map(Number);
+          const [nr, nc] = rotCoord(r, c);
+          return `${nr},${nc}`;
+        });
+
+        board.rows = newRows;
+        board.cols = newCols;
+        board.grid = newGrid;
+        dragState.clickStartCell = null;
+
+        syncActiveBoardToState();
+      }
+
+      /* ================================================================
+         7. RENDERING
+         ================================================================ */
+      function renderAll() {
+        renderTopHud();
+        renderClueCard();
+        renderGridBoard();
+        renderPowerupBadges();
+        elOnboardingTip.style.display = (board.id === 0 && board.foundWords.length === 0) ? 'block' : 'none';
+      }
+
+      function getTotalHintsUsed(b = board) {
+        return (b.zapUses || 0) + (b.wandUses || 0) + (b.lensUses || 0);
+      }
+
+      function renderRunGradeBadge() {
+        const runStars = computeRunStars(board.mistakes || 0, getTotalHintsUsed(board));
+        const starsStr = '★'.repeat(runStars) + '☆'.repeat(3 - runStars);
+        const streakSuffix = (runStars === 3 && state.streak > 0) ? ` 🔥${state.streak}` : '';
+        elRunGradeBadge.textContent = starsStr + streakSuffix;
+        elRunGradeBadge.className = 'run-grade-badge' + (runStars < 3 ? ` grade-${runStars}` : '');
+      }
+
+      function renderTopHud() {
+        elLevelBadge.textContent = `Nível ${board.id}`;
+        elCoinCount.textContent = String(state.coins);
+        elStarCount.textContent = `${state.stars}/20`;
+        renderRunGradeBadge();
+      }
+
+      function renderClueCard() {
+        elThemeTitle.textContent = board.theme;
+        elWordBank.innerHTML = '';
+
+        for (const word of board.words) {
+          const span = document.createElement('span');
+          span.className = 'word-item';
+          const isFound = board.foundWords.includes(word);
+          const maskedIndices = board.masks[word] || [];
+
+          if (isFound) {
+            span.classList.add('found');
+            const bgColor = board.foundColors[word] || CAPSULE_PALETTE[0];
+            span.style.backgroundColor = bgColor;
+            span.textContent = word;
+          } else if (maskedIndices.length > 0) {
+            const maskSet = new Set(maskedIndices);
+            for (let i = 0; i < word.length; i++) {
+              if (maskSet.has(i)) {
+                const coin = document.createElement('span');
+                coin.className = 'inline-coin';
+                coin.setAttribute('aria-label', 'letra oculta');
+                span.appendChild(coin);
+              } else {
+                span.appendChild(document.createTextNode(word[i]));
+              }
+            }
+          } else {
+            span.textContent = word;
+          }
+
+          elWordBank.appendChild(span);
+        }
+      }
+
+      function layoutBoardDimensions() {
+        const shell = document.querySelector('.game-shell');
+        const topBar = document.querySelector('.top-bar');
+        const clueCard = document.querySelector('.clue-card');
+        const powerBar = document.querySelector('.powerups-bar');
+
+        const shellRect = shell.getBoundingClientRect();
+        const shellStyle = getComputedStyle(shell);
+        const padTop = parseFloat(shellStyle.paddingTop) || 10;
+        const padBottom = parseFloat(shellStyle.paddingBottom) || 12;
+        const padLeft = parseFloat(shellStyle.paddingLeft) || 14;
+        const padRight = parseFloat(shellStyle.paddingRight) || 14;
+        const gap = parseFloat(shellStyle.rowGap || shellStyle.gap) || 9;
+
+        const usedOtherH =
+          padTop +
+          padBottom +
+          topBar.getBoundingClientRect().height +
+          clueCard.getBoundingClientRect().height +
+          powerBar.getBoundingClientRect().height +
+          gap * 3;
+
+        // Leave tasteful turquoise water breathing room at the bottom on tall phones
+        const waterReserve = shellRect.height > 740 ? 28 : 4;
+        const maxCardH = Math.max(220, shellRect.height - usedOtherH - waterReserve);
+        const maxCardW = Math.max(220, shellRect.width - padLeft - padRight);
+
+        const availW = maxCardW - 24;
+        const availH = maxCardH - 28;
+
+        const maxCellW = Math.floor(availW / board.cols);
+        const maxCellH = Math.floor(availH / board.rows);
+        const finalCellW = Math.max(24, Math.min(maxCellW, maxCellH, 76));
+
+        // Gently elongate cell height when vertical space permits (matches screenshot proportions)
+        const aspectLimit = board.rows > board.cols ? 1.24 : 1.16;
+        const finalCellH = Math.max(
+          finalCellW,
+          Math.min(maxCellH, Math.round(finalCellW * aspectLimit))
+        );
+
+        cellMetrics = { width: finalCellW, height: finalCellH };
+        const stageW = finalCellW * board.cols;
+        const stageH = finalCellH * board.rows;
+
+        elBoardStage.style.width = `${stageW}px`;
+        elBoardStage.style.height = `${stageH}px`;
+        elCapsuleSvg.setAttribute('viewBox', `0 0 ${stageW} ${stageH}`);
+
+        const fontSize = Math.round(Math.min(finalCellW, finalCellH) * 0.57);
+        elLetterGrid.style.fontSize = `${fontSize}px`;
+      }
+
+      function renderGridBoard() {
+        elLetterGrid.style.gridTemplateColumns = `repeat(${board.cols}, 1fr)`;
+        elLetterGrid.style.gridTemplateRows = `repeat(${board.rows}, 1fr)`;
+        elLetterGrid.innerHTML = '';
+
+        const fadedSet = new Set(board.fadedCells);
+        const hintSet = new Set(board.hintCells);
+
+        for (let r = 0; r < board.rows; r++) {
+          for (let c = 0; c < board.cols; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            cell.dataset.r = String(r);
+            cell.dataset.c = String(c);
+            cell.setAttribute('role', 'gridcell');
+            cell.textContent = board.grid[r][c];
+
+            const key = `${r},${c}`;
+            if (fadedSet.has(key)) cell.classList.add('faded');
+            if (hintSet.has(key)) cell.classList.add('hint-pulse');
+
+            elLetterGrid.appendChild(cell);
+          }
+        }
+
+        layoutBoardDimensions();
+        renderCapsules();
+      }
+
+      function cellCenter(r, c) {
+        return {
+          x: (c + 0.5) * cellMetrics.width,
+          y: (r + 0.5) * cellMetrics.height
+        };
+      }
+
+      function renderCapsules() {
+        elCapsuleSvg.innerHTML = '';
+        const strokeW = Math.round(Math.min(cellMetrics.width, cellMetrics.height) * 0.72);
+        const placementByWord = new Map(board.placements.map(p => [p.word, p]));
+
+        // Found word capsules
+        for (const word of board.foundWords) {
+          const p = placementByWord.get(word);
+          if (!p) continue;
+          const start = cellCenter(p.r, p.c);
+          const endR = p.r + (word.length - 1) * p.dr;
+          const endC = p.c + (word.length - 1) * p.dc;
+          const end = cellCenter(endR, endC);
+
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', start.x);
+          line.setAttribute('y1', start.y);
+          line.setAttribute('x2', end.x);
+          line.setAttribute('y2', end.y);
+          line.setAttribute('stroke', board.foundColors[word] || CAPSULE_PALETTE[0]);
+          line.setAttribute('stroke-width', strokeW);
+          line.setAttribute('stroke-linecap', 'round');
+          elCapsuleSvg.appendChild(line);
+        }
+
+        // Active selection capsule
+        if (dragState.cells.length > 0) {
+          const first = dragState.cells[0];
+          const last = dragState.cells[dragState.cells.length - 1];
+          const p1 = cellCenter(first.r, first.c);
+          const p2 = cellCenter(last.r, last.c);
+
+          const activeLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          activeLine.setAttribute('x1', p1.x);
+          activeLine.setAttribute('y1', p1.y);
+          activeLine.setAttribute('x2', p2.x);
+          activeLine.setAttribute('y2', p2.y);
+          activeLine.setAttribute('stroke', 'rgba(59, 130, 246, 0.48)');
+          activeLine.setAttribute('stroke-width', strokeW);
+          activeLine.setAttribute('stroke-linecap', 'round');
+          elCapsuleSvg.appendChild(activeLine);
+        }
+      }
+
+      function renderPowerupBadges() {
+        const costs = getPowerupCosts(board);
+        elZapBadge.className = 'powerup-badge coin-cost-badge';
+        elZapBadge.innerHTML = `<span class="mini-coin"></span><span>${costs.zap}</span>`;
+
+        elWandBadge.className = 'powerup-badge coin-cost-badge';
+        elWandBadge.innerHTML = `<span class="mini-coin"></span><span>${costs.wand}</span>`;
+
+        elLensBadge.className = 'powerup-badge coin-cost-badge';
+        elLensBadge.innerHTML = `<span class="mini-coin"></span><span>${costs.lens}</span>`;
+      }
+
+      /* ================================================================
+         8. 8-WAY ANGLE-SNAPPED POINTER SELECTION & CLICK FALLBACK
+         ================================================================ */
+      function getCellFromPoint(clientX, clientY) {
+        const rect = elBoardStage.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        const c = Math.floor(x / cellMetrics.width);
+        const r = Math.floor(y / cellMetrics.height);
+        if (r < 0 || r >= board.rows || c < 0 || c >= board.cols) return null;
+        return { r, c, relX: x, relY: y };
+      }
+
+      function computeSnappedPath(start, clientX, clientY) {
+        const rect = elBoardStage.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        const startCenter = cellCenter(start.r, start.c);
+        const dx = x - startCenter.x;
+        const dy = y - startCenter.y;
+
+        const minCell = Math.min(cellMetrics.width, cellMetrics.height);
+        if (Math.hypot(dx, dy) < minCell * 0.32) {
+          return [{ r: start.r, c: start.c }];
+        }
+
+        const angle = Math.atan2(dy, dx);
+        const octant = Math.round(angle / (Math.PI / 4));
+        const snappedAngle = octant * (Math.PI / 4);
+        const dr = Math.round(Math.sin(snappedAngle));
+        const dc = Math.round(Math.cos(snappedAngle));
+
+        const stepX = Math.abs(dx) / cellMetrics.width;
+        const stepY = Math.abs(dy) / cellMetrics.height;
+        const rawSteps = (dr !== 0 && dc !== 0)
+          ? Math.round((stepX + stepY) / 2)
+          : Math.round(Math.max(stepX, stepY));
+
+        const cells = [];
+        for (let k = 0; k <= rawSteps; k++) {
+          const nr = start.r + k * dr;
+          const nc = start.c + k * dc;
+          if (nr < 0 || nr >= board.rows || nc < 0 || nc >= board.cols) break;
+          cells.push({ r: nr, c: nc });
+        }
+        return cells;
+      }
+
+      function updateSelectionHighlights() {
+        const selectedKeys = new Set(dragState.cells.map(p => `${p.r},${p.c}`));
+        const allCells = elLetterGrid.children;
+        for (let i = 0; i < allCells.length; i++) {
+          const el = allCells[i];
+          const key = `${el.dataset.r},${el.dataset.c}`;
+          el.classList.toggle('selected', selectedKeys.has(key));
+        }
+
+        if (dragState.cells.length > 0) {
+          const text = dragState.cells.map(p => board.grid[p.r][p.c]).join('');
+          elDragPreview.textContent = text;
+          elDragPreview.classList.add('visible');
+        } else {
+          elDragPreview.classList.remove('visible');
+        }
+
+        renderCapsules();
+      }
+
+      function evaluateSelection(cells) {
+        if (!cells || cells.length < 2) return false;
+        const selectedStr = cells.map(p => board.grid[p.r][p.c]).join('');
+
+        // Match exact reading order against any unfound target word
+        const matchedWord = board.words.find(
+          w => w === selectedStr && !board.foundWords.includes(w)
+        );
+
+        if (!matchedWord) {
+          board.mistakes += 1;
+          SoundFX.error();
+          vibrate(14);
+          if (board.mistakes === 1) {
+            showToast('Palavra inválida! Maestria 3★ perdida neste nível.');
+          } else {
+            const penalty = 2 + getTierStep(board.id) * 2;
+            const deducted = Math.min(state.coins, penalty);
+            state.coins -= deducted;
+            if (deducted > 0) {
+              showToast(`Erro #${board.mistakes}: -${deducted} 🪙 por tentativa imprecisa!`);
+            } else {
+              showToast(`Erro #${board.mistakes}: precisão reduzida!`);
+            }
+          }
+          syncActiveBoardToState();
+          renderTopHud();
+          return false;
+        }
+
+        // Align placement with found coordinates so capsule fits exact user swipe
+        const start = cells[0];
+        const second = cells[1];
+        const dr = Math.sign(second.r - start.r);
+        const dc = Math.sign(second.c - start.c);
+        const pIndex = board.placements.findIndex(p => p.word === matchedWord);
+        if (pIndex >= 0) {
+          board.placements[pIndex] = { word: matchedWord, r: start.r, c: start.c, dr, dc };
+        }
+
+        const color = CAPSULE_PALETTE[board.foundWords.length % CAPSULE_PALETTE.length];
+        board.foundWords.push(matchedWord);
+        board.foundColors[matchedWord] = color;
+
+        // Clear any hint pulse belonging to matched cells
+        const matchedKeys = new Set(cells.map(p => `${p.r},${p.c}`));
+        board.hintCells = board.hintCells.filter(k => !matchedKeys.has(k));
+
+        // Accumulate masked-word coins until level resolution
+        const masked = board.masks[matchedWord] || [];
+        let maskBonus = 0;
+        if (masked.length > 0) {
+          maskBonus = masked.length * 3;
+          board.pendingMaskCoins = (board.pendingMaskCoins || 0) + maskBonus;
+          delete board.masks[matchedWord];
+        }
+
+        SoundFX.found();
+        vibrate(18);
+
+        if (maskBonus > 0) {
+          showToast(`+${maskBonus} 🪙 acumulados para a resolução!`, true);
+        }
+
+        syncActiveBoardToState();
+        renderAll();
+
+        // Bounce animation on found cells
+        for (const el of elLetterGrid.children) {
+          if (matchedKeys.has(`${el.dataset.r},${el.dataset.c}`)) {
+            el.classList.add('word-bounce');
+          }
+        }
+
+        // Check level completion
+        if (board.foundWords.length === board.words.length) {
+          setTimeout(handleLevelVictory, 420);
+        }
+        return true;
+      }
+
+      elBoardStage.addEventListener('pointerdown', (e) => {
+        const hit = getCellFromPoint(e.clientX, e.clientY);
+        if (!hit) return;
+
+        elBoardStage.setPointerCapture(e.pointerId);
+        dragState.active = true;
+        dragState.pointerId = e.pointerId;
+        dragState.startCell = { r: hit.r, c: hit.c };
+        dragState.cells = [{ r: hit.r, c: hit.c }];
+        SoundFX.step(0);
+        updateSelectionHighlights();
+      });
+
+      elBoardStage.addEventListener('pointermove', (e) => {
+        if (!dragState.active || e.pointerId !== dragState.pointerId) return;
+        const prevLen = dragState.cells.length;
+        const nextCells = computeSnappedPath(dragState.startCell, e.clientX, e.clientY);
+
+        const changed =
+          nextCells.length !== prevLen ||
+          nextCells.some((c, i) => c.r !== dragState.cells[i].r || c.c !== dragState.cells[i].c);
+
+        if (changed) {
+          dragState.cells = nextCells;
+          if (nextCells.length > prevLen) {
+            SoundFX.step(nextCells.length - 1);
+          }
+          updateSelectionHighlights();
+        }
+      });
+
+      function finishPointerDrag(e) {
+        if (!dragState.active || e.pointerId !== dragState.pointerId) return;
+        const cells = dragState.cells.slice();
+        dragState.active = false;
+        dragState.pointerId = null;
+
+        // Click-start -> click-end fallback for desktop accessibility
+        if (cells.length === 1) {
+          const clicked = cells[0];
+          if (!dragState.clickStartCell) {
+            dragState.clickStartCell = clicked;
+            dragState.cells = [clicked];
+            updateSelectionHighlights();
+            return;
+          } else {
+            const first = dragState.clickStartCell;
+            dragState.clickStartCell = null;
+            if (first.r === clicked.r && first.c === clicked.c) {
+              dragState.cells = [];
+              updateSelectionHighlights();
+              return;
+            }
+            const dr = clicked.r - first.r;
+            const dc = clicked.c - first.c;
+            const aligned = dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc);
+            if (aligned) {
+              const stepR = Math.sign(dr);
+              const stepC = Math.sign(dc);
+              const steps = Math.max(Math.abs(dr), Math.abs(dc));
+              const lineCells = [];
+              for (let k = 0; k <= steps; k++) {
+                lineCells.push({ r: first.r + k * stepR, c: first.c + k * stepC });
+              }
+              dragState.cells = [];
+              updateSelectionHighlights();
+              evaluateSelection(lineCells);
+              return;
+            } else {
+              dragState.clickStartCell = clicked;
+              dragState.cells = [clicked];
+              updateSelectionHighlights();
+              return;
+            }
+          }
+        }
+
+        dragState.clickStartCell = null;
+        dragState.cells = [];
+        updateSelectionHighlights();
+        evaluateSelection(cells);
+      }
+
+      elBoardStage.addEventListener('pointerup', finishPointerDrag);
+      elBoardStage.addEventListener('pointercancel', finishPointerDrag);
+
+      /* ================================================================
+         9. POWER-UPS (RELÂMPAGO, VARINHA, LUPA, GIRAR)
+         ================================================================ */
+      function getUnfoundPlacements() {
+        return board.placements.filter(p => !board.foundWords.includes(p.word));
+      }
+
+      function spendHintCoins(cost, label) {
+        if (state.coins < cost) {
+          showToast(`Precisa de ${cost} 🪙 para usar ${label}. Resolva níveis para ganhar moedas!`);
+          openEconomyModal();
+          return false;
+        }
+        state.coins -= cost;
+        return true;
+      }
+
+      // 1. Relâmpago: fade up to 5 filler cells
+      elBtnZap.addEventListener('click', () => {
+        const unfound = getUnfoundPlacements();
+        if (unfound.length === 0) return;
+
+        const usedKeys = new Set();
+        for (const p of board.placements) {
+          for (let k = 0; k < p.word.length; k++) {
+            usedKeys.add(`${p.r + k * p.dr},${p.c + k * p.dc}`);
+          }
+        }
+
+        const fadedSet = new Set(board.fadedCells);
+        const candidates = [];
+        for (let r = 0; r < board.rows; r++) {
+          for (let c = 0; c < board.cols; c++) {
+            const key = `${r},${c}`;
+            if (!usedKeys.has(key) && !fadedSet.has(key)) {
+              candidates.push(key);
+            }
+          }
+        }
+
+        if (candidates.length === 0) {
+          showToast('Todas as letras extras já foram esmaecidas!');
+          return;
+        }
+
+        const costs = getPowerupCosts(board);
+        if (!spendHintCoins(costs.zap, 'o Relâmpago')) return;
+
+        board.zapUses += 1;
+        for (let i = candidates.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+        }
+        const picked = candidates.slice(0, 5);
+        board.fadedCells.push(...picked);
+
+        SoundFX.zap();
+        vibrate(15);
+        syncActiveBoardToState();
+        renderAll();
+        showToast(`${picked.length} letras extras esmaecidas! ⚡`);
+      });
+
+      // 2. Varinha Mágica: reveal coin-masked letters (or start/end on grid)
+      elBtnWand.addEventListener('click', () => {
+        const unfound = getUnfoundPlacements();
+        if (unfound.length === 0) return;
+
+        const costs = getPowerupCosts(board);
+        if (!spendHintCoins(costs.wand, 'a Varinha')) return;
+
+        board.wandUses += 1;
+        const maskedWord = board.words.find(
+          w => !board.foundWords.includes(w) && board.masks[w] && board.masks[w].length > 0
+        );
+
+        if (maskedWord) {
+          delete board.masks[maskedWord];
+          SoundFX.wand();
+          vibrate(15);
+          syncActiveBoardToState();
+          renderAll();
+          showToast(`Palavra "${maskedWord}" revelada no painel! ✨`);
+        } else {
+          const target = unfound[0];
+          const startKey = `${target.r},${target.c}`;
+          const endKey = `${target.r + (target.word.length - 1) * target.dr},${target.c + (target.word.length - 1) * target.dc}`;
+          if (!board.hintCells.includes(startKey)) board.hintCells.push(startKey);
+          if (!board.hintCells.includes(endKey)) board.hintCells.push(endKey);
+          SoundFX.wand();
+          vibrate(15);
+          syncActiveBoardToState();
+          renderAll();
+          showToast(`Pontas de "${target.word}" destacadas! ✨`);
+        }
+      });
+
+      // 3. Lupa: highlight first 2 letters of an unfound word
+      elBtnLens.addEventListener('click', () => {
+        const unfound = getUnfoundPlacements();
+        if (unfound.length === 0) return;
+
+        const costs = getPowerupCosts(board);
+        if (!spendHintCoins(costs.lens, 'a Lupa')) return;
+
+        board.lensUses += 1;
+        const hintSet = new Set(board.hintCells);
+        const target = unfound.find(p => !hintSet.has(`${p.r},${p.c}`)) || unfound[0];
+
+        const firstKey = `${target.r},${target.c}`;
+        const secondKey = `${target.r + target.dr},${target.c + target.dc}`;
+        if (!board.hintCells.includes(firstKey)) board.hintCells.push(firstKey);
+        if (!board.hintCells.includes(secondKey)) board.hintCells.push(secondKey);
+
+        SoundFX.wand();
+        vibrate(18);
+        syncActiveBoardToState();
+        renderAll();
+        showToast(`Início de "${target.word}" destacado! 🔍`);
+      });
+
+      // 4. Girar: rotate board 90° clockwise
+      elBtnRotate.addEventListener('click', () => {
+        SoundFX.rotate();
+        vibrate(10);
+        elBoardStage.classList.add('rotating');
+        setTimeout(() => {
+          rotateBoard90CW();
+          elBoardStage.classList.remove('rotating');
+          renderGridBoard();
+        }, 160);
+      });
+
+      /* ================================================================
+         10. VICTORY, CONFETTI, TOASTS & MODALS
+         ================================================================ */
+      function handleLevelVictory() {
+        const hintsUsed = getTotalHintsUsed(board);
+        const prevStars = state.levelStars[board.id] || 0;
+        const prevCoins = state.levelCoinsEarned[board.id] || 0;
+
+        const outcome = calculateResolutionOutcome({
+          levelId: board.id,
+          mistakes: board.mistakes || 0,
+          hintsUsed,
+          pendingMaskCoins: board.pendingMaskCoins || 0,
+          prevStars,
+          prevCoins,
+          prevStreak: state.streak
+        });
+
+        state.streak = outcome.nextStreak;
+        state.coins += outcome.netCoins;
+        state.levelCoinsEarned[board.id] = Math.max(prevCoins, outcome.calculatedPayout);
+        state.levelStars[board.id] = Math.max(prevStars, outcome.runStars);
+
+        if (!state.completedLevels.includes(board.id)) {
+          state.completedLevels.push(board.id);
+        }
+
+        let chestCoins = 0;
+        state.stars += outcome.netStars;
+        if (state.stars >= 20) {
+          const chests = Math.floor(state.stars / 20);
+          state.stars = state.stars % 20;
+          chestCoins = chests * 40;
+          state.coins += chestCoins;
+        }
+
+        board.pendingMaskCoins = 0;
+        SoundFX.victory();
+        if (outcome.netCoins > 0 || chestCoins > 0) SoundFX.coin();
+        vibrate([25, 40, 35]);
+        syncActiveBoardToState();
+        renderTopHud();
+
+        const isFinal = board.id === MAX_LEVEL;
+        document.getElementById('victoryStars').textContent =
+          '⭐'.repeat(outcome.runStars) + '☆'.repeat(3 - outcome.runStars);
+        document.getElementById('victoryModalTitle').textContent = isFinal
+          ? `Mestre dos ${TOTAL_LEVELS} Níveis!`
+          : `Nível ${board.id} Concluído!`;
+        document.getElementById('victoryHeading').textContent = isFinal
+          ? 'Parabéns, Campeão! 🏆'
+          : `${board.theme}`;
+
+        const gradeText = outcome.runStars === 3
+          ? 'Maestria perfeita!'
+          : outcome.runStars === 2
+            ? 'Bom domínio!'
+            : 'Nível resolvido — aprimore para 3★!';
+        document.getElementById('victorySub').textContent = isFinal
+          ? `Você completou toda a jornada com ${getTotalEarnedStars()}★ de proficiência!`
+          : `${gradeText} (${state.completedLevels.length}/${TOTAL_LEVELS} níveis • ${getTotalEarnedStars()}★)`;
+        document.getElementById('victoryMetrics').textContent =
+          `Erros: ${board.mistakes || 0} • Dicas: ${hintsUsed}${state.streak > 0 ? ` • Sequência 3★: 🔥${state.streak}` : ''}`;
+
+        const coinsBox = document.getElementById('victoryCoinsBox');
+        const totalGained = outcome.netCoins + chestCoins;
+        if (totalGained > 0) {
+          coinsBox.innerHTML = `🪙 +<span id="victoryCoins">${totalGained}</span> moedas${chestCoins > 0 ? ' (inclui Baú ★)' : ''}`;
+        } else {
+          coinsBox.textContent = 'Recompensa máxima já obtida';
+        }
+        document.getElementById('victoryWords').textContent = String(board.words.length);
+
+        const btnNext = document.getElementById('btnNextLevel');
+        if (isFinal) {
+          btnNext.style.display = 'none';
+        } else {
+          btnNext.style.display = 'block';
+          const nextAccess = checkLevelAccess(board.id + 1);
+          if (nextAccess.unlocked) {
+            btnNext.dataset.mode = 'next';
+            btnNext.textContent = 'Próximo Nível ▶';
+          } else {
+            btnNext.dataset.mode = 'improve';
+            btnNext.textContent = `Aprimorar Níveis (< 3★) • Meta ${nextAccess.required}★`;
+          }
+        }
+
+        openModal('victoryModal');
+        launchConfetti();
+      }
+
+      function showToast(msg, isGold = false) {
+        const div = document.createElement('div');
+        div.className = 'toast-pill' + (isGold ? ' gold' : '');
+        div.textContent = msg;
+        elToastContainer.appendChild(div);
+        setTimeout(() => {
+          div.style.opacity = '0';
+          div.style.transition = 'opacity 0.25s ease';
+          setTimeout(() => div.remove(), 260);
+        }, 2300);
+      }
+
+      function launchConfetti() {
+        const canvas = document.getElementById('confettiCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const colors = ['#facc15', '#4ade80', '#38bdf8', '#f472b6', '#a78bfa', '#fb923c'];
+        const pieces = Array.from({ length: 75 }, () => ({
+          x: Math.random() * canvas.width,
+          y: -20 - Math.random() * 140,
+          w: 7 + Math.random() * 6,
+          h: 10 + Math.random() * 8,
+          vx: (Math.random() - 0.5) * 4,
+          vy: 3 + Math.random() * 4.5,
+          rot: Math.random() * Math.PI * 2,
+          vr: (Math.random() - 0.5) * 0.2,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        }));
+
+        let frame = 0;
+        function tick() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (const p of pieces) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vr;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          }
+          frame++;
+          if (frame < 120) {
+            requestAnimationFrame(tick);
+          } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+        requestAnimationFrame(tick);
+      }
+
+      /* ================================================================
+         11. MODAL WIRING (MAPA 0..200, SETTINGS, ECONOMIA, VITÓRIA)
+         ================================================================ */
+      function openModal(id) {
+        document.getElementById(id).classList.add('open');
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).classList.remove('open');
+      }
+
+      function renderLevelsMap() {
+        const grid = document.getElementById('levelsGrid');
+        const completedSet = new Set(state.completedLevels);
+        const totalStars = getTotalEarnedStars();
+        const nextGate = getNextMilestoneFor(state.levelStars);
+
+        document.getElementById('levelsProgressText').textContent =
+          `${state.completedLevels.length} de ${TOTAL_LEVELS} concluídos`;
+        document.getElementById('levelsCurrentText').textContent =
+          `Atual: Nível ${state.currentLevel}`;
+        document.getElementById('levelsMilestoneText').textContent = nextGate
+          ? `Proficiência Total: ${totalStars}★ • Próxima meta: ${nextGate.requiredStars}★ para Nível ${nextGate.minLevel}`
+          : `Proficiência Total: ${totalStars}★ / ${MAX_TOTAL_STARS}★ • Todas as metas desbloqueadas!`;
+
+        document.querySelectorAll('.quick-chip').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.filter === levelsFilter);
+        });
+
+        grid.innerHTML = '';
+        const frag = document.createDocumentFragment();
+        const visibleLevels = LEVELS.filter(lvl => {
+          if (levelsFilter === 'improve') {
+            return completedSet.has(lvl.id) && (state.levelStars[lvl.id] || 0) < 3;
+          }
+          return true;
+        });
+
+        if (visibleLevels.length === 0) {
+          const emptyMsg = document.createElement('div');
+          emptyMsg.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 14px; font-weight: 800; color: #64748b; font-size: 0.86rem;';
+          emptyMsg.textContent = 'Todos os níveis concluídos já estão com 3★ de maestria!';
+          frag.appendChild(emptyMsg);
+        }
+
+        for (const lvl of visibleLevels) {
+          const access = checkLevelAccess(lvl.id);
+          const starsEarned = state.levelStars[lvl.id] || 0;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'level-tile';
+          if (!access.unlocked) btn.classList.add('locked');
+          else if (completedSet.has(lvl.id)) btn.classList.add('completed');
+          if (lvl.id === state.currentLevel) btn.classList.add('current');
+          btn.title = access.unlocked ? `Nível ${lvl.id}: ${lvl.t}` : access.msg;
+          btn.dataset.levelId = String(lvl.id);
+
+          const num = document.createElement('span');
+          num.className = 'level-tile-num';
+          num.textContent = String(lvl.id);
+
+          const tag = document.createElement('span');
+          tag.className = 'level-tile-tag';
+          tag.textContent = lvl.t.split(' ')[0];
+
+          const starsEl = document.createElement('span');
+          starsEl.className = 'level-tile-stars';
+          if (!access.unlocked) {
+            starsEl.textContent = '🔒';
+          } else if (starsEarned > 0) {
+            starsEl.textContent = '★'.repeat(starsEarned) + '☆'.repeat(3 - starsEarned);
+          } else {
+            starsEl.textContent = '☆☆☆';
+          }
+
+          btn.appendChild(num);
+          btn.appendChild(tag);
+          btn.appendChild(starsEl);
+
+          if (completedSet.has(lvl.id)) {
+            const check = document.createElement('span');
+            check.className = 'level-tile-check';
+            check.textContent = '✓';
+            btn.appendChild(check);
+          }
+
+          btn.addEventListener('click', () => {
+            if (!access.unlocked) {
+              showToast(access.msg);
+              SoundFX.error();
+              return;
+            }
+            closeModal('levelsModal');
+            initLevel(lvl.id, true);
+          });
+
+          frag.appendChild(btn);
+        }
+        grid.appendChild(frag);
+      }
+
+      function openEconomyModal() {
+        const totalStars = getTotalEarnedStars();
+        const nextGate = getNextMilestoneFor(state.levelStars);
+        document.getElementById('economySummary').innerHTML = `
+          <div>Estrelas de Proficiência: <strong>${totalStars}★ / ${MAX_TOTAL_STARS}★</strong> • Sequência 3★: <strong>🔥 ${state.streak}</strong></div>
+          <div>${nextGate ? `Próximo Marco: <strong>${nextGate.requiredStars}★</strong> para desbloquear o Nível ${nextGate.minLevel}` : 'Todas as metas de proficiência foram atingidas!'}</div>
+        `;
+        openModal('coinsModal');
+      }
+
+      document.getElementById('btnLevels').addEventListener('click', () => {
+        levelsFilter = 'all';
+        renderLevelsMap();
+        openModal('levelsModal');
+      });
+
+      elLevelBadge.addEventListener('click', () => {
+        levelsFilter = 'all';
+        renderLevelsMap();
+        openModal('levelsModal');
+      });
+
+      document.querySelectorAll('.quick-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const action = btn.dataset.filter;
+          if (action === 'current') {
+            const highest = getHighestUnlockedLevelFor(state.completedLevels, state.levelStars);
+            closeModal('levelsModal');
+            initLevel(highest, true);
+            return;
+          }
+          levelsFilter = action || 'all';
+          renderLevelsMap();
+        });
+      });
+
+      document.getElementById('btnSettings').addEventListener('click', () => {
+        document.getElementById('toggleSound').classList.toggle('on', state.soundEnabled);
+        document.getElementById('toggleVibrate').classList.toggle('on', state.vibrateEnabled);
+        openModal('settingsModal');
+      });
+
+      document.getElementById('toggleSound').addEventListener('click', (e) => {
+        state.soundEnabled = !state.soundEnabled;
+        e.currentTarget.classList.toggle('on', state.soundEnabled);
+        e.currentTarget.setAttribute('aria-pressed', String(state.soundEnabled));
+        saveState();
+      });
+
+      document.getElementById('toggleVibrate').addEventListener('click', (e) => {
+        state.vibrateEnabled = !state.vibrateEnabled;
+        e.currentTarget.classList.toggle('on', state.vibrateEnabled);
+        e.currentTarget.setAttribute('aria-pressed', String(state.vibrateEnabled));
+        saveState();
+      });
+
+      document.getElementById('btnRestartLevel').addEventListener('click', () => {
+        closeModal('settingsModal');
+        initLevel(state.currentLevel, true);
+        showToast(`Nível ${state.currentLevel} reiniciado`);
+      });
+
+      document.getElementById('btnResetProgress').addEventListener('click', () => {
+        if (confirm('Deseja apagar todo o progresso e voltar ao Nível 0?')) {
+          state = createDefaultState();
+          saveState();
+          closeModal('settingsModal');
+          initLevel(0, true);
+          showToast('Progresso reiniciado');
+        }
+      });
+
+      document.getElementById('btnAddCoins').addEventListener('click', () => {
+        openEconomyModal();
+      });
+
+      document.getElementById('btnGoImprove').addEventListener('click', () => {
+        closeModal('coinsModal');
+        levelsFilter = 'improve';
+        renderLevelsMap();
+        openModal('levelsModal');
+      });
+
+      document.getElementById('btnNextLevel').addEventListener('click', (e) => {
+        closeModal('victoryModal');
+        if (e.currentTarget.dataset.mode === 'improve') {
+          levelsFilter = 'improve';
+          renderLevelsMap();
+          openModal('levelsModal');
+          return;
+        }
+        initLevel(Math.min(MAX_LEVEL, board.id + 1), true);
+      });
+
+      document.getElementById('btnReplayLevel').addEventListener('click', () => {
+        closeModal('victoryModal');
+        initLevel(board.id, true);
+      });
+
+      document.querySelectorAll('[data-close]').forEach(btn => {
+        btn.addEventListener('click', () => closeModal(btn.dataset.close));
+      });
+
+      document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+        backdrop.addEventListener('click', (e) => {
+          if (e.target === backdrop) backdrop.classList.remove('open');
+        });
+      });
+
+      /* ================================================================
+         12. RESPONSIVE RESIZE & BOOTSTRAP
+         ================================================================ */
+      const resizeObserver = new ResizeObserver(() => {
+        if (board) {
+          layoutBoardDimensions();
+          renderCapsules();
+        }
+      });
+      resizeObserver.observe(elGridCard);
+
+      initLevel(state.currentLevel);
+    })();
+  </script>
+</body>
+</html>

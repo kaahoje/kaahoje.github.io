@@ -1,0 +1,2870 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Sudoku Mestre — Níveis 0 a 200</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-btn-top: #58a6ff;
+      --blue-btn-mid: #256fe3;
+      --blue-btn-bot: #154bb3;
+      --blue-btn-edge: #0c337d;
+      --green-btn-top: #74f03c;
+      --green-btn-bot: #29a812;
+      --green-btn-edge: #186b07;
+      --card-shadow: 0 10px 28px rgba(7, 36, 82, 0.24);
+      --text-ink: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Nunito', 'Montserrat', system-ui, -apple-system, sans-serif;
+      background: #0d9488;
+      color: var(--text-ink);
+    }
+
+    /* Full-bleed Coastal Sapphire Lagoon Backdrop */
+    .scenic-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: linear-gradient(180deg,
+        #7ad4fa 0%,
+        #bcebfb 18%,
+        #e4f6ff 34%,
+        #48c7d4 68%,
+        #128da3 84%,
+        #085f78 100%
+      );
+    }
+
+    .scenic-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .viewport-wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100dvh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .game-shell {
+      width: 100%;
+      max-width: 450px;
+      height: 100dvh;
+      padding: max(8px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      position: relative;
+    }
+
+    /* ================= TOP HUD BAR ================= */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+
+    .top-left-btns {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-3d-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.55);
+      background: linear-gradient(180deg, var(--blue-btn-top) 0%, var(--blue-btn-mid) 58%, var(--blue-btn-bot) 100%);
+      box-shadow:
+        0 4px 0 var(--blue-btn-edge),
+        0 6px 12px rgba(8, 35, 85, 0.35),
+        inset 0 2px 3px rgba(255, 255, 255, 0.65);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      position: relative;
+      padding: 0;
+    }
+
+    .btn-3d-circle:active {
+      transform: translateY(3px);
+      box-shadow:
+        0 1px 0 var(--blue-btn-edge),
+        0 2px 6px rgba(8, 35, 85, 0.35),
+        inset 0 2px 3px rgba(255, 255, 255, 0.45);
+    }
+
+    .level-pill {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(6px);
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      border-radius: 999px;
+      padding: 6px 18px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.94rem;
+      color: #1e293b;
+      box-shadow: 0 3px 10px rgba(15, 45, 95, 0.16);
+      cursor: pointer;
+      transition: transform 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .level-pill:active { transform: scale(0.96); }
+
+    .coin-capsule {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      height: 34px;
+      padding: 0 34px 0 36px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #327ef2 0%, #1752c4 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      box-shadow:
+        0 3px 0 #0c3582,
+        0 5px 12px rgba(8, 35, 85, 0.3);
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.98rem;
+      letter-spacing: 0.01em;
+      min-width: 106px;
+      justify-content: center;
+    }
+
+    .coin-badge-icon {
+      position: absolute;
+      left: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #fff69b 0%, #ffd538 35%, #f59e0b 82%, #c97302 100%);
+      border: 2px solid #fff3b0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.32), inset 0 -2px 3px rgba(161, 88, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .coin-badge-icon::after {
+      content: '';
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(217, 119, 6, 0.65);
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.7);
+    }
+
+    .btn-add-coins {
+      position: absolute;
+      right: -3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid #d9ffbd;
+      background: linear-gradient(180deg, var(--green-btn-top) 0%, var(--green-btn-bot) 100%);
+      box-shadow: 0 3px 0 var(--green-btn-edge), 0 4px 8px rgba(0, 0, 0, 0.28);
+      color: #fff;
+      font-size: 1.35rem;
+      font-weight: 900;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .btn-add-coins:active {
+      transform: translateY(calc(-50% + 2px));
+      box-shadow: 0 1px 0 var(--green-btn-edge);
+    }
+
+    /* ================= HEADER & STATUS CARD ================= */
+    .clue-card {
+      position: relative;
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: var(--card-shadow);
+      flex-shrink: 0;
+    }
+
+    .clue-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 33px;
+      padding: 5px 92px 5px 96px;
+      background: linear-gradient(180deg, #3c8aff 0%, #1c5bd2 55%, #1246b5 100%);
+      border-radius: 14px 14px 0 0;
+      border-bottom: 2px solid #0e3794;
+      box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.4);
+    }
+
+    .star-progress {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      background: rgba(7, 22, 62, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 2px 10px 2px 26px;
+      height: 22px;
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+    }
+
+    .star-icon-3d {
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-52%);
+      width: 34px;
+      height: 34px;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+      pointer-events: none;
+    }
+
+    .theme-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: clamp(0.8rem, 3.3vw, 0.96rem);
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      text-shadow: 0 1px 2px rgba(0, 20, 70, 0.45);
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    .run-grade-badge {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(7, 22, 62, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      padding: 2px 8px;
+      height: 22px;
+      color: #fde047;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.72rem;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+
+    .run-grade-badge.grade-2 { color: #93c5fd; }
+    .run-grade-badge.grade-1 { color: #fca5a5; }
+
+    .status-strip {
+      padding: 6px 12px 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 2px 9px;
+      white-space: nowrap;
+    }
+
+    .status-chip.gold {
+      background: #fef9c3;
+      border-color: #fde047;
+      color: #854d0e;
+    }
+
+    /* ================= CENTRAL 9x9 SUDOKU GRID CARD ================= */
+    .grid-card {
+      position: relative;
+      flex: 0 1 auto;
+      min-height: 0;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: var(--card-shadow);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .board-stage {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sudoku-grid {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      grid-template-rows: repeat(9, 1fr);
+      border: 2.5px solid #1e293b;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .s-cell {
+      position: relative;
+      border-right: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      line-height: 1;
+      background: #ffffff;
+      transition: background-color 0.12s ease;
+    }
+
+    .s-cell.box-right { border-right: 2px solid #1e293b; }
+    .s-cell.box-bottom { border-bottom: 2px solid #1e293b; }
+    .s-cell.no-right { border-right: none; }
+    .s-cell.no-bottom { border-bottom: none; }
+
+    .s-cell.peer { background: #f1f5f9; }
+    .s-cell.same-num { background: #dbeafe; }
+    .s-cell.selected {
+      background: #bae6fd;
+      box-shadow: inset 0 0 0 2px #0284c7;
+    }
+
+    .s-cell.given { color: #0f172a; }
+    .s-cell.solved { color: #1d4ed8; }
+
+    .s-cell.hint-pulse {
+      background: #fef9c3;
+      box-shadow: inset 0 0 0 2.5px #f59e0b;
+      animation: hintPulse 1.1s ease-in-out infinite;
+    }
+
+    .s-cell.error-flash {
+      background: #fee2e2;
+      color: #dc2626;
+      animation: cellShake 0.28s ease-in-out;
+    }
+
+    .seal-coin {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff48f 0%, #ffd234 45%, #f59e0b 90%);
+      border: 1px solid #b45309;
+      pointer-events: none;
+    }
+
+    .notes-grid {
+      width: 100%;
+      height: 100%;
+      padding: 2px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      pointer-events: none;
+    }
+
+    .note-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.44em;
+      color: #475569;
+      line-height: 1;
+    }
+
+    .onboarding-tip {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.88);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 20;
+      white-space: nowrap;
+      animation: floatGentle 2.2s ease-in-out infinite;
+    }
+
+    /* ================= KEYPAD & NOTES CONTROLS ================= */
+    .keypad-section {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(6px);
+      border-radius: 15px;
+      padding: 7px 8px;
+      box-shadow: 0 6px 18px rgba(7, 36, 82, 0.18);
+    }
+
+    .keypad-tools {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .tool-pill {
+      flex: 1;
+      border: 1.5px solid #cbd5e1;
+      background: #f8fafc;
+      color: #1e293b;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.74rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .tool-pill.notes-active {
+      background: linear-gradient(180deg, #3885f6 0%, #1752c7 100%);
+      border-color: #1246b5;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(23, 82, 199, 0.35);
+    }
+
+    .digit-row {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    .digit-btn {
+      position: relative;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
+      box-shadow: 0 3px 0 #93c5fd;
+      padding: 6px 2px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease;
+    }
+
+    .digit-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #93c5fd;
+    }
+
+    .digit-btn.digit-complete {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      box-shadow: none;
+      opacity: 0.55;
+    }
+
+    .digit-main {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: #1d4ed8;
+      line-height: 1;
+    }
+
+    .digit-btn.digit-complete .digit-main { color: #64748b; }
+
+    .digit-rem {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.58rem;
+      color: #64748b;
+      margin-top: 2px;
+      line-height: 1;
+    }
+
+    /* ================= BOTTOM 4 POWER-UP BUTTONS ================= */
+    .powerups-bar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 2px 2px 10px;
+      flex-shrink: 0;
+    }
+
+    .powerup-btn {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.58);
+      background: linear-gradient(180deg, #54a2ff 0%, #246ce0 58%, #154ab2 100%);
+      box-shadow:
+        0 4px 0 #0c337d,
+        0 7px 14px rgba(5, 30, 72, 0.4),
+        inset 0 2px 3px rgba(255, 255, 255, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      padding: 0;
+    }
+
+    .powerup-btn:active {
+      transform: translateY(3px);
+      box-shadow:
+        0 1px 0 #0c337d,
+        0 3px 8px rgba(5, 30, 72, 0.4),
+        inset 0 2px 3px rgba(255, 255, 255, 0.5);
+    }
+
+    .powerup-badge {
+      position: absolute;
+      bottom: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-width: 28px;
+      height: 19px;
+      padding: 0 7px 0 4px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #2d79ed 0%, #154aad 100%);
+      color: #ffffff;
+      border: 1.5px solid #bfdbfe;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.72rem;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .mini-coin {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff48f 0%, #ffd234 45%, #f59e0b 90%);
+      border: 1px solid #b45309;
+      flex-shrink: 0;
+    }
+
+    /* ================= TOASTS & MODALS ================= */
+    .toast-container {
+      position: fixed;
+      top: 66px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .toast-pill {
+      background: rgba(15, 23, 42, 0.92);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.84rem;
+      padding: 7px 15px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+      animation: toastSlide 0.24s ease-out;
+      white-space: nowrap;
+    }
+
+    .toast-pill.gold {
+      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+      border-color: #fef08a;
+      color: #ffffff;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 20, 52, 0.62);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.18s ease-out;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 390px;
+      max-height: 86dvh;
+      background: #ffffff;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 18px 46px rgba(4, 18, 46, 0.48);
+      display: flex;
+      flex-direction: column;
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      animation: popScale 0.24s cubic-bezier(0.22, 1.3, 0.36, 1);
+    }
+
+    .modal-header {
+      background: linear-gradient(180deg, #3c8aff 0%, #1854c8 100%);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      border-bottom: 3px solid #0e3894;
+    }
+
+    .modal-header h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 255, 255, 0.55);
+      background: rgba(10, 30, 80, 0.35);
+      color: #ffffff;
+      font-size: 1.15rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-body {
+      padding: 14px 16px 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .level-summary-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: #1e40af;
+    }
+
+    .level-milestone-bar {
+      background: #fefce8;
+      border: 1px solid #fde047;
+      border-radius: 10px;
+      padding: 7px 11px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #854d0e;
+      text-align: center;
+    }
+
+    .level-quick-jumps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .quick-chip {
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #1e293b;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .quick-chip:hover,
+    .quick-chip.active {
+      background: #dbeafe;
+      border-color: #3b82f6;
+      color: #1d4ed8;
+    }
+
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .level-tile {
+      position: relative;
+      min-width: 0;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      background: #f8fafc;
+      padding: 7px 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s ease, border-color 0.15s ease;
+    }
+
+    .level-tile:active { transform: scale(0.95); }
+
+    .level-tile.completed {
+      background: linear-gradient(180deg, #dcfce7 0%, #bbf7d0 100%);
+      border-color: #22c55e;
+      color: #14532d;
+    }
+
+    .level-tile.current {
+      background: linear-gradient(180deg, #fef08a 0%, #fde047 100%);
+      border-color: #eab308;
+      box-shadow: 0 3px 10px rgba(234, 179, 8, 0.35);
+      color: #713f12;
+    }
+
+    .level-tile.locked {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #64748b;
+      opacity: 0.85;
+    }
+
+    .level-tile-num {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 0.96rem;
+      line-height: 1.1;
+    }
+
+    .level-tile-tag {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: #64748b;
+      margin-top: 2px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .level-tile.completed .level-tile-tag { color: #15803d; }
+
+    .level-tile-stars {
+      font-size: 0.64rem;
+      line-height: 1;
+      margin-top: 2px;
+      color: #eab308;
+      letter-spacing: 1px;
+    }
+
+    .level-tile.locked .level-tile-stars { color: #64748b; }
+
+    .level-tile-check {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: #16a34a;
+      color: #ffffff;
+      font-size: 0.65rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1.5px solid #ffffff;
+    }
+
+    .economy-summary {
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #1e3a8a;
+    }
+
+    .economy-rules {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .economy-rule-row {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 11px;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #334155;
+      line-height: 1.35;
+    }
+
+    .economy-rule-row strong { color: #0f172a; }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      font-weight: 800;
+      font-size: 0.92rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      border-radius: 999px;
+      background: #cbd5e1;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .toggle-switch.on { background: #22c55e; }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
+    }
+
+    .toggle-switch.on::after { transform: translateX(22px); }
+
+    .btn-primary-3d {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #ffffff;
+      background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+      box-shadow: 0 4px 0 #14532d;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .btn-primary-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #14532d;
+    }
+
+    .btn-blue-3d {
+      background: linear-gradient(180deg, #4f9cff 0%, #1d5ed6 100%);
+      box-shadow: 0 4px 0 #0e3894;
+    }
+
+    .btn-blue-3d:active { box-shadow: 0 1px 0 #0e3894; }
+
+    .btn-danger-outline {
+      width: 100%;
+      border: 2px solid #fca5a5;
+      background: #fef2f2;
+      color: #b91c1c;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .victory-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      padding: 4px 0 2px;
+    }
+
+    .victory-stars {
+      font-size: 2.3rem;
+      letter-spacing: 6px;
+      filter: drop-shadow(0 3px 5px rgba(245, 158, 11, 0.4));
+    }
+
+    .victory-title {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      font-size: 1.28rem;
+      color: #0f172a;
+    }
+
+    .victory-sub {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .reward-box {
+      width: 100%;
+      background: linear-gradient(180deg, #fefce8 0%, #fef9c3 100%);
+      border: 2px solid #fde047;
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      font-weight: 800;
+      color: #854d0e;
+    }
+
+    .confetti-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 95;
+    }
+
+    @media (max-height: 700px) {
+      .game-shell { gap: 5px; padding-top: 6px; padding-bottom: 6px; }
+      .btn-3d-circle { width: 36px; height: 36px; }
+      .powerup-btn { width: 46px; height: 46px; }
+      .powerups-bar { padding-bottom: 6px; gap: 10px; }
+      .digit-btn { padding: 4px 2px 3px; }
+      .digit-main { font-size: 0.96rem; }
+    }
+
+    @keyframes popScale {
+      0% { transform: scale(0.84); opacity: 0; }
+      70% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes hintPulse {
+      0%, 100% { box-shadow: inset 0 0 0 2px #f59e0b; }
+      50% { box-shadow: inset 0 0 0 3.5px #d97706; }
+    }
+
+    @keyframes cellShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-3px); }
+      75% { transform: translateX(3px); }
+    }
+
+    @keyframes toastSlide {
+      from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes floatGentle {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-4px); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Scenic Coastal Sapphire Backdrop -->
+  <div class="scenic-bg" aria-hidden="true">
+    <svg class="scenic-svg" viewBox="0 0 430 900" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#6ac9f7"/>
+          <stop offset="55%" stop-color="#bfeaff"/>
+          <stop offset="100%" stop-color="#eaf8ff"/>
+        </linearGradient>
+        <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#48c7d4"/>
+          <stop offset="35%" stop-color="#1ca2b8"/>
+          <stop offset="72%" stop-color="#0f7e9c"/>
+          <stop offset="100%" stop-color="#085672"/>
+        </linearGradient>
+        <linearGradient id="rockLeft" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#9e8769"/>
+          <stop offset="60%" stop-color="#766047"/>
+          <stop offset="100%" stop-color="#4e3f2d"/>
+        </linearGradient>
+        <linearGradient id="rockRight" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#a89070"/>
+          <stop offset="65%" stop-color="#7b654a"/>
+          <stop offset="100%" stop-color="#4c3d2c"/>
+        </linearGradient>
+      </defs>
+
+      <rect x="0" y="0" width="430" height="580" fill="url(#skyGrad)"/>
+      <ellipse cx="215" cy="95" rx="220" ry="70" fill="#ffffff" opacity="0.38"/>
+      <ellipse cx="90" cy="145" rx="110" ry="30" fill="#ffffff" opacity="0.32"/>
+      <ellipse cx="340" cy="135" rx="120" ry="32" fill="#ffffff" opacity="0.28"/>
+
+      <rect x="0" y="540" width="430" height="360" fill="url(#waterGrad)"/>
+      <path d="M88,542 Q122,508 158,542 Z" fill="#4f9468" opacity="0.58"/>
+      <path d="M270,542 Q308,514 344,542 Z" fill="#45885e" opacity="0.52"/>
+      <rect x="0" y="538" width="430" height="4" fill="#c7f9f2" opacity="0.55"/>
+
+      <!-- Left Coastal Cliff & Pine Foliage -->
+      <path d="M0,95 L56,142 L68,238 L55,342 L72,468 L58,595 L122,684 L0,704 Z" fill="url(#rockLeft)"/>
+      <path d="M0,115 Q38,125 46,162 Q64,194 42,226 Q60,262 36,296 Q54,335 30,374 Q48,418 26,458 Q46,502 22,542 L0,565 Z" fill="#1d4f12"/>
+      <path d="M0,132 C34,136 52,168 38,198 C58,216 54,254 32,272 C50,298 46,336 26,356 L0,536 Z" fill="#2f7418"/>
+      <path d="M-5,222 Q26,204 54,218 Q28,226 -2,235 Z" fill="#6bc43d"/>
+      <path d="M-4,344 Q28,325 54,340 Q26,348 -2,356 Z" fill="#70ca42"/>
+
+      <!-- Right Coastal Cliff & Pine Foliage -->
+      <path d="M430,88 L370,138 L356,242 L372,350 L358,478 L374,598 L308,682 L430,702 Z" fill="url(#rockRight)"/>
+      <path d="M430,108 Q390,120 382,158 Q364,192 388,224 Q368,260 392,296 Q374,335 398,374 Q380,418 402,458 Q382,502 406,542 L430,565 Z" fill="#1d4f12"/>
+      <path d="M430,126 C394,132 376,164 390,196 C370,214 374,252 396,270 C378,296 382,334 402,354 L430,534 Z" fill="#2f7418"/>
+      <path d="M435,216 Q402,198 374,212 Q400,220 432,229 Z" fill="#6bc43d"/>
+      <path d="M434,340 Q400,322 374,336 Q402,344 432,352 Z" fill="#70ca42"/>
+
+      <!-- Sapphire Lagoon Reflections -->
+      <ellipse cx="215" cy="735" rx="190" ry="26" fill="#99f6e4" opacity="0.22"/>
+      <ellipse cx="145" cy="790" rx="125" ry="14" fill="#ccfbf1" opacity="0.26"/>
+      <ellipse cx="295" cy="825" rx="135" ry="16" fill="#99f6e4" opacity="0.23"/>
+      <path d="M45,712 Q130,702 215,715 T385,710" stroke="#ffffff" stroke-width="2.2" fill="none" opacity="0.28"/>
+      <path d="M25,765 Q125,754 220,768 T410,760" stroke="#ffffff" stroke-width="2.6" fill="none" opacity="0.24"/>
+      <path d="M40,830 Q150,818 245,832 T395,826" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.22"/>
+    </svg>
+  </div>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+  <canvas id="confettiCanvas" class="confetti-layer"></canvas>
+
+  <div class="viewport-wrap">
+    <main class="game-shell">
+      <!-- Top HUD Bar -->
+      <header class="top-bar">
+        <div class="top-left-btns">
+          <button id="btnLevels" class="btn-3d-circle" type="button" title="Mapa de Níveis (0 a 200)" aria-label="Selecionar nível">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <button id="btnSettings" class="btn-3d-circle" type="button" title="Configurações" aria-label="Configurações">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+              <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.31-.07.63-.07.94s.02.63.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+            </svg>
+          </button>
+        </div>
+
+        <button id="levelBadge" class="level-pill" type="button" title="Escolher nível">Nível 0</button>
+
+        <div class="coin-capsule" aria-label="Moedas">
+          <span class="coin-badge-icon" aria-hidden="true"></span>
+          <span id="coinCount">25</span>
+          <button id="btnAddCoins" class="btn-add-coins" type="button" title="Economia e regras de proficiência" aria-label="Economia e proficiência">+</button>
+        </div>
+      </header>
+
+      <!-- Header & Status Card -->
+      <section class="clue-card" aria-label="Desafio e status do nível">
+        <div class="clue-header">
+          <div class="star-progress" title="Baú de Proficiência (a cada 20 estrelas ganhas você recebe +40 moedas)">
+            <svg class="star-icon-3d" viewBox="0 0 40 40">
+              <defs>
+                <linearGradient id="starGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#fff59d"/>
+                  <stop offset="45%" stop-color="#ffca28"/>
+                  <stop offset="100%" stop-color="#f59e0b"/>
+                </linearGradient>
+              </defs>
+              <path d="M20 3.5c1 0 1.9.6 2.3 1.5l3.7 7.6 8.4 1.2c1 .1 1.8.8 2.1 1.8.3.9 0 2-.7 2.6l-6.1 5.9 1.4 8.3c.2 1-.2 2-1.1 2.6-.8.6-1.9.7-2.8.2L20 31.3l-7.5 3.9c-.9.5-2 .4-2.8-.2-.8-.6-1.2-1.6-1.1-2.6l1.4-8.3-6.1-5.9c-.7-.7-1-1.7-.7-2.6.3-1 1.1-1.7 2.1-1.8l8.4-1.2 3.7-7.6c.4-.9 1.3-1.5 2.3-1.5z" fill="url(#starGrad)" stroke="#d97706" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            <span id="starCount">0/20</span>
+          </div>
+          <h1 id="themeTitle" class="theme-title">TRILHA INICIAL</h1>
+          <div id="runGradeBadge" class="run-grade-badge" title="Proficiência atual neste nível">★★★</div>
+        </div>
+        <div class="status-strip">
+          <span class="status-chip">🔢 Vazias: <strong id="emptyCounter">14</strong></span>
+          <span class="status-chip">🎯 Erros: <strong id="mistakesCounter">0</strong></span>
+          <span class="status-chip gold">🪙 Selos: <strong id="bonusCounter">+0</strong></span>
+        </div>
+      </section>
+
+      <!-- Central 9x9 Sudoku Grid Card -->
+      <section id="gridCard" class="grid-card" aria-label="Grade Sudoku 9 por 9">
+        <div id="boardStage" class="board-stage">
+          <div id="sudokuGrid" class="sudoku-grid" role="grid"></div>
+        </div>
+        <div id="onboardingTip" class="onboarding-tip" style="display: none;">Toque numa casa vazia e escolha o dígito de 1 a 9!</div>
+      </section>
+
+      <!-- Keypad & Pencil Notes Bar -->
+      <section class="keypad-section" aria-label="Teclado numérico e rascunho">
+        <div class="keypad-tools">
+          <button id="btnToggleNotes" class="tool-pill" type="button" title="Alternar modo de anotações (tecla N)">✏️ Notas: OFF</button>
+          <button id="btnClearNotes" class="tool-pill" type="button" title="Limpar anotações da casa selecionada">⌫ Limpar Notas</button>
+        </div>
+        <div id="digitRow" class="digit-row"></div>
+      </section>
+
+      <!-- Bottom 4 Power-up Buttons -->
+      <footer class="powerups-bar" aria-label="Auxílios lógicos">
+        <!-- 1. Candidatos automáticos em até 6 casas -->
+        <button id="btnAutoNotes" class="powerup-btn" type="button" title="Preencher candidatos em até 6 casas vazias" aria-label="Candidatos automáticos">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+            <rect x="6" y="5" width="20" height="22" rx="3" fill="#ffffff" stroke="#1e3a8a" stroke-width="2"/>
+            <line x1="10" y1="11" x2="22" y2="11" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"/>
+            <line x1="10" y1="16" x2="22" y2="16" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"/>
+            <line x1="10" y1="21" x2="18" y2="21" stroke="#f59e0b" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+          <span id="notesBadge" class="powerup-badge"><span class="mini-coin"></span><span>40</span></span>
+        </button>
+
+        <!-- 2. Lupa Lógica (Destaca casa mais simples e anota candidatos) -->
+        <button id="btnLens" class="powerup-btn" type="button" title="Destacar casa lógica e seus candidatos" aria-label="Lupa lógica">
+          <svg width="30" height="30" viewBox="0 0 36 36">
+            <line x1="21.5" y1="21.5" x2="30" y2="30" stroke="#991b1b" stroke-width="5.5" stroke-linecap="round"/>
+            <line x1="21.5" y1="21.5" x2="29.5" y2="29.5" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="14.5" cy="14.5" r="8.5" fill="#bae6fd" stroke="#f59e0b" stroke-width="3.4"/>
+            <circle cx="14.5" cy="14.5" r="7.2" fill="none" stroke="#fef08a" stroke-width="1.2"/>
+            <path d="M10.5 11.5a5 5 0 0 1 6-1" stroke="#ffffff" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.85"/>
+          </svg>
+          <span id="lensBadge" class="powerup-badge"><span class="mini-coin"></span><span>60</span></span>
+        </button>
+
+        <!-- 3. Varinha (Revela dígito correto na casa selecionada ou vazia) -->
+        <button id="btnWand" class="powerup-btn" type="button" title="Revelar o número de uma casa vazia" aria-label="Varinha mágica">
+          <svg width="30" height="30" viewBox="0 0 36 36">
+            <defs>
+              <linearGradient id="wandStar" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fff59d"/>
+                <stop offset="55%" stop-color="#ffd22e"/>
+                <stop offset="100%" stop-color="#f59e0b"/>
+              </linearGradient>
+            </defs>
+            <path d="M19 19 L29.5 29.5" stroke="#5b21b6" stroke-width="5.5" stroke-linecap="round"/>
+            <path d="M19 19 L29.5 29.5" stroke="#8b5cf6" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M18.5 18.5 L21.5 21.5" stroke="#fbbf24" stroke-width="5.8" stroke-linecap="round"/>
+            <path d="M14 4.5l2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L14 4.5z" fill="url(#wandStar)" stroke="#b45309" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          <span id="wandBadge" class="powerup-badge"><span class="mini-coin"></span><span>95</span></span>
+        </button>
+
+        <!-- 4. Raio Duplo (Preenche até 2 casas vazias) -->
+        <button id="btnZap" class="powerup-btn" type="button" title="Preencher até 2 casas vazias" aria-label="Raio duplo">
+          <svg width="28" height="28" viewBox="0 0 32 32">
+            <defs>
+              <linearGradient id="boltGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fff59d"/>
+                <stop offset="50%" stop-color="#ffd52e"/>
+                <stop offset="100%" stop-color="#f59e0b"/>
+              </linearGradient>
+            </defs>
+            <path d="M18.5 3L8 17.5h7.2L13.5 29 24 14.5h-7.2L18.5 3z" fill="url(#boltGrad)" stroke="#b45309" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+          <span id="zapBadge" class="powerup-badge"><span class="mini-coin"></span><span>130</span></span>
+        </button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- MODAL: Mapa de Níveis (0 a 200) -->
+  <div id="levelsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="levelsModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="levelsModalTitle">Mapa de Níveis (0 a 200)</h2>
+        <button class="modal-close" type="button" data-close="levelsModal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="level-summary-bar">
+          <span id="levelsProgressText">0 de 201 concluídos</span>
+          <span id="levelsCurrentText">Atual: Nível 0</span>
+        </div>
+        <div id="levelsMilestoneText" class="level-milestone-bar">Proficiência Total: 0★</div>
+        <div class="level-quick-jumps">
+          <button class="quick-chip active" type="button" data-filter="all">Todos (0–200)</button>
+          <button class="quick-chip" type="button" data-filter="improve">Aprimorar (&lt; 3★)</button>
+          <button class="quick-chip" type="button" data-filter="current">Ir ao Atual</button>
+        </div>
+        <div id="levelsGrid" class="levels-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Configurações -->
+  <div id="settingsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="settingsModalTitle">Configurações</h2>
+        <button class="modal-close" type="button" data-close="settingsModal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-row">
+          <span>Efeitos Sonoros</span>
+          <button id="toggleSound" class="toggle-switch on" type="button" aria-pressed="true"></button>
+        </div>
+        <div class="setting-row">
+          <span>Vibração ao Tocar</span>
+          <button id="toggleVibrate" class="toggle-switch on" type="button" aria-pressed="true"></button>
+        </div>
+        <button id="btnRestartLevel" class="btn-primary-3d btn-blue-3d" type="button">Reiniciar Nível Atual</button>
+        <button id="btnResetProgress" class="btn-danger-outline" type="button">Resetar Todo o Progresso</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Economia & Proficiência -->
+  <div id="coinsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="coinsModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="coinsModalTitle">Economia &amp; Proficiência</h2>
+        <button class="modal-close" type="button" data-close="coinsModal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="economySummary" class="economy-summary"></div>
+        <div class="economy-rules">
+          <div class="economy-rule-row"><strong>⭐⭐⭐ Maestria (0 erros e 0 auxílios):</strong> 100% da recompensa + selos 🪙 + bônus de maestria e sequência + 3★.</div>
+          <div class="economy-rule-row"><strong>⭐⭐ Proficiente (até 2 erros sem auxílios, ou 1 auxílio sem erros):</strong> 70% da recompensa + 2★.</div>
+          <div class="economy-rule-row"><strong>⭐ Básico (3+ erros ou 2+ auxílios):</strong> 35% da recompensa + 1★.</div>
+          <div class="economy-rule-row"><strong>Rigor de Precisão:</strong> o Modo Notas (✏️) é grátis; inserir dígito incorreto conta erro e, a partir do 2º erro, desconta moedas imediatamente. Rejogue níveis &lt; 3★ para ganhar o restante!</div>
+        </div>
+        <button id="btnGoImprove" class="btn-primary-3d btn-blue-3d" type="button">Ver Mapa de Níveis ★</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Nível Concluído -->
+  <div id="victoryModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="victoryModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="victoryModalTitle">Nível Concluído!</h2>
+        <button class="modal-close" type="button" data-close="victoryModal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="victory-hero">
+          <div id="victoryStars" class="victory-stars">⭐⭐⭐</div>
+          <div id="victoryHeading" class="victory-title">Excelente!</div>
+          <div id="victorySub" class="victory-sub">Você completou toda a grade com lógica pura.</div>
+          <div id="victoryMetrics" class="victory-sub" style="font-size: 0.8rem; color: #64748b;">Erros: 0 • Auxílios: 0</div>
+        </div>
+        <div class="reward-box">
+          <span id="victoryCoinsBox">🪙 +<span id="victoryCoins">19</span> moedas</span>
+          <span>🔢 <span id="victoryBlanks">0</span> casas</span>
+        </div>
+        <button id="btnNextLevel" class="btn-primary-3d" type="button">Próximo Nível ▶</button>
+        <button id="btnReplayLevel" class="btn-primary-3d btn-blue-3d" type="button">Jogar Novamente</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ================================================================
+         1. ALL 201 UNIQUE PORTUGUESE SUDOKU LEVELS (NÍVEL 0 ATÉ NÍVEL 200)
+         ================================================================ */
+      const LEVEL_TITLES = [
+        'TRILHA INICIAL', 'PASSO LÓGICO', 'MENTE CLARA', 'PRIMEIRO BLOCO', 'FOCO EXATO',
+        'OLHAR ATENTO', 'LINHA PURA', 'COLUNA EXATA', 'EQUILÍBRIO', 'DIAGONAL CLARA',
+        'BASE SÓLIDA', 'DEDUÇÃO DIRETA', 'RAIO LÓGICO', 'ORDEM NATURAL', 'SIMETRIA',
+        'PONTE NUMÉRICA', 'GRADE SERENA', 'NÚMERO ÚNICO', 'RITMO CONSTANTE', 'ENCAIXE PERFEITO',
+        'VISÃO ANALÍTICA', 'CAMPO ABERTO', 'CHAVE NUMÉRICA', 'PONTO DE APOIO', 'SINTONIA FINA',
+        'CRISTAL LÓGICO', 'ATALHO MENTAL', 'CRUZAMENTO PURO', 'ALINHAMENTO', 'ELIMINAÇÃO',
+        'CONEXÃO CERTA', 'ESCALA CRESCENTE', 'MARGEM SEGURA', 'RASTREIO FINO', 'ZONA DE FOCO',
+        'DOMÍNIO BÁSICO', 'NOVO HORIZONTE', 'DUPLA DEDUÇÃO', 'PAR EXCLUSIVO', 'BLOCO FECHADO',
+        'LINHA MESTRA', 'COLUNA CENTRAL', 'MALHA PRECISA', 'PADRÃO OCULTO', 'TRIO NUMÉRICO',
+        'ESPELHO LÓGICO', 'FLUXO CONTÍNUO', 'FILTRO MENTAL', 'CERCO PERFEITO', 'MAPA EXATO',
+        'MEIO CAMINHO', 'CÁLCULO PURO', 'VETOR LÓGICO', 'ROTA DIRETA', 'PONTO CEGO',
+        'EIXO PRINCIPAL', 'ÂNGULO AGUDO', 'PRISMA NUMÉRICO', 'SOMA MENTAL', 'LAÇO FECHADO',
+        'TRAMA PROFUNDA', 'NÓ DESATADO', 'BLOCO CRUZADO', 'SEQUÊNCIA EXATA', 'HARMONIA TOTAL',
+        'ESTRATÉGIA PURA', 'CORTE PRECISO', 'ANEL LÓGICO', 'GRADE FIRME', 'MIRA CERTEIRA',
+        'PORTA AVANÇADA', 'SALTOS DE GÊNIO', 'ENIGMA SUTIL', 'CADEIA SIMPLES', 'XADREZ NUMÉRICO',
+        'CAMADA OCULTA', 'PARES CRUZADOS', 'TRINCA FECHADA', 'QUADRANTE SUL', 'QUADRANTE NORTE',
+        'SOLUÇÃO ÚNICA', 'MENTE AGILIZADA', 'TRILHA SILENCIOSA', 'ALVO EXATO', 'PULSO LÓGICO',
+        'FIO CONDUTOR', 'TEIA NUMÉRICA', 'ESPIRAL CLARA', 'VÉRTICE VIVO', 'MATRIZ ESTÁVEL',
+        'TORRE DE NÚMEROS', 'PASSO AVANÇADO', 'DESAFIO DO BLOCO', 'LABIRINTO LIMPO', 'PONTO DECISIVO',
+        'ELOS DO PENSAR', 'RAIZ LÓGICA', 'CIRCUITO FECHADO', 'SELO DE PRECISÃO', 'PORTAL DOS CEM',
+        'DESAFIO CENTENÁRIO', 'SEGUNDA JORNADA', 'MÉTODO INFALÍVEL', 'BÚSSOLA MENTAL', 'FAROL LÓGICO',
+        'PONTO CARDIAL', 'ESTRADA REAL', 'DESVIO CERTO', 'TRINCA CRUZADA', 'PAR OCULTO',
+        'CANDIDATO ÚNICO', 'QUADRADO MÁGICO', 'LINHA INVISÍVEL', 'COLUNA OCULTA', 'MALHA FECHADA',
+        'BLOCO DE AÇO', 'CORRENTE EXATA', 'ELIMINADOR', 'SINAIS CLAROS', 'RASTREIO PURO',
+        'LÓGICA DE FERRO', 'ARQUITETO', 'ENGENHO PURO', 'ORDEM SUPREMA', 'PRECISÃO SUÍÇA',
+        'ENGRENAGEM', 'MECANISMO FINO', 'CHAVE MESTRA', 'CÓDIGO ABERTO', 'CIFRA NUMÉRICA',
+        'DECIFRADOR', 'HORIZONTE DUPLO', 'PLANO PERFEITO', 'REDE DE LÓGICA', 'ESTRATO PURO',
+        'NÍVEL DE ELITE', 'ALTA PRECISÃO', 'CADEIA LONGA', 'CICLO FORÇADO', 'ASA DE X',
+        'PEIXE LÓGICO', 'ESPADA CORTANTE', 'PONTE ESTREITA', 'CAMINHO ÁRDUO', 'VALE DOS GÊNIOS',
+        'PICOS DO SABER', 'MONTE LÓGICO', 'ROCHA SÓLIDA', 'DIAMANTE PURO', 'SAFIRA AZUL',
+        'ESMERALDA VIVA', 'RUBI ARDENTE', 'TOPÁZIO REAL', 'OPALA CLARA', 'JADE IMPERIAL',
+        'CRISTAL PURO', 'PRISMA DO SUL', 'AURORA LÓGICA', 'SOL DA MEIA-NOITE', 'ESTRELA GUIA',
+        'CONSTELAÇÃO', 'ÓRBITA EXATA', 'GALÁXIA DE FOCO', 'COSMOS MENTAL', 'GRAVIDADE ZERO',
+        'ALÉM DO LIMITE', 'PORTAL DO GÊNIO', 'SALA DOS SÁBIOS', 'TEMPLO DA RAZÃO', 'TORRE DO SÁBIO',
+        'GUARDIÃO LÓGICO', 'CAVALEIRO PURO', 'ESTRATEGA', 'GRÃO-MESTRE', 'ORÁCULO EXATO',
+        'LÂMINA LÓGICA', 'ESCUDO MENTAL', 'COROA DE FERRO', 'TRONO DA RAZÃO', 'CETRO NUMÉRICO',
+        'REINO DA LÓGICA', 'IMPÉRIO EXATO', 'ASCENSÃO FINAL', 'CAMINHO DO TOPO', ' ÚLTIMA FRONTEIRA',
+        'PROVA DE FOGO', 'DESAFIO EXTREMO', 'ALTA MAESTRIA', 'ENIGMA REAL', 'VÉRTICE SUPREMO',
+        'SÍNTESE PURA', 'CORAÇÃO DA GRADE', 'DOMÍNIO ABSOLUTO', 'MENTE INVICTA', 'RUMO AO ÁPICE',
+        'CHAVE ETERNA', 'MARCO FINAL', 'PÓDIO LÓGICO', 'GLÓRIA NUMÉRICA', 'COROA SUPREMA',
+        'MESTRE SUPREMO'
+      ].map(s => s.trim());
+
+      function blanksForLevel(id) {
+        if (id === 0) return 14;
+        if (id <= 10) return 20 + Math.floor(((id - 1) / 9) * 8);          // 20..28
+        if (id <= 35) return 30 + Math.floor(((id - 11) / 24) * 8);        // 30..38
+        if (id <= 70) return 40 + Math.floor(((id - 36) / 34) * 6);        // 40..46
+        if (id <= 135) return 47 + Math.floor(((id - 71) / 64) * 5);       // 47..52
+        if (id < 200) return 53 + Math.floor(((id - 136) / 63) * 3);       // 53..56
+        return 57;                                                          // 57 (24 givens)
+      }
+
+      const LEVELS = LEVEL_TITLES.map((title, id) => ({
+        id,
+        t: title,
+        blanks: blanksForLevel(id)
+      }));
+
+      const MAX_LEVEL = LEVELS.length - 1;       // 200
+      const TOTAL_LEVELS = LEVELS.length;        // 201
+      const MAX_TOTAL_STARS = TOTAL_LEVELS * 3;  // 603
+
+      /* ================================================================
+         2. UNIQUE-SOLUTION SUDOKU GENERATOR & BITMASK MRV SOLVER
+         ================================================================ */
+      const POPCOUNT = new Uint8Array(512);
+      for (let m = 1; m < 512; m++) {
+        POPCOUNT[m] = POPCOUNT[m >> 1] + (m & 1);
+      }
+
+      function mulberry32(seed) {
+        let a = seed >>> 0;
+        return function () {
+          a |= 0;
+          a = (a + 0x6D2B79F5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      function shuffleArr(arr, rng) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(rng() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      function countSolutions(grid, limit = 2) {
+        const rowMask = new Int32Array(9);
+        const colMask = new Int32Array(9);
+        const boxMask = new Int32Array(9);
+        let empties = 0;
+
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            const v = grid[r][c];
+            if (v === 0) {
+              empties++;
+            } else {
+              const bit = 1 << (v - 1);
+              const b = Math.floor(r / 3) * 3 + Math.floor(c / 3);
+              if ((rowMask[r] & bit) || (colMask[c] & bit) || (boxMask[b] & bit)) return 0;
+              rowMask[r] |= bit;
+              colMask[c] |= bit;
+              boxMask[b] |= bit;
+            }
+          }
+        }
+
+        let solutions = 0;
+        function dfs(rem) {
+          if (rem === 0) {
+            solutions++;
+            return;
+          }
+          let bestR = -1, bestC = -1, bestAvail = 0, bestCount = 10;
+          for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+              if (grid[r][c] !== 0) continue;
+              const b = Math.floor(r / 3) * 3 + Math.floor(c / 3);
+              const avail = 0x1FF & ~(rowMask[r] | colMask[c] | boxMask[b]);
+              if (avail === 0) return;
+              const cnt = POPCOUNT[avail];
+              if (cnt < bestCount) {
+                bestCount = cnt;
+                bestAvail = avail;
+                bestR = r;
+                bestC = c;
+                if (cnt === 1) break;
+              }
+            }
+            if (bestCount === 1) break;
+          }
+
+          const b = Math.floor(bestR / 3) * 3 + Math.floor(bestC / 3);
+          let avail = bestAvail;
+          while (avail !== 0) {
+            const bit = avail & -avail;
+            avail ^= bit;
+            const d = Math.clz32(bit) ^ 31; // 0..8
+            grid[bestR][bestC] = d + 1;
+            rowMask[bestR] |= bit;
+            colMask[bestC] |= bit;
+            boxMask[b] |= bit;
+
+            dfs(rem - 1);
+
+            grid[bestR][bestC] = 0;
+            rowMask[bestR] ^= bit;
+            colMask[bestC] ^= bit;
+            boxMask[b] ^= bit;
+
+            if (solutions >= limit) return;
+          }
+        }
+
+        dfs(empties);
+        return solutions;
+      }
+
+      function generateSolvedGrid(rng) {
+        const digits = shuffleArr([1, 2, 3, 4, 5, 6, 7, 8, 9], rng);
+        const rBands = shuffleArr([0, 1, 2], rng);
+        const cStacks = shuffleArr([0, 1, 2], rng);
+        const rowOrder = [];
+        const colOrder = [];
+        for (const b of rBands) {
+          for (const off of shuffleArr([0, 1, 2], rng)) rowOrder.push(b * 3 + off);
+        }
+        for (const s of cStacks) {
+          for (const off of shuffleArr([0, 1, 2], rng)) colOrder.push(s * 3 + off);
+        }
+
+        const transpose = rng() < 0.5;
+        const grid = Array.from({ length: 9 }, () => Array(9).fill(0));
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            const rr = rowOrder[r];
+            const cc = colOrder[c];
+            const val = digits[(rr * 3 + Math.floor(rr / 3) + cc) % 9];
+            if (transpose) grid[c][r] = val;
+            else grid[r][c] = val;
+          }
+        }
+        return grid;
+      }
+
+      function buildLevelBoard(levelIndex) {
+        const levelDef = LEVELS[levelIndex];
+        if (!levelDef) throw new Error('Nível inválido: ' + levelIndex);
+
+        const targetBlanks = levelDef.blanks;
+        let bestPuzzle = null;
+        let bestSolution = null;
+        let bestRemoved = -1;
+
+        for (let attempt = 0; attempt < 18; attempt++) {
+          const rng = mulberry32((levelDef.id + 1) * 2654435761 + 515151 + attempt * 104729);
+          const solution = generateSolvedGrid(rng);
+          const puzzle = solution.map(r => r.slice());
+          let removed = 0;
+
+          // 1. Symmetric 180-degree hole digging pass
+          const symPairs = [];
+          for (let idx = 0; idx <= 40; idx++) {
+            const r1 = Math.floor(idx / 9), c1 = idx % 9;
+            const r2 = 8 - r1, c2 = 8 - c1;
+            symPairs.push(idx === 40 ? [[r1, c1]] : [[r1, c1], [r2, c2]]);
+          }
+          shuffleArr(symPairs, rng);
+
+          for (const pair of symPairs) {
+            if (removed + pair.length > targetBlanks) continue;
+            const saved = pair.map(([r, c]) => [r, c, puzzle[r][c]]);
+            for (const [r, c] of pair) puzzle[r][c] = 0;
+            if (countSolutions(puzzle, 2) === 1) {
+              removed += pair.length;
+            } else {
+              for (const [r, c, v] of saved) puzzle[r][c] = v;
+            }
+            if (removed === targetBlanks) break;
+          }
+
+          // 2. Single-cell fill pass if symmetric pairs left shortfall
+          if (removed < targetBlanks) {
+            const singles = [];
+            for (let r = 0; r < 9; r++) {
+              for (let c = 0; c < 9; c++) {
+                if (puzzle[r][c] !== 0) singles.push([r, c]);
+              }
+            }
+            shuffleArr(singles, rng);
+            for (const [r, c] of singles) {
+              if (removed >= targetBlanks) break;
+              const prev = puzzle[r][c];
+              puzzle[r][c] = 0;
+              if (countSolutions(puzzle, 2) === 1) {
+                removed++;
+              } else {
+                puzzle[r][c] = prev;
+              }
+            }
+          }
+
+          if (removed > bestRemoved) {
+            bestRemoved = removed;
+            bestPuzzle = puzzle;
+            bestSolution = solution;
+          }
+          if (removed === targetBlanks) break;
+        }
+
+        // Assign Golden Coin Seals to subset of blank cells
+        const sealRng = mulberry32((levelDef.id + 1) * 97531 + 13579);
+        const sealTarget =
+          levelDef.id === 0 ? 0 :
+          levelDef.id <= 10 ? 2 :
+          levelDef.id <= 35 ? 3 :
+          levelDef.id <= 70 ? 4 :
+          levelDef.id <= 135 ? 5 : 6;
+
+        const blankKeys = [];
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            if (bestPuzzle[r][c] === 0) blankKeys.push(`${r},${c}`);
+          }
+        }
+        shuffleArr(blankKeys, sealRng);
+        const seals = blankKeys.slice(0, Math.min(sealTarget, blankKeys.length));
+
+        return {
+          id: levelDef.id,
+          theme: levelDef.t,
+          blanks: blankKeys.length,
+          solution: bestSolution,
+          puzzle: bestPuzzle,
+          seals
+        };
+      }
+
+      /* ================================================================
+         2B. ECONOMY & PROFICIENCY RULES
+         ================================================================ */
+      const PROFICIENCY_GATES = [
+        { minLevel: 190, requiredStars: 480 },
+        { minLevel: 170, requiredStars: 414 },
+        { minLevel: 135, requiredStars: 312 },
+        { minLevel: 100, requiredStars: 222 },
+        { minLevel: 71,  requiredStars: 150 },
+        { minLevel: 36,  requiredStars: 66 },
+        { minLevel: 11,  requiredStars: 18 }
+      ];
+
+      function getTierStep(levelId) {
+        if (levelId <= 10) return 0;
+        if (levelId <= 35) return 1;
+        if (levelId <= 70) return 2;
+        if (levelId <= 120) return 3;
+        if (levelId <= 165) return 4;
+        return 5;
+      }
+
+      function getPowerupCosts(b) {
+        const tierStep = getTierStep(b.id);
+        return {
+          notes: 40 + tierStep * 10 + (b.notesUses || 0) * 20,
+          lens: 60 + tierStep * 12 + (b.lensUses || 0) * 30,
+          wand: 95 + tierStep * 20 + (b.wandUses || 0) * 45,
+          zap: 130 + tierStep * 25 + (b.zapUses || 0) * 55
+        };
+      }
+
+      function getTotalHintsUsed(b) {
+        return (b.notesUses || 0) + (b.lensUses || 0) + (b.wandUses || 0) + (b.zapUses || 0);
+      }
+
+      function computeRunStars(mistakes, hintsUsed) {
+        if (hintsUsed === 0 && mistakes === 0) return 3;
+        if ((hintsUsed === 0 && mistakes <= 2) || (hintsUsed === 1 && mistakes === 0)) return 2;
+        return 1;
+      }
+
+      function getTotalEarnedStarsFor(levelStars) {
+        let sum = 0;
+        if (!levelStars) return 0;
+        for (const k of Object.keys(levelStars)) sum += Number(levelStars[k]) || 0;
+        return sum;
+      }
+
+      function checkLevelAccessFor(levelId, completedLevels, levelStars) {
+        if (levelId <= 0) return { unlocked: true };
+        if (!completedLevels.includes(levelId - 1)) {
+          return {
+            unlocked: false,
+            reason: 'seq',
+            msg: `Conclua o Nível ${levelId - 1} primeiro.`
+          };
+        }
+        const totalStars = getTotalEarnedStarsFor(levelStars);
+        for (const gate of PROFICIENCY_GATES) {
+          if (levelId >= gate.minLevel && totalStars < gate.requiredStars) {
+            return {
+              unlocked: false,
+              reason: 'stars',
+              required: gate.requiredStars,
+              currentStars: totalStars,
+              msg: `Exige ${gate.requiredStars}★ de proficiência acumulada (atual: ${totalStars}★). Melhore níveis anteriores para 3★!`
+            };
+          }
+        }
+        return { unlocked: true };
+      }
+
+      function getNextMilestoneFor(levelStars) {
+        const totalStars = getTotalEarnedStarsFor(levelStars);
+        const ascending = PROFICIENCY_GATES.slice().sort((a, b) => a.minLevel - b.minLevel);
+        for (const gate of ascending) {
+          if (totalStars < gate.requiredStars) return { ...gate, currentStars: totalStars };
+        }
+        return null;
+      }
+
+      function getHighestUnlockedLevelFor(completedLevels, levelStars) {
+        let highest = 0;
+        for (let i = 1; i <= MAX_LEVEL; i++) {
+          if (checkLevelAccessFor(i, completedLevels, levelStars).unlocked) highest = i;
+          else break;
+        }
+        return highest;
+      }
+
+      function calculateResolutionOutcome({ levelId, mistakes, hintsUsed, pendingBonusCoins, prevStars, prevCoins, prevStreak }) {
+        const runStars = computeRunStars(mistakes, hintsUsed);
+        const baseCoins =
+          levelId === 0 ? 10 :
+          levelId <= 10 ? 12 :
+          levelId <= 35 ? 16 :
+          levelId <= 70 ? 20 :
+          levelId <= 120 ? 26 :
+          levelId <= 165 ? 30 :
+          levelId < MAX_LEVEL ? 34 : 80;
+        const rawPot = baseCoins + (pendingBonusCoins || 0);
+
+        let isNewMastery = false;
+        let nextStreak = prevStreak || 0;
+        let masteryBonus = 0;
+        let streakBonus = 0;
+        let calculatedPayout = 0;
+
+        if (runStars === 3) {
+          isNewMastery = (prevStars || 0) < 3;
+          if (isNewMastery) nextStreak += 1;
+          masteryBonus =
+            levelId <= 10 ? 6 :
+            levelId <= 35 ? 10 :
+            levelId <= 70 ? 14 :
+            levelId <= 120 ? 18 :
+            levelId <= 165 ? 22 : 26;
+          streakBonus = isNewMastery ? Math.min(nextStreak * 3, 15) : 0;
+          calculatedPayout = rawPot + masteryBonus + streakBonus;
+        } else if (runStars === 2) {
+          if ((prevStars || 0) < 3) nextStreak = 0;
+          calculatedPayout = Math.round(rawPot * 0.7);
+        } else {
+          if ((prevStars || 0) < 3) nextStreak = 0;
+          calculatedPayout = Math.max(3, Math.round(rawPot * 0.35));
+        }
+
+        const safePrevCoins = prevCoins || 0;
+        const safePrevStars = prevStars || 0;
+        return {
+          runStars,
+          netStars: Math.max(0, runStars - safePrevStars),
+          baseCoins,
+          rawPot,
+          calculatedPayout,
+          prevCoins: safePrevCoins,
+          netCoins: Math.max(0, calculatedPayout - safePrevCoins),
+          nextStreak,
+          masteryBonus,
+          streakBonus,
+          isNewMastery
+        };
+      }
+
+      /* ================================================================
+         3. PROCEDURAL WEBAUDIO SOUND EFFECTS
+         ================================================================ */
+      const SoundFX = (() => {
+        let ctx = null;
+        function ensureCtx() {
+          if (!state.soundEnabled) return null;
+          if (!ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
+            ctx = new AudioCtx();
+          }
+          if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+          return ctx;
+        }
+        function tone(freq, duration, type = 'sine', gainVal = 0.08, delay = 0) {
+          const ac = ensureCtx();
+          if (!ac) return;
+          const now = ac.currentTime + delay;
+          const osc = ac.createOscillator();
+          const gain = ac.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.exponentialRampToValueAtTime(gainVal, now + 0.012);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+          osc.connect(gain);
+          gain.connect(ac.destination);
+          osc.start(now);
+          osc.stop(now + duration + 0.02);
+        }
+        return {
+          tap() { tone(520, 0.05, 'triangle', 0.05); },
+          place() { tone(660, 0.1, 'triangle', 0.08, 0); tone(880, 0.12, 'sine', 0.07, 0.04); },
+          note() { tone(440, 0.05, 'sine', 0.045); },
+          coin() { tone(987.77, 0.08, 'sine', 0.07, 0); tone(1318.51, 0.16, 'sine', 0.08, 0.06); },
+          hint() { [523.25, 659.25, 783.99].forEach((f, i) => tone(f, 0.11, 'sine', 0.06, i * 0.04)); },
+          error() { tone(185, 0.14, 'sine', 0.055, 0); },
+          victory() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, 0.24, 'triangle', 0.1, i * 0.09)); }
+        };
+      })();
+
+      /* ================================================================
+         4. STATE & PERSISTENCE
+         ================================================================ */
+      const STORAGE_KEY = 'kaahoje_sudoku_v1';
+
+      function createDefaultState() {
+        return {
+          currentLevel: 0,
+          completedLevels: [],
+          levelStars: {},
+          levelCoinsEarned: {},
+          coins: 25,
+          stars: 0,
+          streak: 0,
+          soundEnabled: true,
+          vibrateEnabled: true,
+          activeLevelState: null
+        };
+      }
+
+      let state = loadState();
+      let board = null;
+      let selectedCell = null; // { r, c }
+      let hintCellKey = null;
+      let errorCellKey = null;
+      let notesMode = false;
+      let levelsFilter = 'all';
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return createDefaultState();
+          const parsed = JSON.parse(raw);
+          const completed = Array.isArray(parsed.completedLevels) ? parsed.completedLevels : [];
+          const levelStars = parsed.levelStars && typeof parsed.levelStars === 'object' ? parsed.levelStars : {};
+          const levelCoinsEarned = parsed.levelCoinsEarned && typeof parsed.levelCoinsEarned === 'object' ? parsed.levelCoinsEarned : {};
+          let currentLevel = clampLevel(parsed.currentLevel ?? 0);
+          if (!checkLevelAccessFor(currentLevel, completed, levelStars).unlocked) {
+            currentLevel = getHighestUnlockedLevelFor(completed, levelStars);
+          }
+          return {
+            currentLevel,
+            completedLevels: completed,
+            levelStars,
+            levelCoinsEarned,
+            coins: typeof parsed.coins === 'number' ? Math.max(0, parsed.coins) : 25,
+            stars: typeof parsed.stars === 'number' ? Math.max(0, parsed.stars % 20) : 0,
+            streak: typeof parsed.streak === 'number' ? Math.max(0, parsed.streak) : 0,
+            soundEnabled: parsed.soundEnabled !== false,
+            vibrateEnabled: parsed.vibrateEnabled !== false,
+            activeLevelState: parsed.activeLevelState || null
+          };
+        } catch {
+          return createDefaultState();
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch {}
+      }
+
+      function clampLevel(n) {
+        const val = Number(n);
+        if (!Number.isFinite(val)) return 0;
+        return Math.max(0, Math.min(MAX_LEVEL, Math.trunc(val)));
+      }
+
+      function getTotalEarnedStars() { return getTotalEarnedStarsFor(state.levelStars); }
+      function checkLevelAccess(levelId) { return checkLevelAccessFor(levelId, state.completedLevels, state.levelStars); }
+      function vibrate(ms) { if (state.vibrateEnabled && navigator.vibrate) navigator.vibrate(ms); }
+
+      /* ================================================================
+         5. DOM ELEMENTS
+         ================================================================ */
+      const elLevelBadge = document.getElementById('levelBadge');
+      const elCoinCount = document.getElementById('coinCount');
+      const elStarCount = document.getElementById('starCount');
+      const elRunGradeBadge = document.getElementById('runGradeBadge');
+      const elThemeTitle = document.getElementById('themeTitle');
+      const elEmptyCounter = document.getElementById('emptyCounter');
+      const elMistakesCounter = document.getElementById('mistakesCounter');
+      const elBonusCounter = document.getElementById('bonusCounter');
+      const elGridCard = document.getElementById('gridCard');
+      const elBoardStage = document.getElementById('boardStage');
+      const elSudokuGrid = document.getElementById('sudokuGrid');
+      const elOnboardingTip = document.getElementById('onboardingTip');
+      const elBtnToggleNotes = document.getElementById('btnToggleNotes');
+      const elDigitRow = document.getElementById('digitRow');
+      const elToastContainer = document.getElementById('toastContainer');
+      const elNotesBadge = document.getElementById('notesBadge');
+      const elLensBadge = document.getElementById('lensBadge');
+      const elWandBadge = document.getElementById('wandBadge');
+      const elZapBadge = document.getElementById('zapBadge');
+
+      /* ================================================================
+         6. LEVEL INITIALIZATION & SUDOKU LOGIC
+         ================================================================ */
+      function initLevel(levelIndex, forceFresh = false) {
+        const idx = clampLevel(levelIndex);
+        const access = checkLevelAccess(idx);
+        const targetIdx = access.unlocked
+          ? idx
+          : getHighestUnlockedLevelFor(state.completedLevels, state.levelStars);
+
+        state.currentLevel = targetIdx;
+        const saved = state.activeLevelState;
+
+        if (!forceFresh && saved && saved.levelId === targetIdx && Array.isArray(saved.current)) {
+          board = {
+            id: targetIdx,
+            theme: LEVELS[targetIdx].t,
+            blanks: Number(saved.blanks) || LEVELS[targetIdx].blanks,
+            solution: saved.solution,
+            puzzle: saved.puzzle,
+            current: saved.current,
+            notes: saved.notes || {},
+            seals: Array.isArray(saved.seals) ? saved.seals : [],
+            mistakes: Number(saved.mistakes) || 0,
+            notesUses: Number(saved.notesUses) || 0,
+            lensUses: Number(saved.lensUses) || 0,
+            wandUses: Number(saved.wandUses) || 0,
+            zapUses: Number(saved.zapUses) || 0,
+            pendingBonusCoins: Number(saved.pendingBonusCoins) || 0
+          };
+        } else {
+          const fresh = buildLevelBoard(targetIdx);
+          board = {
+            id: fresh.id,
+            theme: fresh.theme,
+            blanks: fresh.blanks,
+            solution: fresh.solution,
+            puzzle: fresh.puzzle,
+            current: fresh.puzzle.map(r => r.slice()),
+            notes: {},
+            seals: fresh.seals,
+            mistakes: 0,
+            notesUses: 0,
+            lensUses: 0,
+            wandUses: 0,
+            zapUses: 0,
+            pendingBonusCoins: 0
+          };
+          syncActiveBoardToState();
+        }
+
+        selectedCell = findFirstEmptyCell();
+        hintCellKey = null;
+        errorCellKey = null;
+        notesMode = false;
+        renderAll();
+      }
+
+      function findFirstEmptyCell() {
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            if (board.current[r][c] === 0) return { r, c };
+          }
+        }
+        return null;
+      }
+
+      function syncActiveBoardToState() {
+        state.activeLevelState = {
+          levelId: board.id,
+          blanks: board.blanks,
+          solution: board.solution,
+          puzzle: board.puzzle,
+          current: board.current,
+          notes: board.notes,
+          seals: board.seals,
+          mistakes: board.mistakes,
+          notesUses: board.notesUses,
+          lensUses: board.lensUses,
+          wandUses: board.wandUses,
+          zapUses: board.zapUses,
+          pendingBonusCoins: board.pendingBonusCoins
+        };
+        saveState();
+      }
+
+      function getCandidates(r, c) {
+        const used = new Set();
+        for (let i = 0; i < 9; i++) {
+          if (board.current[r][i] !== 0) used.add(board.current[r][i]);
+          if (board.current[i][c] !== 0) used.add(board.current[i][c]);
+        }
+        const br = Math.floor(r / 3) * 3;
+        const bc = Math.floor(c / 3) * 3;
+        for (let rr = br; rr < br + 3; rr++) {
+          for (let cc = bc; cc < bc + 3; cc++) {
+            if (board.current[rr][cc] !== 0) used.add(board.current[rr][cc]);
+          }
+        }
+        const res = [];
+        for (let d = 1; d <= 9; d++) {
+          if (!used.has(d)) res.push(d);
+        }
+        return res;
+      }
+
+      function clearPeerNoteDigit(r, c, d) {
+        const br = Math.floor(r / 3) * 3;
+        const bc = Math.floor(c / 3) * 3;
+        for (let i = 0; i < 9; i++) {
+          for (const key of [`${r},${i}`, `${i},${c}`]) {
+            if (board.notes[key]) {
+              board.notes[key] = board.notes[key].filter(n => n !== d);
+              if (board.notes[key].length === 0) delete board.notes[key];
+            }
+          }
+        }
+        for (let rr = br; rr < br + 3; rr++) {
+          for (let cc = bc; cc < bc + 3; cc++) {
+            const key = `${rr},${cc}`;
+            if (board.notes[key]) {
+              board.notes[key] = board.notes[key].filter(n => n !== d);
+              if (board.notes[key].length === 0) delete board.notes[key];
+            }
+          }
+        }
+      }
+
+      function countRemainingCells() {
+        let empty = 0;
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            if (board.current[r][c] === 0) empty++;
+          }
+        }
+        return empty;
+      }
+
+      /* ================================================================
+         7. RENDERING
+         ================================================================ */
+      function computeBoardLayout() {
+        const shell = document.querySelector('.game-shell');
+        const topBar = document.querySelector('.top-bar');
+        const clueCard = document.querySelector('.clue-card');
+        const keypad = document.querySelector('.keypad-section');
+        const powerBar = document.querySelector('.powerups-bar');
+
+        const shellRect = shell.getBoundingClientRect();
+        const shellStyle = getComputedStyle(shell);
+        const padTop = parseFloat(shellStyle.paddingTop) || 8;
+        const padBottom = parseFloat(shellStyle.paddingBottom) || 10;
+        const padLeft = parseFloat(shellStyle.paddingLeft) || 12;
+        const padRight = parseFloat(shellStyle.paddingRight) || 12;
+        const gap = parseFloat(shellStyle.rowGap || shellStyle.gap) || 7;
+
+        const usedOtherH =
+          padTop +
+          padBottom +
+          topBar.getBoundingClientRect().height +
+          clueCard.getBoundingClientRect().height +
+          keypad.getBoundingClientRect().height +
+          powerBar.getBoundingClientRect().height +
+          gap * 4;
+
+        const maxCardH = Math.max(240, shellRect.height - usedOtherH - 4);
+        const maxCardW = Math.max(240, shellRect.width - padLeft - padRight);
+        const square = Math.max(225, Math.min(maxCardW - 18, maxCardH - 18, 384));
+        // Snap to multiple of 9 for crisp borders
+        const snapped = Math.floor(square / 9) * 9;
+        elBoardStage.style.width = `${snapped}px`;
+        elBoardStage.style.height = `${snapped}px`;
+        elSudokuGrid.style.fontSize = `${Math.round((snapped / 9) * 0.56)}px`;
+      }
+
+      function renderAll() {
+        renderTopHud();
+        renderStatusStrip();
+        renderGrid();
+        renderKeypad();
+        renderPowerupBadges();
+      }
+
+      function renderTopHud() {
+        elLevelBadge.textContent = `Nível ${board.id}`;
+        elCoinCount.textContent = String(state.coins);
+        elStarCount.textContent = `${state.stars}/20`;
+        const runStars = computeRunStars(board.mistakes, getTotalHintsUsed(board));
+        const starsStr = '★'.repeat(runStars) + '☆'.repeat(3 - runStars);
+        const streakSuffix = (runStars === 3 && state.streak > 0) ? ` 🔥${state.streak}` : '';
+        elRunGradeBadge.textContent = starsStr + streakSuffix;
+        elRunGradeBadge.className = 'run-grade-badge' + (runStars < 3 ? ` grade-${runStars}` : '');
+      }
+
+      function renderStatusStrip() {
+        elThemeTitle.textContent = board.theme;
+        const empty = countRemainingCells();
+        elEmptyCounter.textContent = String(empty);
+        elMistakesCounter.textContent = String(board.mistakes);
+        elBonusCounter.textContent = `+${board.pendingBonusCoins || 0}`;
+        elOnboardingTip.style.display = (board.id === 0 && empty === board.blanks) ? 'block' : 'none';
+      }
+
+      function renderGrid() {
+        computeBoardLayout();
+        elSudokuGrid.innerHTML = '';
+
+        const selVal = selectedCell ? board.current[selectedCell.r][selectedCell.c] : 0;
+        const selBoxR = selectedCell ? Math.floor(selectedCell.r / 3) : -1;
+        const selBoxC = selectedCell ? Math.floor(selectedCell.c / 3) : -1;
+        const sealSet = new Set(board.seals || []);
+
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            const cell = document.createElement('div');
+            cell.className = 's-cell';
+            cell.dataset.r = String(r);
+            cell.dataset.c = String(c);
+            cell.setAttribute('role', 'gridcell');
+
+            if (c === 2 || c === 5) cell.classList.add('box-right');
+            if (r === 2 || r === 5) cell.classList.add('box-bottom');
+            if (c === 8) cell.classList.add('no-right');
+            if (r === 8) cell.classList.add('no-bottom');
+
+            const val = board.current[r][c];
+            const isGiven = board.puzzle[r][c] !== 0;
+            const key = `${r},${c}`;
+
+            if (isGiven) cell.classList.add('given');
+            else if (val !== 0) cell.classList.add('solved');
+
+            if (selectedCell) {
+              if (selectedCell.r === r && selectedCell.c === c) {
+                cell.classList.add('selected');
+              } else if (selVal !== 0 && val === selVal) {
+                cell.classList.add('same-num');
+              } else if (
+                selectedCell.r === r ||
+                selectedCell.c === c ||
+                (Math.floor(r / 3) === selBoxR && Math.floor(c / 3) === selBoxC)
+              ) {
+                cell.classList.add('peer');
+              }
+            }
+
+            if (hintCellKey === key) cell.classList.add('hint-pulse');
+            if (errorCellKey === key) cell.classList.add('error-flash');
+
+            if (val !== 0) {
+              cell.textContent = String(val);
+            } else {
+              if (sealSet.has(key)) {
+                const seal = document.createElement('span');
+                seal.className = 'seal-coin';
+                seal.title = 'Casa com Selo de Ouro (+4 🪙 ao resolver sem dica direta)';
+                cell.appendChild(seal);
+              }
+              const cellNotes = board.notes[key];
+              if (cellNotes && cellNotes.length > 0) {
+                const notesDiv = document.createElement('div');
+                notesDiv.className = 'notes-grid';
+                const nSet = new Set(cellNotes);
+                for (let d = 1; d <= 9; d++) {
+                  const nEl = document.createElement('span');
+                  nEl.className = 'note-num';
+                  nEl.textContent = nSet.has(d) ? String(d) : '';
+                  notesDiv.appendChild(nEl);
+                }
+                cell.appendChild(notesDiv);
+              }
+            }
+
+            cell.addEventListener('click', () => {
+              selectedCell = { r, c };
+              SoundFX.tap();
+              renderGrid();
+            });
+
+            elSudokuGrid.appendChild(cell);
+          }
+        }
+      }
+
+      function renderKeypad() {
+        elBtnToggleNotes.textContent = notesMode ? '✏️ Notas: ON' : '✏️ Notas: OFF';
+        elBtnToggleNotes.classList.toggle('notes-active', notesMode);
+
+        const counts = new Int32Array(10);
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            const v = board.current[r][c];
+            if (v >= 1 && v <= 9) counts[v]++;
+          }
+        }
+
+        elDigitRow.innerHTML = '';
+        for (let d = 1; d <= 9; d++) {
+          const rem = Math.max(0, 9 - counts[d]);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'digit-btn' + (rem === 0 ? ' digit-complete' : '');
+          btn.dataset.digit = String(d);
+          btn.innerHTML = `<span class="digit-main">${d}</span><span class="digit-rem">${rem === 0 ? '✓' : rem}</span>`;
+          btn.addEventListener('click', () => handleDigitInput(d));
+          elDigitRow.appendChild(btn);
+        }
+      }
+
+      function renderPowerupBadges() {
+        const costs = getPowerupCosts(board);
+        elNotesBadge.innerHTML = `<span class="mini-coin"></span><span>${costs.notes}</span>`;
+        elLensBadge.innerHTML = `<span class="mini-coin"></span><span>${costs.lens}</span>`;
+        elWandBadge.innerHTML = `<span class="mini-coin"></span><span>${costs.wand}</span>`;
+        elZapBadge.innerHTML = `<span class="mini-coin"></span><span>${costs.zap}</span>`;
+      }
+
+      /* ================================================================
+         8. INPUT HANDLING, MISTAKES & POWER-UPS
+         ================================================================ */
+      function handleDigitInput(d) {
+        if (!selectedCell) {
+          selectedCell = findFirstEmptyCell();
+          if (!selectedCell) return;
+        }
+        const { r, c } = selectedCell;
+        if (board.current[r][c] !== 0) {
+          showToast('Selecione uma casa vazia!');
+          return;
+        }
+
+        const key = `${r},${c}`;
+        if (notesMode) {
+          const cur = board.notes[key] ? board.notes[key].slice() : [];
+          const idx = cur.indexOf(d);
+          if (idx >= 0) cur.splice(idx, 1);
+          else cur.push(d);
+          cur.sort((a, b) => a - b);
+          if (cur.length === 0) delete board.notes[key];
+          else board.notes[key] = cur;
+
+          SoundFX.note();
+          syncActiveBoardToState();
+          renderGrid();
+          return;
+        }
+
+        if (board.solution[r][c] === d) {
+          placeCorrectDigit(r, c, d, true);
+        } else {
+          board.mistakes += 1;
+          errorCellKey = key;
+          SoundFX.error();
+          vibrate(18);
+
+          if (board.mistakes === 1) {
+            showToast(`Dígito ${d} incorreto! Maestria 3★ perdida neste nível.`);
+          } else {
+            const penalty = 2 + getTierStep(board.id) * 2;
+            const deducted = Math.min(state.coins, penalty);
+            state.coins -= deducted;
+            showToast(
+              deducted > 0
+                ? `Erro #${board.mistakes}: -${deducted} 🪙 por tentativa imprecisa!`
+                : `Erro #${board.mistakes}: precisão reduzida!`
+            );
+          }
+
+          syncActiveBoardToState();
+          renderAll();
+          setTimeout(() => {
+            if (errorCellKey === key) {
+              errorCellKey = null;
+              renderGrid();
+            }
+          }, 340);
+        }
+      }
+
+      function placeCorrectDigit(r, c, d, grantSealBonus) {
+        const key = `${r},${c}`;
+        board.current[r][c] = d;
+        delete board.notes[key];
+        clearPeerNoteDigit(r, c, d);
+        if (hintCellKey === key) hintCellKey = null;
+
+        let sealBonus = 0;
+        const sealIdx = (board.seals || []).indexOf(key);
+        if (sealIdx >= 0) {
+          board.seals.splice(sealIdx, 1);
+          if (grantSealBonus) {
+            sealBonus = 4;
+            board.pendingBonusCoins = (board.pendingBonusCoins || 0) + sealBonus;
+          }
+        }
+
+        SoundFX.place();
+        vibrate(14);
+        if (sealBonus > 0) {
+          showToast(`+${sealBonus} 🪙 acumulados para a resolução!`, true);
+        }
+
+        if (countRemainingCells() > 0) {
+          // Keep current cell selected or jump cleanly? Keeping current lets user see the number placed
+        }
+
+        syncActiveBoardToState();
+        renderAll();
+
+        if (countRemainingCells() === 0) {
+          setTimeout(handleLevelVictory, 360);
+        }
+      }
+
+      document.getElementById('btnToggleNotes').addEventListener('click', () => {
+        notesMode = !notesMode;
+        SoundFX.tap();
+        renderKeypad();
+      });
+
+      document.getElementById('btnClearNotes').addEventListener('click', () => {
+        if (!selectedCell) return;
+        const key = `${selectedCell.r},${selectedCell.c}`;
+        if (board.notes[key]) {
+          delete board.notes[key];
+          SoundFX.tap();
+          syncActiveBoardToState();
+          renderGrid();
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (document.querySelector('.modal-backdrop.open')) return;
+        if (e.key >= '1' && e.key <= '9') {
+          handleDigitInput(Number(e.key));
+        } else if (e.key === 'n' || e.key === 'N') {
+          notesMode = !notesMode;
+          renderKeypad();
+        } else if (e.key === 'Backspace' || e.key === 'Delete') {
+          if (selectedCell) {
+            const key = `${selectedCell.r},${selectedCell.c}`;
+            if (board.notes[key]) {
+              delete board.notes[key];
+              syncActiveBoardToState();
+              renderGrid();
+            }
+          }
+        } else if (selectedCell && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+          e.preventDefault();
+          const dr = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0;
+          const dc = e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowRight' ? 1 : 0;
+          selectedCell = {
+            r: (selectedCell.r + dr + 9) % 9,
+            c: (selectedCell.c + dc + 9) % 9
+          };
+          renderGrid();
+        }
+      });
+
+      function spendPowerupCoins(cost, label) {
+        if (state.coins < cost) {
+          showToast(`Precisa de ${cost} 🪙 para usar ${label}. Resolva níveis para ganhar moedas!`);
+          openEconomyModal();
+          return false;
+        }
+        state.coins -= cost;
+        return true;
+      }
+
+      // 1. Candidatos automáticos em até 6 casas vazias
+      document.getElementById('btnAutoNotes').addEventListener('click', () => {
+        const empties = [];
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            if (board.current[r][c] === 0) empties.push({ r, c });
+          }
+        }
+        if (empties.length === 0) return;
+
+        const costs = getPowerupCosts(board);
+        if (!spendPowerupCoins(costs.notes, 'Candidatos')) return;
+
+        board.notesUses += 1;
+        empties.sort((a, b) => getCandidates(a.r, a.c).length - getCandidates(b.r, b.c).length);
+        const picked = empties.slice(0, 6);
+        for (const p of picked) {
+          board.notes[`${p.r},${p.c}`] = getCandidates(p.r, p.c);
+        }
+
+        SoundFX.hint();
+        vibrate(14);
+        syncActiveBoardToState();
+        renderAll();
+        showToast(`Candidatos anotados em ${picked.length} casas! 📝`);
+      });
+
+      // 2. Lupa Lógica (Destaca casa com menos candidatos e anota seus candidatos)
+      document.getElementById('btnLens').addEventListener('click', () => {
+        let best = null, bestCands = null;
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            if (board.current[r][c] !== 0) continue;
+            const cands = getCandidates(r, c);
+            if (!best || cands.length < bestCands.length) {
+              best = { r, c };
+              bestCands = cands;
+            }
+          }
+        }
+        if (!best) return;
+
+        const costs = getPowerupCosts(board);
+        if (!spendPowerupCoins(costs.lens, 'a Lupa')) return;
+
+        board.lensUses += 1;
+        selectedCell = best;
+        hintCellKey = `${best.r},${best.c}`;
+        board.notes[hintCellKey] = bestCands;
+
+        SoundFX.hint();
+        vibrate(15);
+        syncActiveBoardToState();
+        renderAll();
+        showToast(`Casa (${best.r + 1},${best.c + 1}) destacada (${bestCands.join(', ')})! 🔍`);
+      });
+
+      // 3. Varinha (Revela 1 casa vazia, sem bônus de selo)
+      document.getElementById('btnWand').addEventListener('click', () => {
+        let target = (selectedCell && board.current[selectedCell.r][selectedCell.c] === 0)
+          ? selectedCell
+          : findFirstEmptyCell();
+        if (!target) return;
+
+        const costs = getPowerupCosts(board);
+        if (!spendPowerupCoins(costs.wand, 'a Varinha')) return;
+
+        board.wandUses += 1;
+        selectedCell = target;
+        placeCorrectDigit(target.r, target.c, board.solution[target.r][target.c], false);
+        showToast('Dígito revelado com a Varinha! ✨');
+      });
+
+      // 4. Raio Duplo (Preenche até 2 casas vazias, sem bônus de selo)
+      document.getElementById('btnZap').addEventListener('click', () => {
+        const empties = [];
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            if (board.current[r][c] === 0) empties.push({ r, c });
+          }
+        }
+        if (empties.length === 0) return;
+
+        const costs = getPowerupCosts(board);
+        if (!spendPowerupCoins(costs.zap, 'o Raio Duplo')) return;
+
+        board.zapUses += 1;
+        const picked = empties.slice(0, 2);
+        for (const p of picked) {
+          const key = `${p.r},${p.c}`;
+          const d = board.solution[p.r][p.c];
+          board.current[p.r][p.c] = d;
+          delete board.notes[key];
+          clearPeerNoteDigit(p.r, p.c, d);
+          const sealIdx = (board.seals || []).indexOf(key);
+          if (sealIdx >= 0) board.seals.splice(sealIdx, 1);
+        }
+
+        SoundFX.hint();
+        vibrate(16);
+        syncActiveBoardToState();
+        renderAll();
+        showToast(`${picked.length} casas preenchidas! ⚡`);
+
+        if (countRemainingCells() === 0) {
+          setTimeout(handleLevelVictory, 360);
+        }
+      });
+
+      /* ================================================================
+         9. VICTORY, CONFETTI, TOASTS & MODALS
+         ================================================================ */
+      function handleLevelVictory() {
+        const hintsUsed = getTotalHintsUsed(board);
+        const prevStars = state.levelStars[board.id] || 0;
+        const prevCoins = state.levelCoinsEarned[board.id] || 0;
+
+        const outcome = calculateResolutionOutcome({
+          levelId: board.id,
+          mistakes: board.mistakes || 0,
+          hintsUsed,
+          pendingBonusCoins: board.pendingBonusCoins || 0,
+          prevStars,
+          prevCoins,
+          prevStreak: state.streak
+        });
+
+        state.streak = outcome.nextStreak;
+        state.coins += outcome.netCoins;
+        state.levelCoinsEarned[board.id] = Math.max(prevCoins, outcome.calculatedPayout);
+        state.levelStars[board.id] = Math.max(prevStars, outcome.runStars);
+
+        if (!state.completedLevels.includes(board.id)) {
+          state.completedLevels.push(board.id);
+        }
+
+        let chestCoins = 0;
+        state.stars += outcome.netStars;
+        if (state.stars >= 20) {
+          const chests = Math.floor(state.stars / 20);
+          state.stars = state.stars % 20;
+          chestCoins = chests * 40;
+          state.coins += chestCoins;
+        }
+
+        board.pendingBonusCoins = 0;
+        SoundFX.victory();
+        if (outcome.netCoins > 0 || chestCoins > 0) SoundFX.coin();
+        vibrate([25, 40, 35]);
+        syncActiveBoardToState();
+        renderTopHud();
+
+        const isFinal = board.id === MAX_LEVEL;
+        document.getElementById('victoryStars').textContent =
+          '⭐'.repeat(outcome.runStars) + '☆'.repeat(3 - outcome.runStars);
+        document.getElementById('victoryModalTitle').textContent = isFinal
+          ? `Mestre dos ${TOTAL_LEVELS} Níveis!`
+          : `Nível ${board.id} Concluído!`;
+        document.getElementById('victoryHeading').textContent = isFinal
+          ? 'Parabéns, Grão-Mestre! 🏆'
+          : `${board.theme}`;
+
+        const gradeText = outcome.runStars === 3
+          ? 'Maestria perfeita!'
+          : outcome.runStars === 2
+            ? 'Bom domínio!'
+            : 'Nível resolvido — aprimore para 3★!';
+        document.getElementById('victorySub').textContent = isFinal
+          ? `Você completou toda a jornada com ${getTotalEarnedStars()}★ de proficiência!`
+          : `${gradeText} (${state.completedLevels.length}/${TOTAL_LEVELS} níveis • ${getTotalEarnedStars()}★)`;
+        document.getElementById('victoryMetrics').textContent =
+          `Erros: ${board.mistakes || 0} • Auxílios: ${hintsUsed}${state.streak > 0 ? ` • Sequência 3★: 🔥${state.streak}` : ''}`;
+
+        const coinsBox = document.getElementById('victoryCoinsBox');
+        const totalGained = outcome.netCoins + chestCoins;
+        if (totalGained > 0) {
+          coinsBox.innerHTML = `🪙 +<span id="victoryCoins">${totalGained}</span> moedas${chestCoins > 0 ? ' (inclui Baú ★)' : ''}`;
+        } else {
+          coinsBox.textContent = 'Recompensa máxima já obtida';
+        }
+        document.getElementById('victoryBlanks').textContent = String(board.blanks);
+
+        const btnNext = document.getElementById('btnNextLevel');
+        if (isFinal) {
+          btnNext.style.display = 'none';
+        } else {
+          btnNext.style.display = 'block';
+          const nextAccess = checkLevelAccess(board.id + 1);
+          if (nextAccess.unlocked) {
+            btnNext.dataset.mode = 'next';
+            btnNext.textContent = 'Próximo Nível ▶';
+          } else {
+            btnNext.dataset.mode = 'improve';
+            btnNext.textContent = `Aprimorar Níveis (< 3★) • Meta ${nextAccess.required}★`;
+          }
+        }
+
+        openModal('victoryModal');
+        launchConfetti();
+      }
+
+      function showToast(msg, isGold = false) {
+        const div = document.createElement('div');
+        div.className = 'toast-pill' + (isGold ? ' gold' : '');
+        div.textContent = msg;
+        elToastContainer.appendChild(div);
+        setTimeout(() => {
+          div.style.opacity = '0';
+          div.style.transition = 'opacity 0.25s ease';
+          setTimeout(() => div.remove(), 260);
+        }, 2300);
+      }
+
+      function launchConfetti() {
+        const canvas = document.getElementById('confettiCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const colors = ['#facc15', '#4ade80', '#38bdf8', '#f472b6', '#a78bfa', '#fb923c'];
+        const pieces = Array.from({ length: 75 }, () => ({
+          x: Math.random() * canvas.width,
+          y: -20 - Math.random() * 140,
+          w: 7 + Math.random() * 6,
+          h: 10 + Math.random() * 8,
+          vx: (Math.random() - 0.5) * 4,
+          vy: 3 + Math.random() * 4.5,
+          rot: Math.random() * Math.PI * 2,
+          vr: (Math.random() - 0.5) * 0.2,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        }));
+
+        let frame = 0;
+        function tick() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (const p of pieces) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += p.vr;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          }
+          frame++;
+          if (frame < 120) requestAnimationFrame(tick);
+          else ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      /* ================================================================
+         10. MODAL WIRING (MAPA 0..200, SETTINGS, ECONOMIA, VITÓRIA)
+         ================================================================ */
+      function openModal(id) { document.getElementById(id).classList.add('open'); }
+      function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+      function renderLevelsMap() {
+        const grid = document.getElementById('levelsGrid');
+        const completedSet = new Set(state.completedLevels);
+        const totalStars = getTotalEarnedStars();
+        const nextGate = getNextMilestoneFor(state.levelStars);
+
+        document.getElementById('levelsProgressText').textContent =
+          `${state.completedLevels.length} de ${TOTAL_LEVELS} concluídos`;
+        document.getElementById('levelsCurrentText').textContent =
+          `Atual: Nível ${state.currentLevel}`;
+        document.getElementById('levelsMilestoneText').textContent = nextGate
+          ? `Proficiência Total: ${totalStars}★ • Próxima meta: ${nextGate.requiredStars}★ para Nível ${nextGate.minLevel}`
+          : `Proficiência Total: ${totalStars}★ / ${MAX_TOTAL_STARS}★ • Todas as metas desbloqueadas!`;
+
+        document.querySelectorAll('.quick-chip').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.filter === levelsFilter);
+        });
+
+        grid.innerHTML = '';
+        const frag = document.createDocumentFragment();
+        const visibleLevels = LEVELS.filter(lvl => {
+          if (levelsFilter === 'improve') {
+            return completedSet.has(lvl.id) && (state.levelStars[lvl.id] || 0) < 3;
+          }
+          return true;
+        });
+
+        if (visibleLevels.length === 0) {
+          const emptyMsg = document.createElement('div');
+          emptyMsg.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 14px; font-weight: 800; color: #64748b; font-size: 0.86rem;';
+          emptyMsg.textContent = 'Todos os níveis concluídos já estão com 3★ de maestria!';
+          frag.appendChild(emptyMsg);
+        }
+
+        for (const lvl of visibleLevels) {
+          const access = checkLevelAccess(lvl.id);
+          const starsEarned = state.levelStars[lvl.id] || 0;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'level-tile';
+          if (!access.unlocked) btn.classList.add('locked');
+          else if (completedSet.has(lvl.id)) btn.classList.add('completed');
+          if (lvl.id === state.currentLevel) btn.classList.add('current');
+          btn.title = access.unlocked ? `Nível ${lvl.id}: ${lvl.t}` : access.msg;
+          btn.dataset.levelId = String(lvl.id);
+
+          const num = document.createElement('span');
+          num.className = 'level-tile-num';
+          num.textContent = String(lvl.id);
+
+          const tag = document.createElement('span');
+          tag.className = 'level-tile-tag';
+          tag.textContent = lvl.t.split(' ')[0];
+
+          const starsEl = document.createElement('span');
+          starsEl.className = 'level-tile-stars';
+          starsEl.textContent = !access.unlocked
+            ? '🔒'
+            : starsEarned > 0
+              ? '★'.repeat(starsEarned) + '☆'.repeat(3 - starsEarned)
+              : '☆☆☆';
+
+          btn.appendChild(num);
+          btn.appendChild(tag);
+          btn.appendChild(starsEl);
+
+          if (completedSet.has(lvl.id)) {
+            const check = document.createElement('span');
+            check.className = 'level-tile-check';
+            check.textContent = '✓';
+            btn.appendChild(check);
+          }
+
+          btn.addEventListener('click', () => {
+            if (!access.unlocked) {
+              showToast(access.msg);
+              SoundFX.error();
+              return;
+            }
+            closeModal('levelsModal');
+            initLevel(lvl.id, true);
+          });
+
+          frag.appendChild(btn);
+        }
+        grid.appendChild(frag);
+      }
+
+      function openEconomyModal() {
+        const totalStars = getTotalEarnedStars();
+        const nextGate = getNextMilestoneFor(state.levelStars);
+        document.getElementById('economySummary').innerHTML = `
+          <div>Estrelas de Proficiência: <strong>${totalStars}★ / ${MAX_TOTAL_STARS}★</strong> • Sequência 3★: <strong>🔥 ${state.streak}</strong></div>
+          <div>${nextGate ? `Próximo Marco: <strong>${nextGate.requiredStars}★</strong> para desbloquear o Nível ${nextGate.minLevel}` : 'Todas as metas de proficiência foram atingidas!'}</div>
+        `;
+        openModal('coinsModal');
+      }
+
+      document.getElementById('btnLevels').addEventListener('click', () => {
+        levelsFilter = 'all';
+        renderLevelsMap();
+        openModal('levelsModal');
+      });
+
+      elLevelBadge.addEventListener('click', () => {
+        levelsFilter = 'all';
+        renderLevelsMap();
+        openModal('levelsModal');
+      });
+
+      document.querySelectorAll('.quick-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const action = btn.dataset.filter;
+          if (action === 'current') {
+            const highest = getHighestUnlockedLevelFor(state.completedLevels, state.levelStars);
+            closeModal('levelsModal');
+            initLevel(highest, true);
+            return;
+          }
+          levelsFilter = action || 'all';
+          renderLevelsMap();
+        });
+      });
+
+      document.getElementById('btnSettings').addEventListener('click', () => {
+        document.getElementById('toggleSound').classList.toggle('on', state.soundEnabled);
+        document.getElementById('toggleVibrate').classList.toggle('on', state.vibrateEnabled);
+        openModal('settingsModal');
+      });
+
+      document.getElementById('toggleSound').addEventListener('click', (e) => {
+        state.soundEnabled = !state.soundEnabled;
+        e.currentTarget.classList.toggle('on', state.soundEnabled);
+        e.currentTarget.setAttribute('aria-pressed', String(state.soundEnabled));
+        saveState();
+      });
+
+      document.getElementById('toggleVibrate').addEventListener('click', (e) => {
+        state.vibrateEnabled = !state.vibrateEnabled;
+        e.currentTarget.classList.toggle('on', state.vibrateEnabled);
+        e.currentTarget.setAttribute('aria-pressed', String(state.vibrateEnabled));
+        saveState();
+      });
+
+      document.getElementById('btnRestartLevel').addEventListener('click', () => {
+        closeModal('settingsModal');
+        initLevel(state.currentLevel, true);
+        showToast(`Nível ${state.currentLevel} reiniciado`);
+      });
+
+      document.getElementById('btnResetProgress').addEventListener('click', () => {
+        if (confirm('Deseja apagar todo o progresso e voltar ao Nível 0?')) {
+          state = createDefaultState();
+          saveState();
+          closeModal('settingsModal');
+          initLevel(0, true);
+          showToast('Progresso reiniciado');
+        }
+      });
+
+      document.getElementById('btnAddCoins').addEventListener('click', () => openEconomyModal());
+
+      document.getElementById('btnGoImprove').addEventListener('click', () => {
+        closeModal('coinsModal');
+        levelsFilter = 'improve';
+        renderLevelsMap();
+        openModal('levelsModal');
+      });
+
+      document.getElementById('btnNextLevel').addEventListener('click', (e) => {
+        closeModal('victoryModal');
+        if (e.currentTarget.dataset.mode === 'improve') {
+          levelsFilter = 'improve';
+          renderLevelsMap();
+          openModal('levelsModal');
+          return;
+        }
+        initLevel(Math.min(MAX_LEVEL, board.id + 1), true);
+      });
+
+      document.getElementById('btnReplayLevel').addEventListener('click', () => {
+        closeModal('victoryModal');
+        initLevel(board.id, true);
+      });
+
+      document.querySelectorAll('[data-close]').forEach(btn => {
+        btn.addEventListener('click', () => closeModal(btn.dataset.close));
+      });
+
+      document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+        backdrop.addEventListener('click', (e) => {
+          if (e.target === backdrop) backdrop.classList.remove('open');
+        });
+      });
+
+      /* ================================================================
+         11. RESPONSIVE RESIZE & BOOTSTRAP
+         ================================================================ */
+      const resizeObserver = new ResizeObserver(() => {
+        if (board) computeBoardLayout();
+      });
+      resizeObserver.observe(document.querySelector('.game-shell'));
+
+      initLevel(state.currentLevel);
+    })();
+  </script>
+</body>
+</html>
